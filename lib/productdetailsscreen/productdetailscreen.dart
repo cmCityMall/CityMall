@@ -1,0 +1,1894 @@
+import 'package:citymall/colors/colors.dart';
+import 'package:citymall/controller/clickcontroller.dart';
+import 'package:citymall/controller/theme_controller.dart';
+import 'package:citymall/images/images.dart';
+import 'package:citymall/productdetailsscreen/addaddressscreen.dart';
+import 'package:citymall/productdetailsscreen/confirmaddressscreen.dart';
+import 'package:citymall/productdetailsscreen/viewallreviewscreen.dart';
+import 'package:citymall/rout_screens/rout_1.dart';
+import 'package:citymall/textstylefontfamily/textfontfamily.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+
+// ignore: must_be_immutable
+class ProductDetailScreen extends StatelessWidget {
+  ProductDetailScreen({Key? key}) : super(key: key);
+  final ThemeController themeController = Get.put(ThemeController());
+  final ColorClickController ontapColorController =
+      Get.put(ColorClickController());
+  final SizeClickController ontapSizeController =
+      Get.put(SizeClickController());
+  final ArrowClickController arrowClickController =
+      Get.put(ArrowClickController());
+  final AddressClickController1 addressClickController1 =
+      Get.put(AddressClickController1());
+  List<Map> topRatedProductList = [
+    {
+      "image": Images.purseimage,
+      "text": "Nike Air Max 270\nReact ENG",
+      "text1": "10%",
+      "price": "\$299,43",
+    },
+    {
+      "image": Images.shoesimage,
+      "text": "Nike Air Max 270\nReact ENG",
+      "text1": "10%",
+      "price": "\$299,43",
+    },
+  ];
+
+  List<Map> bottomAddressList = [
+    {
+      "icon": Images.homefill,
+      "text1": "Home Address",
+      "text2": "+91 12345 67890",
+    },
+    {
+      "icon": Images.office,
+      "text1": "Office Address",
+      "text2": "+91 98765 43210",
+    },
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: themeController.isLightTheme.value
+          ? ColorResources.white6
+          : ColorResources.black4,
+      appBar: AppBar(
+        backgroundColor: themeController.isLightTheme.value
+            ? ColorResources.white6
+            : ColorResources.black4,
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+        elevation: 0,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 25),
+          child: InkWell(
+            onTap: () {
+              selectedIndex = 0;
+              Navigator.of(context, rootNavigator: true)
+                  .pushReplacement(MaterialPageRoute(
+                builder: (context) => NavigationBarBottom(),
+              ));
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: ColorResources.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: 13,
+                    color: ColorResources.blue1.withOpacity(0.3),
+                    spreadRadius: 0,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Center(
+                child: Icon(
+                  Icons.arrow_back,
+                  color: ColorResources.black,
+                  size: 20,
+                ),
+              ),
+            ),
+          ),
+        ),
+        title: Text(
+          "Product Detail",
+          style: TextStyle(
+            fontFamily: TextFontFamily.SEN_BOLD,
+            fontSize: 22,
+            color: themeController.isLightTheme.value
+                ? ColorResources.black2
+                : ColorResources.white,
+          ),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(top: 8, bottom: 8, right: 25),
+            child: InkWell(
+              onTap: () {
+                selectedIndex = 4;
+                Navigator.of(context, rootNavigator: true)
+                    .pushReplacement(MaterialPageRoute(
+                  builder: (context) => NavigationBarBottom(),
+                ));
+              },
+              child: Container(
+                height: 40,
+                width: 40,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: themeController.isLightTheme.value
+                      ? ColorResources.white
+                      : ColorResources.black6,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: SvgPicture.asset(
+                    Images.cartblank,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.only(top: 20),
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  Container(
+                    height: 240,
+                    width: Get.width,
+                    color: themeController.isLightTheme.value
+                        ? ColorResources.white6
+                        : ColorResources.black4,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 50),
+                          child: Container(
+                            height: 240,
+                            width: 210,
+                            color: themeController.isLightTheme.value
+                                ? ColorResources.white6
+                                : ColorResources.black4,
+                            child: Image.asset(
+                              Images.clothesimage,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        //SizedBox(width: Get.width / 10.27),
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.bottomRight,
+                            child: Padding(
+                              padding: EdgeInsets.only(top: 50, right: 20),
+                              child: Obx(
+                                () => Container(
+                                  height:
+                                      arrowClickController.click.value == false
+                                          ? 100
+                                          : 200,
+                                  width: 55,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(14),
+                                    color: themeController.isLightTheme.value
+                                        ? ColorResources.white
+                                        : ColorResources.black1,
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 10),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Obx(
+                                          () => InkWell(
+                                            onTap: () {
+                                              arrowClickController.click.value =
+                                                  !arrowClickController
+                                                      .click.value;
+                                            },
+                                            child: SvgPicture.asset(
+                                              arrowClickController
+                                                          .click.value ==
+                                                      false
+                                                  ? Images.arrowup
+                                                  : Images.arrowdown,
+                                              color: themeController
+                                                      .isLightTheme.value
+                                                  ? ColorResources.grey8
+                                                  : ColorResources.white,
+                                            ),
+                                          ),
+                                        ),
+                                        Divider(
+                                          thickness: 0.6,
+                                          color: ColorResources.grey6,
+                                        ),
+                                        ListView.builder(
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          shrinkWrap: true,
+                                          itemCount: arrowClickController
+                                                      .click.value ==
+                                                  false
+                                              ? 1
+                                              : 3,
+                                          itemBuilder: (BuildContext context,
+                                              int index) {
+                                            return Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 5),
+                                              child: Container(
+                                                height: 42,
+                                                width: 42,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(14),
+                                                  color: ColorResources.grey6,
+                                                ),
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(4),
+                                                  child: Image.asset(
+                                                    Images.clothesimage,
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Container(
+                    // height: Get.height,
+                    width: Get.width,
+                    decoration: BoxDecoration(
+                      color: themeController.isLightTheme.value
+                          ? ColorResources.white
+                          : ColorResources.black1,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(100),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          blurRadius: 34,
+                          color: ColorResources.black.withOpacity(0.04),
+                          spreadRadius: 0,
+                          offset: Offset(0, 0),
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 40),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Mentli Solid Blue\nSliim Fit",
+                                style: TextStyle(
+                                  fontFamily: TextFontFamily.SEN_BOLD,
+                                  fontSize: 24,
+                                  color: themeController.isLightTheme.value
+                                      ? ColorResources.black2
+                                      : ColorResources.white,
+                                ),
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(top: 30, right: 5),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.star,
+                                      color: ColorResources.yellow,
+                                    ),
+                                    SizedBox(width: 9),
+                                    Text(
+                                      "4.5",
+                                      style: TextStyle(
+                                        fontFamily: TextFontFamily.SEN_BOLD,
+                                        fontSize: 18,
+                                        color:
+                                            themeController.isLightTheme.value
+                                                ? ColorResources.black2
+                                                : ColorResources.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "\$50,00",
+                                style: TextStyle(
+                                  fontFamily: TextFontFamily.SEN_EXTRA_BOLD,
+                                  fontSize: 25,
+                                  color: ColorResources.blue1,
+                                ),
+                              ),
+                              Text(
+                                "(932 Sale)",
+                                style: TextStyle(
+                                  fontFamily: TextFontFamily.SEN_REGULAR,
+                                  fontSize: 14,
+                                  color: themeController.isLightTheme.value
+                                      ? ColorResources.grey5
+                                      : ColorResources.white.withOpacity(0.6),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          Divider(
+                            thickness: 0.5,
+                            color: themeController.isLightTheme.value
+                                ? ColorResources.grey8
+                                : ColorResources.white.withOpacity(0.2),
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "COLOR",
+                                style: TextStyle(
+                                  fontFamily: TextFontFamily.SEN_REGULAR,
+                                  fontSize: 13,
+                                  color: ColorResources.grey11,
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 100),
+                                child: Text(
+                                  "SIZE",
+                                  style: TextStyle(
+                                    fontFamily: TextFontFamily.SEN_REGULAR,
+                                    fontSize: 13,
+                                    color: ColorResources.grey11,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Obx(
+                                    () => InkWell(
+                                      onTap: () {
+                                        if (ontapColorController.one.isTrue ||
+                                            ontapColorController.two.isTrue ||
+                                            ontapColorController.three.isTrue ||
+                                            ontapColorController.four.isTrue ||
+                                            ontapColorController.five.isTrue) {
+                                          ontapColorController.one(false);
+                                          ontapColorController.two(false);
+                                          ontapColorController.three(false);
+                                          ontapColorController.four(false);
+                                          ontapColorController.five(false);
+                                        }
+                                        ontapColorController.one(true);
+                                      },
+                                      child: Container(
+                                        height: 35,
+                                        width: 35,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          color: themeController
+                                                  .isLightTheme.value
+                                              ? ontapColorController.one.isTrue
+                                                  ? ColorResources.white9
+                                                  : ColorResources.white
+                                              : ontapColorController.one.isTrue
+                                                  ? ColorResources.white9
+                                                  : ColorResources.black1,
+                                        ),
+                                        child: Center(
+                                          child: CircleAvatar(
+                                            radius:
+                                                ontapColorController.one.isTrue
+                                                    ? 9
+                                                    : 6,
+                                            backgroundColor:
+                                                ColorResources.navyblue2,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Obx(
+                                    () => InkWell(
+                                      onTap: () {
+                                        if (ontapColorController.one.isTrue ||
+                                            ontapColorController.two.isTrue ||
+                                            ontapColorController.three.isTrue ||
+                                            ontapColorController.four.isTrue ||
+                                            ontapColorController.five.isTrue) {
+                                          ontapColorController.one(false);
+                                          ontapColorController.two(false);
+                                          ontapColorController.three(false);
+                                          ontapColorController.four(false);
+                                          ontapColorController.five(false);
+                                        }
+                                        ontapColorController.two(true);
+                                      },
+                                      child: Container(
+                                        height: 35,
+                                        width: 35,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          color: themeController
+                                                  .isLightTheme.value
+                                              ? ontapColorController.two.isTrue
+                                                  ? ColorResources.white9
+                                                  : ColorResources.white
+                                              : ontapColorController.two.isTrue
+                                                  ? ColorResources.white9
+                                                  : ColorResources.black1,
+                                        ),
+                                        child: Center(
+                                          child: CircleAvatar(
+                                            radius:
+                                                ontapColorController.two.isTrue
+                                                    ? 9
+                                                    : 6,
+                                            backgroundColor:
+                                                ColorResources.white10,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Obx(
+                                    () => InkWell(
+                                      onTap: () {
+                                        if (ontapColorController.one.isTrue ||
+                                            ontapColorController.two.isTrue ||
+                                            ontapColorController.three.isTrue ||
+                                            ontapColorController.four.isTrue ||
+                                            ontapColorController.five.isTrue) {
+                                          ontapColorController.one(false);
+                                          ontapColorController.two(false);
+                                          ontapColorController.three(false);
+                                          ontapColorController.four(false);
+                                          ontapColorController.five(false);
+                                        }
+                                        ontapColorController.three(true);
+                                      },
+                                      child: Container(
+                                        height: 35,
+                                        width: 35,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          color:
+                                              themeController.isLightTheme.value
+                                                  ? ontapColorController
+                                                          .three.isTrue
+                                                      ? ColorResources.white9
+                                                      : ColorResources.white
+                                                  : ontapColorController
+                                                          .three.isTrue
+                                                      ? ColorResources.white9
+                                                      : ColorResources.black1,
+                                        ),
+                                        child: Center(
+                                          child: CircleAvatar(
+                                            radius: ontapColorController
+                                                    .three.isTrue
+                                                ? 9
+                                                : 6,
+                                            backgroundColor:
+                                                ColorResources.yellow1,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Obx(
+                                    () => InkWell(
+                                      onTap: () {
+                                        if (ontapSizeController.one.isTrue ||
+                                            ontapSizeController.two.isTrue ||
+                                            ontapSizeController.three.isTrue) {
+                                          ontapSizeController.one(false);
+                                          ontapSizeController.two(false);
+                                          ontapSizeController.three(false);
+                                        }
+                                        ontapSizeController.one(true);
+                                      },
+                                      child: Container(
+                                        height: 40,
+                                        width: 40,
+                                        decoration: BoxDecoration(
+                                          color: themeController
+                                                  .isLightTheme.value
+                                              ? ontapSizeController.one.isTrue
+                                                  ? ColorResources.blue1
+                                                  : ColorResources.white
+                                              : ontapSizeController.one.isTrue
+                                                  ? ColorResources.blue1
+                                                  : ColorResources.black1,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                              width: 1.5,
+                                              color:
+                                                  ontapSizeController.one.isTrue
+                                                      ? ColorResources.blue1
+                                                      : ColorResources.white9),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            "S",
+                                            style: TextStyle(
+                                              fontFamily:
+                                                  TextFontFamily.SEN_REGULAR,
+                                              fontSize: 20,
+                                              color:
+                                                  ontapSizeController.one.isTrue
+                                                      ? ColorResources.white
+                                                      : ColorResources.blue1,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 10),
+                                  Obx(
+                                    () => InkWell(
+                                      onTap: () {
+                                        if (ontapSizeController.one.isTrue ||
+                                            ontapSizeController.two.isTrue ||
+                                            ontapSizeController.three.isTrue) {
+                                          ontapSizeController.one(false);
+                                          ontapSizeController.two(false);
+                                          ontapSizeController.three(false);
+                                        }
+                                        ontapSizeController.two(true);
+                                      },
+                                      child: Container(
+                                        height: 40,
+                                        width: 40,
+                                        decoration: BoxDecoration(
+                                          color: themeController
+                                                  .isLightTheme.value
+                                              ? ontapSizeController.two.isTrue
+                                                  ? ColorResources.blue1
+                                                  : ColorResources.white
+                                              : ontapSizeController.two.isTrue
+                                                  ? ColorResources.blue1
+                                                  : ColorResources.black1,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                              width: 1.5,
+                                              color:
+                                                  ontapSizeController.two.isTrue
+                                                      ? ColorResources.blue1
+                                                      : ColorResources.white9),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            "M",
+                                            style: TextStyle(
+                                              fontFamily:
+                                                  TextFontFamily.SEN_REGULAR,
+                                              fontSize: 20,
+                                              color:
+                                                  ontapSizeController.two.isTrue
+                                                      ? ColorResources.white
+                                                      : ColorResources.blue1,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 10),
+                                  Obx(
+                                    () => InkWell(
+                                      onTap: () {
+                                        if (ontapSizeController.one.isTrue ||
+                                            ontapSizeController.two.isTrue ||
+                                            ontapSizeController.three.isTrue) {
+                                          ontapSizeController.one(false);
+                                          ontapSizeController.two(false);
+                                          ontapSizeController.three(false);
+                                        }
+                                        ontapSizeController.three(true);
+                                      },
+                                      child: Container(
+                                        height: 40,
+                                        width: 40,
+                                        decoration: BoxDecoration(
+                                          color: themeController
+                                                  .isLightTheme.value
+                                              ? ontapSizeController.three.isTrue
+                                                  ? ColorResources.blue1
+                                                  : ColorResources.white
+                                              : ontapSizeController.three.isTrue
+                                                  ? ColorResources.blue1
+                                                  : ColorResources.black1,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                              width: 1.5,
+                                              color: ontapSizeController
+                                                      .three.isTrue
+                                                  ? ColorResources.blue1
+                                                  : ColorResources.white9),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            "L",
+                                            style: TextStyle(
+                                              fontFamily:
+                                                  TextFontFamily.SEN_REGULAR,
+                                              fontSize: 20,
+                                              color: ontapSizeController
+                                                      .three.isTrue
+                                                  ? ColorResources.white
+                                                  : ColorResources.blue1,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Row(
+                                children: [
+                                  Obx(
+                                    () => InkWell(
+                                      onTap: () {
+                                        if (ontapColorController.one.isTrue ||
+                                            ontapColorController.two.isTrue ||
+                                            ontapColorController.three.isTrue ||
+                                            ontapColorController.four.isTrue ||
+                                            ontapColorController.five.isTrue) {
+                                          ontapColorController.one(false);
+                                          ontapColorController.two(false);
+                                          ontapColorController.three(false);
+                                          ontapColorController.four(false);
+                                          ontapColorController.five(false);
+                                        }
+                                        ontapColorController.four(true);
+                                      },
+                                      child: Container(
+                                        height: 35,
+                                        width: 35,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          color: themeController
+                                                  .isLightTheme.value
+                                              ? ontapColorController.four.isTrue
+                                                  ? ColorResources.white9
+                                                  : ColorResources.white
+                                              : ontapColorController.four.isTrue
+                                                  ? ColorResources.white9
+                                                  : ColorResources.black1,
+                                        ),
+                                        child: Center(
+                                          child: CircleAvatar(
+                                            radius:
+                                                ontapColorController.four.isTrue
+                                                    ? 9
+                                                    : 6,
+                                            backgroundColor: ColorResources.red,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Obx(
+                                    () => InkWell(
+                                      onTap: () {
+                                        if (ontapColorController.one.isTrue ||
+                                            ontapColorController.two.isTrue ||
+                                            ontapColorController.three.isTrue ||
+                                            ontapColorController.four.isTrue ||
+                                            ontapColorController.five.isTrue) {
+                                          ontapColorController.one(false);
+                                          ontapColorController.two(false);
+                                          ontapColorController.three(false);
+                                          ontapColorController.four(false);
+                                          ontapColorController.five(false);
+                                        }
+                                        ontapColorController.five(true);
+                                      },
+                                      child: Container(
+                                        height: 35,
+                                        width: 35,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          color: themeController
+                                                  .isLightTheme.value
+                                              ? ontapColorController.five.isTrue
+                                                  ? ColorResources.white9
+                                                  : ColorResources.white
+                                              : ontapColorController.five.isTrue
+                                                  ? ColorResources.white9
+                                                  : ColorResources.black1,
+                                        ),
+                                        child: Center(
+                                          child: CircleAvatar(
+                                            radius:
+                                                ontapColorController.five.isTrue
+                                                    ? 9
+                                                    : 6,
+                                            backgroundColor:
+                                                ColorResources.yellow2,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 20),
+                          Container(
+                            height: 175,
+                            width: Get.width,
+                            decoration: BoxDecoration(
+                              color: themeController.isLightTheme.value
+                                  ? ColorResources.white
+                                  : ColorResources.black1,
+                              borderRadius: BorderRadius.only(
+                                bottomRight: Radius.circular(8),
+                                bottomLeft: Radius.circular(8),
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  blurRadius: 4,
+                                  color:
+                                      ColorResources.black.withOpacity(0.018),
+                                  spreadRadius: 0,
+                                  offset: Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Description",
+                                  style: TextStyle(
+                                    fontFamily: TextFontFamily.SEN_BOLD,
+                                    fontSize: 18,
+                                    color: themeController.isLightTheme.value
+                                        ? ColorResources.black2
+                                        : ColorResources.white,
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  "Lorem Ipsum is simply dummy text of the printing"
+                                  "and typesetting industry. Lorem Ipsum has been the"
+                                  "indu stry's standard dummy text ever since the"
+                                  "1500s, whe an unknown printer took a galley of type"
+                                  "and sc rambled it to make a type printer took a...",
+                                  style: TextStyle(
+                                    height: 1.3,
+                                    fontFamily: TextFontFamily.SEN_REGULAR,
+                                    fontSize: 13,
+                                    color: themeController.isLightTheme.value
+                                        ? ColorResources.grey5
+                                        : ColorResources.white.withOpacity(0.6),
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                InkWell(
+                                  onTap: () {
+                                    Get.bottomSheet(
+                                      Container(
+                                        //height: 250,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 10, horizontal: 15),
+                                          child: SingleChildScrollView(
+                                            child: Column(
+                                              children: [
+                                                Text(
+                                                  "Description",
+                                                  style: TextStyle(
+                                                    fontFamily:
+                                                        TextFontFamily.SEN_BOLD,
+                                                    fontSize: 18,
+                                                    color: themeController
+                                                            .isLightTheme.value
+                                                        ? ColorResources.black2
+                                                        : ColorResources.white,
+                                                  ),
+                                                ),
+                                                SizedBox(height: 15),
+                                                Text(
+                                                  "Lorem Ipsum is simply dummy text of the printing"
+                                                  "and typesetting industry. Lorem Ipsum has been the"
+                                                  "indu stry's standard dummy text ever since the"
+                                                  "1500s, whe an unknown printer took a galley of type"
+                                                  "and sc rambled it to make a type printer took a...",
+                                                  style: TextStyle(
+                                                    height: 1.3,
+                                                    fontFamily: TextFontFamily
+                                                        .SEN_REGULAR,
+                                                    fontSize: 13,
+                                                    color: themeController
+                                                            .isLightTheme.value
+                                                        ? ColorResources.grey5
+                                                        : ColorResources.white
+                                                            .withOpacity(0.6),
+                                                  ),
+                                                ),
+                                                SizedBox(height: 15),
+                                                Text(
+                                                  "Lorem Ipsum is simply dummy text of the printing"
+                                                  "and typesetting industry.",
+                                                  style: TextStyle(
+                                                    height: 1.3,
+                                                    fontFamily: TextFontFamily
+                                                        .SEN_REGULAR,
+                                                    fontSize: 13,
+                                                    color: themeController
+                                                            .isLightTheme.value
+                                                        ? ColorResources.grey5
+                                                        : ColorResources.white
+                                                            .withOpacity(0.6),
+                                                  ),
+                                                ),
+                                                SizedBox(height: 15),
+                                                Text(
+                                                  "Lorem Ipsum is simply dummy text of the printing"
+                                                  "and typesetting industry. Lorem Ipsum has been the"
+                                                  "indu stry's standard dummy text ever since the"
+                                                  "1500s, whe an unknown.",
+                                                  style: TextStyle(
+                                                    height: 1.3,
+                                                    fontFamily: TextFontFamily
+                                                        .SEN_REGULAR,
+                                                    fontSize: 13,
+                                                    color: themeController
+                                                            .isLightTheme.value
+                                                        ? ColorResources.grey5
+                                                        : ColorResources.white
+                                                            .withOpacity(0.6),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      backgroundColor:
+                                          themeController.isLightTheme.value
+                                              ? ColorResources.white
+                                              : ColorResources.black1,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(25),
+                                            topRight: Radius.circular(25)),
+                                      ),
+                                    );
+                                  },
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "View More",
+                                        style: TextStyle(
+                                          fontFamily: TextFontFamily.SEN_BOLD,
+                                          fontSize: 15,
+                                          color: ColorResources.blue1,
+                                        ),
+                                      ),
+                                      Icon(
+                                        Icons.keyboard_arrow_down,
+                                        color: ColorResources.blue1,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Review Product",
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontFamily: TextFontFamily.SEN_BOLD,
+                                  color: themeController.isLightTheme.value
+                                      ? ColorResources.black2
+                                      : ColorResources.white,
+                                ),
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  // selectedIndex = 0;
+                                  // Navigator.of(context, rootNavigator: true)
+                                  //     .pushReplacement(MaterialPageRoute(
+                                  //   builder: (context) => NavigationBarBottom(),
+                                  // ));
+                                  // Navigator.pushReplacement(
+                                  //     context,
+                                  //     MaterialPageRoute(
+                                  //       builder: (context) => MenuViewAllScreen(),
+                                  //     ));
+                                },
+                                child: InkWell(
+                                  onTap: () {
+                                    Get.off(ViewAllReviewScreen());
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        "View all  ",
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontFamily:
+                                              TextFontFamily.SEN_REGULAR,
+                                          color: ColorResources.blue1,
+                                        ),
+                                      ),
+                                      SvgPicture.asset(Images.viewallarrow),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 4),
+                          Row(
+                            children: [
+                              RatingBar(
+                                itemSize: 20,
+                                maxRating: 5,
+                                initialRating: 4,
+                                itemCount: 5,
+                                direction: Axis.horizontal,
+                                ratingWidget: RatingWidget(
+                                  full: Icon(
+                                    Icons.star,
+                                    color: ColorResources.yellow,
+                                  ),
+                                  empty: Icon(
+                                    Icons.star,
+                                    color: ColorResources.white2,
+                                  ),
+                                  half: Icon(Icons.star),
+                                ),
+                                onRatingUpdate: (rating) {},
+                              ),
+                              SizedBox(width: 8),
+                              Text(
+                                "4.5",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontFamily: TextFontFamily.SEN_REGULAR,
+                                  fontWeight: FontWeight.w800,
+                                  color: themeController.isLightTheme.value
+                                      ? ColorResources.grey4
+                                      : ColorResources.white.withOpacity(0.6),
+                                ),
+                              ),
+                              Text(
+                                "(5 Review)",
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontFamily: TextFontFamily.SEN_REGULAR,
+                                  color: themeController.isLightTheme.value
+                                      ? ColorResources.grey4
+                                      : ColorResources.white.withOpacity(0.6),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Container(
+                            height: 280,
+                            width: Get.width,
+                            decoration: BoxDecoration(
+                              color: themeController.isLightTheme.value
+                                  ? ColorResources.white
+                                  : ColorResources.black1,
+                              borderRadius: BorderRadius.only(
+                                bottomRight: Radius.circular(8),
+                                bottomLeft: Radius.circular(8),
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  blurRadius: 4,
+                                  color:
+                                      ColorResources.black.withOpacity(0.020),
+                                  spreadRadius: 0,
+                                  offset: Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: ListView.builder(
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: 2,
+                              shrinkWrap: true,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(top: 10),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      ListTile(
+                                        contentPadding: EdgeInsets.zero,
+                                        leading: CircleAvatar(
+                                          radius: 30,
+                                          backgroundImage:
+                                              AssetImage(Images.reviewprofile),
+                                        ),
+                                        title: Text(
+                                          "John Doe",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontFamily: TextFontFamily.SEN_BOLD,
+                                            color: themeController
+                                                    .isLightTheme.value
+                                                ? ColorResources.black1
+                                                : ColorResources.white,
+                                          ),
+                                        ),
+                                        subtitle: RatingBar(
+                                          itemSize: 20,
+                                          maxRating: 5,
+                                          initialRating: 4,
+                                          itemCount: 5,
+                                          direction: Axis.horizontal,
+                                          ratingWidget: RatingWidget(
+                                            full: Icon(
+                                              Icons.star,
+                                              color: ColorResources.yellow,
+                                            ),
+                                            empty: Icon(
+                                              Icons.star,
+                                              color: ColorResources.white2,
+                                            ),
+                                            half: Icon(Icons.star),
+                                          ),
+                                          onRatingUpdate: (rating) {},
+                                        ),
+                                        trailing: Text(
+                                          "December 10, 2022",
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            fontFamily:
+                                                TextFontFamily.SEN_REGULAR,
+                                            color: themeController
+                                                    .isLightTheme.value
+                                                ? ColorResources.grey4
+                                                : ColorResources.white
+                                                    .withOpacity(0.6),
+                                          ),
+                                        ),
+                                      ),
+                                      Text(
+                                        "air max are always very comfortable fit, clean and"
+                                        "just perfect in every way. just the box was too small"
+                                        "and scrunched the sneakers up a little bit,",
+                                        style: TextStyle(
+                                          height: 1.3,
+                                          fontSize: 12,
+                                          fontFamily:
+                                              TextFontFamily.SEN_REGULAR,
+                                          color:
+                                              themeController.isLightTheme.value
+                                                  ? ColorResources.grey4
+                                                  : ColorResources.white
+                                                      .withOpacity(0.6),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Top Rated Products",
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontFamily: TextFontFamily.SEN_BOLD,
+                                  color: themeController.isLightTheme.value
+                                      ? ColorResources.black2
+                                      : ColorResources.white,
+                                ),
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  // selectedIndex = 0;
+                                  // Navigator.of(context, rootNavigator: true)
+                                  //     .pushReplacement(MaterialPageRoute(
+                                  //   builder: (context) => NavigationBarBottom(),
+                                  // ));
+                                  // Navigator.pushReplacement(
+                                  //     context,
+                                  //     MaterialPageRoute(
+                                  //       builder: (context) => MenuViewAllScreen(),
+                                  //     ));
+                                },
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      "View all",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontFamily: TextFontFamily.SEN_REGULAR,
+                                        color: ColorResources.blue1,
+                                      ),
+                                    ),
+                                    SvgPicture.asset(Images.viewallarrow),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 15),
+                          GridView.builder(
+                            itemCount: topRatedProductList.length,
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 8,
+                              mainAxisSpacing: 8,
+                              childAspectRatio: Get.width > 450
+                                  ? 1.58 / 2.1
+                                  : Get.width < 370
+                                      ? 1.62 / 2.68
+                                      : 1.8 / 2.5,
+                            ),
+                            itemBuilder: (context, index) {
+                              return InkWell(
+                                onTap: () {},
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: themeController.isLightTheme.value
+                                        ? ColorResources.white
+                                        : ColorResources.black5,
+                                    borderRadius: BorderRadius.circular(20),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        blurRadius: 20,
+                                        color:
+                                            themeController.isLightTheme.value
+                                                ? ColorResources.blue1
+                                                    .withOpacity(0.05)
+                                                : ColorResources.black1,
+                                        spreadRadius: 0,
+                                        offset: Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 10),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        InkWell(
+                                          onTap: () {
+                                            Get.defaultDialog(
+                                              backgroundColor:
+                                                  ColorResources.white6,
+                                              contentPadding: EdgeInsets.zero,
+                                              title: "",
+                                              titlePadding: EdgeInsets.zero,
+                                              content: Center(
+                                                child: Image.asset(
+                                                  topRatedProductList[index]
+                                                      ["image"],
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          child: Container(
+                                            height: 150,
+                                            width: Get.width,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                              color: ColorResources.white6,
+                                            ),
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(5),
+                                              child: Image.asset(
+                                                topRatedProductList[index]
+                                                    ["image"],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Text(
+                                          topRatedProductList[index]["text"],
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontFamily: TextFontFamily.SEN_BOLD,
+                                            color: themeController
+                                                    .isLightTheme.value
+                                                ? ColorResources.black2
+                                                : ColorResources.white,
+                                          ),
+                                        ),
+                                        Text(
+                                          topRatedProductList[index]["price"],
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontFamily:
+                                                TextFontFamily.SEN_EXTRA_BOLD,
+                                            color: ColorResources.blue1,
+                                          ),
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            RatingBar(
+                                              itemSize: 16,
+                                              maxRating: 5,
+                                              initialRating: 4,
+                                              itemCount: 5,
+                                              direction: Axis.horizontal,
+                                              ratingWidget: RatingWidget(
+                                                full: Icon(
+                                                  Icons.star,
+                                                  color: ColorResources.yellow,
+                                                ),
+                                                empty: Icon(
+                                                  Icons.star,
+                                                  color: ColorResources.white2,
+                                                ),
+                                                half: Icon(Icons.star),
+                                              ),
+                                              onRatingUpdate: (rating) {},
+                                            ),
+                                            Text(
+                                              "932 Sale",
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                fontFamily:
+                                                    TextFontFamily.SEN_REGULAR,
+                                                color: ColorResources.white3,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          SizedBox(height: 50),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              bottom: 0,
+              child: Container(
+                height: 90,
+                width: Get.width,
+                alignment: Alignment.bottomCenter,
+                decoration: BoxDecoration(
+                  color: themeController.isLightTheme.value
+                      ? ColorResources.white
+                      : ColorResources.black1,
+                ),
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: 20, left: 20, right: 20),
+                  child: Row(
+                    children: [
+                      Container(
+                        height: 50,
+                        width: 50,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          color: themeController.isLightTheme.value
+                              ? ColorResources.grey10
+                              : ColorResources.white.withOpacity(0.8),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: SvgPicture.asset(
+                            Images.cartblank,
+                            color: ColorResources.black,
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 15),
+                      Expanded(
+                        child: InkWell(
+                          onTap: () {
+                            Get.bottomSheet(
+                              Container(
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        height: 50,
+                                        width: Get.width,
+                                        color:
+                                            themeController.isLightTheme.value
+                                                ? ColorResources.white11
+                                                : ColorResources.black1,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 20),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                "Saved Address",
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontFamily:
+                                                      TextFontFamily.SEN_BOLD,
+                                                  color: themeController
+                                                          .isLightTheme.value
+                                                      ? ColorResources.black2
+                                                      : ColorResources.white,
+                                                ),
+                                              ),
+                                              InkWell(
+                                                onTap: () {
+                                                  Get.off(AddAddressScreen());
+                                                },
+                                                child: Text(
+                                                  "Add New Address",
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontFamily:
+                                                        TextFontFamily.SEN_BOLD,
+                                                    color: ColorResources.blue1,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      Obx(
+                                        () => InkWell(
+                                          onTap: () {
+                                            if (addressClickController1
+                                                    .one.isTrue ||
+                                                addressClickController1
+                                                    .two.isTrue) {
+                                              addressClickController1
+                                                  .one(false);
+                                              addressClickController1
+                                                  .two(false);
+                                            }
+                                            addressClickController1.one(true);
+                                          },
+                                          child: Padding(
+                                            padding: EdgeInsets.only(
+                                                left: 20, right: 20, top: 20),
+                                            child: Container(
+                                              height: 165,
+                                              width: Get.width,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(15),
+                                                color: themeController
+                                                        .isLightTheme.value
+                                                    ? addressClickController1
+                                                            .one.isTrue
+                                                        ? ColorResources
+                                                            .lightgreen
+                                                        : ColorResources.white
+                                                    : addressClickController1
+                                                            .one.isTrue
+                                                        ? ColorResources.black6
+                                                        : ColorResources.black6,
+                                                border: Border.all(
+                                                  width: 1,
+                                                  color: themeController
+                                                          .isLightTheme.value
+                                                      ? addressClickController1
+                                                              .one.isTrue
+                                                          ? ColorResources
+                                                              .green1
+                                                          : ColorResources
+                                                              .grey11
+                                                      : addressClickController1
+                                                              .one.isTrue
+                                                          ? ColorResources.blue1
+                                                          : ColorResources
+                                                              .black5,
+                                                ),
+                                              ),
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 20,
+                                                        vertical: 20),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        SvgPicture.asset(
+                                                          Images.homefill,
+                                                          height: 15,
+                                                          width: 15,
+                                                          color: themeController
+                                                                  .isLightTheme
+                                                                  .value
+                                                              ? addressClickController1
+                                                                      .one
+                                                                      .isTrue
+                                                                  ? ColorResources
+                                                                      .green1
+                                                                  : ColorResources
+                                                                      .black2
+                                                              : addressClickController1
+                                                                      .one
+                                                                      .isTrue
+                                                                  ? ColorResources
+                                                                      .blue1
+                                                                  : ColorResources
+                                                                      .white,
+                                                        ),
+                                                        SizedBox(width: 10),
+                                                        Text(
+                                                          "Home Address",
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                            fontFamily:
+                                                                TextFontFamily
+                                                                    .SEN_BOLD,
+                                                            color: themeController
+                                                                    .isLightTheme
+                                                                    .value
+                                                                ? addressClickController1
+                                                                        .one
+                                                                        .isTrue
+                                                                    ? ColorResources
+                                                                        .green1
+                                                                    : ColorResources
+                                                                        .black2
+                                                                : addressClickController1
+                                                                        .one
+                                                                        .isTrue
+                                                                    ? ColorResources
+                                                                        .blue1
+                                                                    : ColorResources
+                                                                        .white,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    SizedBox(height: 10),
+                                                    Text(
+                                                      " John Doe",
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontFamily:
+                                                            TextFontFamily
+                                                                .SEN_BOLD,
+                                                        color: themeController
+                                                                .isLightTheme
+                                                                .value
+                                                            ? addressClickController1
+                                                                    .one.isTrue
+                                                                ? ColorResources
+                                                                    .black2
+                                                                : ColorResources
+                                                                    .black2
+                                                            : addressClickController1
+                                                                    .one.isTrue
+                                                                ? ColorResources
+                                                                    .white
+                                                                : ColorResources
+                                                                    .white,
+                                                      ),
+                                                    ),
+                                                    SizedBox(height: 8),
+                                                    Text(
+                                                      "+91 12345 67890",
+                                                      style: TextStyle(
+                                                        fontSize: 13,
+                                                        fontFamily:
+                                                            TextFontFamily
+                                                                .SEN_REGULAR,
+                                                        color: themeController
+                                                                .isLightTheme
+                                                                .value
+                                                            ? addressClickController1
+                                                                    .one.isTrue
+                                                                ? ColorResources
+                                                                    .black2
+                                                                : ColorResources
+                                                                    .black2
+                                                            : addressClickController1
+                                                                    .one.isTrue
+                                                                ? ColorResources
+                                                                    .white
+                                                                : ColorResources
+                                                                    .white,
+                                                      ),
+                                                    ),
+                                                    SizedBox(height: 12),
+                                                    Text(
+                                                      "Building No,66, 78th Main Road, 100ft\nRoad, Indiranagar, Bangalore 123456",
+                                                      style: TextStyle(
+                                                        fontSize: 13,
+                                                        fontFamily:
+                                                            TextFontFamily
+                                                                .SEN_REGULAR,
+                                                        color: themeController
+                                                                .isLightTheme
+                                                                .value
+                                                            ? addressClickController1
+                                                                    .one.isTrue
+                                                                ? ColorResources
+                                                                    .black9
+                                                                : ColorResources
+                                                                    .black9
+                                                            : addressClickController1
+                                                                    .one.isTrue
+                                                                ? ColorResources
+                                                                    .white
+                                                                    .withOpacity(
+                                                                        0.6)
+                                                                : ColorResources
+                                                                    .white
+                                                                    .withOpacity(
+                                                                        0.6),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(height: 8),
+                                      Obx(
+                                        () => InkWell(
+                                          onTap: () {
+                                            if (addressClickController1
+                                                    .one.isTrue ||
+                                                addressClickController1
+                                                    .two.isTrue) {
+                                              addressClickController1
+                                                  .one(false);
+                                              addressClickController1
+                                                  .two(false);
+                                            }
+                                            addressClickController1.two(true);
+                                          },
+                                          child: Padding(
+                                            padding: EdgeInsets.only(
+                                                left: 20, right: 20),
+                                            child: Container(
+                                              height: 165,
+                                              width: Get.width,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(15),
+                                                color: themeController
+                                                        .isLightTheme.value
+                                                    ? addressClickController1
+                                                            .two.isTrue
+                                                        ? ColorResources
+                                                            .lightgreen
+                                                        : ColorResources.white
+                                                    : addressClickController1
+                                                            .two.isTrue
+                                                        ? ColorResources.black6
+                                                        : ColorResources.black6,
+                                                border: Border.all(
+                                                  width: 1,
+                                                  color: themeController
+                                                          .isLightTheme.value
+                                                      ? addressClickController1
+                                                              .two.isTrue
+                                                          ? ColorResources
+                                                              .green1
+                                                          : ColorResources
+                                                              .grey11
+                                                      : addressClickController1
+                                                              .two.isTrue
+                                                          ? ColorResources.blue1
+                                                          : ColorResources
+                                                              .black5,
+                                                ),
+                                              ),
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 20,
+                                                        vertical: 20),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        SvgPicture.asset(
+                                                          Images.office,
+                                                          height: 15,
+                                                          width: 15,
+                                                          color: themeController
+                                                                  .isLightTheme
+                                                                  .value
+                                                              ? addressClickController1
+                                                                      .two
+                                                                      .isTrue
+                                                                  ? ColorResources
+                                                                      .green1
+                                                                  : ColorResources
+                                                                      .black2
+                                                              : addressClickController1
+                                                                      .two
+                                                                      .isTrue
+                                                                  ? ColorResources
+                                                                      .blue1
+                                                                  : ColorResources
+                                                                      .white,
+                                                        ),
+                                                        SizedBox(width: 10),
+                                                        Text(
+                                                          "Office Address",
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                            fontFamily:
+                                                                TextFontFamily
+                                                                    .SEN_BOLD,
+                                                            color: themeController
+                                                                    .isLightTheme
+                                                                    .value
+                                                                ? addressClickController1
+                                                                        .two
+                                                                        .isTrue
+                                                                    ? ColorResources
+                                                                        .green1
+                                                                    : ColorResources
+                                                                        .black2
+                                                                : addressClickController1
+                                                                        .two
+                                                                        .isTrue
+                                                                    ? ColorResources
+                                                                        .blue1
+                                                                    : ColorResources
+                                                                        .white,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    SizedBox(height: 10),
+                                                    Text(
+                                                      " John Doe",
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontFamily:
+                                                            TextFontFamily
+                                                                .SEN_BOLD,
+                                                        color: themeController
+                                                                .isLightTheme
+                                                                .value
+                                                            ? addressClickController1
+                                                                    .two.isTrue
+                                                                ? ColorResources
+                                                                    .black2
+                                                                : ColorResources
+                                                                    .black2
+                                                            : addressClickController1
+                                                                    .two.isTrue
+                                                                ? ColorResources
+                                                                    .white
+                                                                : ColorResources
+                                                                    .white,
+                                                      ),
+                                                    ),
+                                                    SizedBox(height: 8),
+                                                    Text(
+                                                      "+91 98765 43210",
+                                                      style: TextStyle(
+                                                        fontSize: 13,
+                                                        fontFamily:
+                                                            TextFontFamily
+                                                                .SEN_REGULAR,
+                                                        color: themeController
+                                                                .isLightTheme
+                                                                .value
+                                                            ? addressClickController1
+                                                                    .two.isTrue
+                                                                ? ColorResources
+                                                                    .black2
+                                                                : ColorResources
+                                                                    .black2
+                                                            : addressClickController1
+                                                                    .two.isTrue
+                                                                ? ColorResources
+                                                                    .white
+                                                                : ColorResources
+                                                                    .white,
+                                                      ),
+                                                    ),
+                                                    SizedBox(height: 12),
+                                                    Text(
+                                                      "Building No,66, 78th Main Road, 100ft\nRoad, Indiranagar, Bangalore 123456",
+                                                      style: TextStyle(
+                                                        fontSize: 13,
+                                                        fontFamily:
+                                                            TextFontFamily
+                                                                .SEN_REGULAR,
+                                                        color: themeController
+                                                                .isLightTheme
+                                                                .value
+                                                            ? addressClickController1
+                                                                    .two.isTrue
+                                                                ? ColorResources
+                                                                    .black9
+                                                                : ColorResources
+                                                                    .black9
+                                                            : addressClickController1
+                                                                    .two.isTrue
+                                                                ? ColorResources
+                                                                    .white
+                                                                    .withOpacity(
+                                                                        0.6)
+                                                                : ColorResources
+                                                                    .white
+                                                                    .withOpacity(
+                                                                        0.6),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(height: 30),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 20),
+                                        child: InkWell(
+                                          onTap: () {
+                                            Get.off(ConfirmAddressScreen());
+                                          },
+                                          child: Container(
+                                            height: 50,
+                                            width: Get.width,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(45),
+                                              color: ColorResources.blue1,
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                "Confirm Address",
+                                                style: TextStyle(
+                                                  fontFamily:
+                                                      TextFontFamily.SEN_BOLD,
+                                                  fontSize: 20,
+                                                  color: ColorResources.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(height: 20),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              backgroundColor:
+                                  themeController.isLightTheme.value
+                                      ? ColorResources.white
+                                      : ColorResources.black4,
+                            );
+                          },
+                          child: Container(
+                            height: 50,
+                            width: Get.width,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              color: ColorResources.blue1,
+                            ),
+                            child: Center(
+                              child: Text(
+                                "Pay",
+                                style: TextStyle(
+                                  fontFamily: TextFontFamily.SEN_BOLD,
+                                  fontSize: 20,
+                                  color: ColorResources.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
