@@ -1,6 +1,7 @@
 import 'package:citymall/cartscreen/cartscreen.dart';
 import 'package:citymall/categorybrandscreen/categorybrandscreen.dart';
 import 'package:citymall/colors/colors.dart';
+import 'package:citymall/controller/db_data_controller.dart';
 import 'package:citymall/controller/theme_controller.dart';
 import 'package:citymall/favoritescreen/favoritescreen.dart';
 import 'package:citymall/homescreen/home.dart';
@@ -252,7 +253,9 @@ class _NavigationBarBottomState extends State<NavigationBarBottom> {
                               padding: const EdgeInsets.all(10),
                               child: InkWell(
                                 onTap: () {
-                                  Get.off(NotificationScreen());
+                                  final DBDataController dbDataController =
+                                      Get.find();
+                                  /* Get.off(NotificationScreen()); */
                                 },
                                 child: SvgPicture.asset(
                                   Images.notification,

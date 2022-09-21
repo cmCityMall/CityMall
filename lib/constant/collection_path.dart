@@ -7,3 +7,4 @@ const reviewCollection = "reviews";
 const advertisementCollection = "advertisements";
 const promotionCollection = "promotions";
 const timeSaleCollection = "timeSale";
+const userCollection = "users";

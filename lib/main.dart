@@ -3,17 +3,18 @@ import 'package:citymall/controller/theme_controller.dart';
 import 'package:citymall/splashscreen/splash.dart';
 import 'package:citymall/theme/dark_theme.dart';
 import 'package:citymall/theme/light_theme.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 //import 'package:get/get.dart';
 
-void main() {
+Future<void> main() async {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     statusBarBrightness: Brightness.dark,
   ));
-
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   Get.put(DBDataController());

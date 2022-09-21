@@ -43,6 +43,7 @@ dependencies:
   get: ^4.6.5
   json_annotation: ^4.6.0
   json_serializable: ^6.3.2
+  nanoid: ^1.0.0
   percent_indicator: null
   pinput: ^2.2.12
   shared_preferences: null

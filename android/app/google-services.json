@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "204412424696",
+    "project_id": "citymall-f5846",
+    "storage_bucket": "citymall-f5846.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:204412424696:android:2f10fda1a295d5fa18060d",
+        "android_client_info": {
+          "package_name": "com.kzn.citymall"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "204412424696-1gv7c44hod3agikodl651uk8168rugi4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kzn.citymall",
+            "certificate_hash": "abf81c3572791ed993ff0385ffc7bbbf1bcd948d"
+          }
+        },
+        {
+          "client_id": "204412424696-bjilia3nh3edh5j14jv9bttbrc86q9ic.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxjVN82Y5duml24THTtwUxLayw2QBecH8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "204412424696-bjilia3nh3edh5j14jv9bttbrc86q9ic.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "204412424696-qrjm5anmcc3rep3pii16s8lpabkjeq4t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.kzn.citymall"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -9,6 +9,7 @@ class SubCategory with _$SubCategory {
     required String id,
     required String name,
     required String parentId,
+    @JsonKey(nullable: true) String? image,
     required DateTime dateTime,
     @JsonKey(nullable: true) dynamic documentSnapshot,
   }) = _SubCategory;

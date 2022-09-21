@@ -6,19 +6,18 @@ class ThemeController extends GetxController {
 
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
-
   @override
   void onInit() {
     super.onInit();
     getTheme();
   }
 
-  getTheme()async{
+  getTheme() async {
     SharedPreferences pref = await _prefs;
-    isLightTheme.value = (pref.getBool("theme"))!;
+    isLightTheme.value = (pref.getBool("theme")) ?? true;
   }
 
-  lightTheme(){
+  lightTheme() {
     isLightTheme.value = !isLightTheme.value;
   }
 
