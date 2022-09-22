@@ -1,4 +1,6 @@
 import 'package:citymall/colors/colors.dart';
+import 'package:citymall/controller/action_screen_controller.dart';
+import 'package:citymall/controller/db_data_controller.dart';
 import 'package:citymall/controller/theme_controller.dart';
 import 'package:citymall/controller/weekpromotionfavoritecontroller.dart';
 import 'package:citymall/dialoguescreen/dialoguescreen.dart';
@@ -11,41 +13,35 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 // ignore: must_be_immutable
-class ActionScreen extends StatelessWidget {
-  ActionScreen({Key? key}) : super(key: key);
+class ActionScreen extends StatefulWidget {
+  const ActionScreen({Key? key}) : super(key: key);
+
+  @override
+  State<ActionScreen> createState() => _ActionScreenState();
+}
+
+class _ActionScreenState extends State<ActionScreen> {
   final ThemeController themeController = Get.put(ThemeController());
+
   final WeekPromotionFavouriteController controller =
       Get.put(WeekPromotionFavouriteController());
 
-  List<Map> actionGridList = [
-    {
-      "image": Images.weekc1,
-      "text": "Action Camera\nHDR",
-      "text1": "10%",
-      "price": "\$200,43",
-    },
-    {
-      "image": Images.weekc2,
-      "text": "Compact Camera\nHigh...",
-      "text1": "30%",
-      "price": "\$299,43",
-    },
-    {
-      "image": Images.weekc3,
-      "text": "Action Camera\nHDR",
-      "text1": "10%",
-      "price": "\$200,00",
-    },
-    {
-      "image": Images.weekc4,
-      "text": "Compact Camera\nHigh...",
-      "text1": "30%",
-      "price": "\$299,43",
-    },
-  ];
+  @override
+  void initState() {
+    Get.put(ActionScreenController());
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    Get.delete<ActionScreenController>();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final DBDataController dbDataController = Get.find();
+    final ActionScreenController actionController = Get.find();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: themeController.isLightTheme.value
@@ -146,164 +142,196 @@ class ActionScreen extends StatelessWidget {
                 ? ColorResources.white1
                 : ColorResources.black1,
           ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-            child: GridView.builder(
-              itemCount: actionGridList.length,
-              shrinkWrap: true,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 8,
-                mainAxisSpacing: 8,
-                childAspectRatio: Get.width > 450
-                    ? 1.58 / 2.1
-                    : Get.width < 370
-                        ? 1.62 / 2.68
-                        : 1.8 / 2.5,
-              ),
-              itemBuilder: (context, index) {
-                return InkWell(
-                  onTap: () {},
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: themeController.isLightTheme.value
-                          ? ColorResources.white
-                          : ColorResources.black5,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          blurRadius: 20,
-                          color: themeController.isLightTheme.value
-                              ? ColorResources.blue1.withOpacity(0.05)
-                              : ColorResources.black1,
-                          spreadRadius: 0,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Stack(
-                            children: [
-                              Container(
-                                height: 150,
-                                width: Get.width,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(15),
-                                  //color: ColorResources.white6,
-                                  image: DecorationImage(
-                                      image: AssetImage(
-                                        actionGridList[index]["image"],
-                                      ),
-                                      fit: BoxFit.cover),
-                                ),
-                              ),
-                              Positioned(
-                                top: 0,
-                                child: Container(
-                                  height: 22,
-                                  width: 50,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(15),
-                                      bottomRight: Radius.circular(8),
-                                    ),
-                                    color: ColorResources.blue1,
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      actionGridList[index]["text1"],
-                                      style: TextStyle(
-                                        color: ColorResources.white,
-                                        fontSize: 12,
-                                        fontFamily: TextFontFamily.SEN_BOLD,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Text(
-                            actionGridList[index]["text"],
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontFamily: TextFontFamily.SEN_BOLD,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+                  child: Obx(() {
+                    final mainData = dbDataController.products;
+                    final dataList = mainData[dbDataController.subId];
+                    debugPrint("******LastId: ${dataList?.last.name}");
+                    return GridView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      controller: actionController.scrollController,
+                      itemCount: dataList?.length,
+                      shrinkWrap: true,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 8,
+                        mainAxisSpacing: 8,
+                        childAspectRatio: Get.width > 450
+                            ? 1.58 / 2.1
+                            : Get.width < 370
+                                ? 1.62 / 2.68
+                                : 1.8 / 2.5,
+                      ),
+                      itemBuilder: (context, index) {
+                        final product = dataList?[index];
+                        return InkWell(
+                          onTap: () {},
+                          child: Container(
+                            decoration: BoxDecoration(
                               color: themeController.isLightTheme.value
-                                  ? ColorResources.black2
-                                  : ColorResources.white,
+                                  ? ColorResources.white
+                                  : ColorResources.black5,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  blurRadius: 20,
+                                  color: themeController.isLightTheme.value
+                                      ? ColorResources.blue1.withOpacity(0.05)
+                                      : ColorResources.black1,
+                                  spreadRadius: 0,
+                                  offset: Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Stack(
+                                    children: [
+                                      Container(
+                                        height: 150,
+                                        width: Get.width,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                          //color: ColorResources.white6,
+                                          image: DecorationImage(
+                                              image: NetworkImage(
+                                                product?.images.first ?? "",
+                                              ),
+                                              fit: BoxFit.cover),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: 0,
+                                        child: Container(
+                                          height: 22,
+                                          width: 50,
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(15),
+                                              bottomRight: Radius.circular(8),
+                                            ),
+                                            color: ColorResources.blue1,
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              "${product?.promotion ?? 0}%",
+                                              style: TextStyle(
+                                                color: ColorResources.white,
+                                                fontSize: 12,
+                                                fontFamily:
+                                                    TextFontFamily.SEN_BOLD,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    product?.name ?? "NULL",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontFamily: TextFontFamily.SEN_BOLD,
+                                      color: themeController.isLightTheme.value
+                                          ? ColorResources.black2
+                                          : ColorResources.white,
+                                    ),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        product?.price.toString() ?? "0",
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontFamily:
+                                              TextFontFamily.SEN_EXTRA_BOLD,
+                                          color: ColorResources.blue1,
+                                        ),
+                                      ),
+                                      /* Obx(
+                                          () => InkWell(
+                                            onTap: () {
+                                              controller.favourite1[index] =
+                                                  !controller.favourite1[index];
+                                            },
+                                            child: controller.favourite1[index] == false
+                                                ? SvgPicture.asset(
+                                                    Images.blankfavoriteicon)
+                                                : SvgPicture.asset(
+                                                    Images.fillfavoriteicon),
+                                          ),
+                                        ), */
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      RatingBar(
+                                        itemSize: 16,
+                                        maxRating: 5,
+                                        initialRating: 4,
+                                        itemCount: 5,
+                                        direction: Axis.horizontal,
+                                        ratingWidget: RatingWidget(
+                                          full: Icon(
+                                            Icons.star,
+                                            color: ColorResources.yellow,
+                                          ),
+                                          empty: Icon(
+                                            Icons.star,
+                                            color: ColorResources.white2,
+                                          ),
+                                          half: Icon(Icons.star),
+                                        ),
+                                        onRatingUpdate: (rating) {},
+                                      ),
+                                      Text(
+                                        "932 Sale",
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          fontFamily:
+                                              TextFontFamily.SEN_REGULAR,
+                                          color: ColorResources.white3,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                actionGridList[index]["price"],
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontFamily: TextFontFamily.SEN_EXTRA_BOLD,
-                                  color: ColorResources.blue1,
-                                ),
-                              ),
-                              Obx(
-                                () => InkWell(
-                                  onTap: () {
-                                    controller.favourite1[index] =
-                                        !controller.favourite1[index];
-                                  },
-                                  child: controller.favourite1[index] == false
-                                      ? SvgPicture.asset(
-                                          Images.blankfavoriteicon)
-                                      : SvgPicture.asset(
-                                          Images.fillfavoriteicon),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              RatingBar(
-                                itemSize: 16,
-                                maxRating: 5,
-                                initialRating: 4,
-                                itemCount: 5,
-                                direction: Axis.horizontal,
-                                ratingWidget: RatingWidget(
-                                  full: Icon(
-                                    Icons.star,
-                                    color: ColorResources.yellow,
-                                  ),
-                                  empty: Icon(
-                                    Icons.star,
-                                    color: ColorResources.white2,
-                                  ),
-                                  half: Icon(Icons.star),
-                                ),
-                                onRatingUpdate: (rating) {},
-                              ),
-                              Text(
-                                "932 Sale",
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  fontFamily: TextFontFamily.SEN_REGULAR,
-                                  color: ColorResources.white3,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
+                        );
+                      },
+                    );
+                  }),
+                ),
+              ),
+              Obx(() => actionController.isLoading.value
+                  ? AnimatedContainer(
+                      duration: const Duration(milliseconds: 500),
+                      curve: Curves.easeIn,
+                      height: 35,
+                      width: 35,
+                      child: CircularProgressIndicator(),
+                    )
+                  : const SizedBox()),
+            ],
           ),
         ),
       ),

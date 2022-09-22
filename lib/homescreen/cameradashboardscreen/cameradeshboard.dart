@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:citymall/colors/colors.dart';
 import 'package:citymall/controller/camerahomefavoritecontroller.dart';
+import 'package:citymall/controller/db_data_controller.dart';
 import 'package:citymall/controller/theme_controller.dart';
 import 'package:citymall/homescreen/cameradashboardscreen/actionscreen.dart';
 import 'package:citymall/homescreen/cameradashboardscreen/camerasubcategoryviewallscreen.dart';
@@ -105,6 +106,7 @@ class CameraDeshBoard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final DBDataController dbDataController = Get.find();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: themeController.isLightTheme.value
@@ -300,46 +302,57 @@ class CameraDeshBoard extends StatelessWidget {
                           color: themeController.isLightTheme.value
                               ? ColorResources.white1
                               : ColorResources.black1,
-                          child: GridView.builder(
-                            physics: NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                              childAspectRatio: 2.2,
-                            ),
-                            itemCount: cameraHomeGridList.length,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding:
-                                    const EdgeInsets.only(top: 5, right: 5),
-                                child: InkWell(
-                                  onTap: () {
-                                    Get.off(ActionScreen());
-                                  },
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(7),
-                                      image: DecorationImage(
-                                        image: AssetImage(
-                                            cameraHomeGridList[index]["image"]),
-                                        fit: BoxFit.cover,
+                          child: Obx(() {
+                            final mainData = dbDataController.subCategories;
+                            final dataList = mainData[dbDataController.mainId];
+                            return GridView.builder(
+                              physics: NeverScrollableScrollPhysics(),
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 3,
+                                childAspectRatio: 2.2,
+                              ),
+                              itemCount: dataList?.length,
+                              itemBuilder: (context, index) {
+                                final subCategory = dbDataController
+                                        .subCategories[dbDataController.mainId]
+                                    ?[index];
+                                return Padding(
+                                  padding:
+                                      const EdgeInsets.only(top: 5, right: 5),
+                                  child: InkWell(
+                                    onTap: () {
+                                      dbDataController
+                                          .setSelectedSub(subCategory!.id);
+                                      dbDataController
+                                          .getInitialProducts(subCategory.id);
+                                      Get.off(ActionScreen());
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(7),
+                                        image: DecorationImage(
+                                          image: AssetImage(
+                                              cameraHomeGridList[0]["image"]),
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        cameraHomeGridList[index]["text"],
-                                        style: TextStyle(
-                                          fontFamily: TextFontFamily.SEN_BOLD,
-                                          fontSize: 14,
-                                          color: ColorResources.white,
+                                      child: Center(
+                                        child: Text(
+                                          subCategory?.name ?? "Null",
+                                          style: TextStyle(
+                                            fontFamily: TextFontFamily.SEN_BOLD,
+                                            fontSize: 14,
+                                            color: ColorResources.white,
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              );
-                            },
-                          ),
+                                );
+                              },
+                            );
+                          }),
                         ),
                         SizedBox(height: 20),
                         Row(

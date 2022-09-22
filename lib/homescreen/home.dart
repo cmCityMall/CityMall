@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:citymall/colors/colors.dart';
+import 'package:citymall/controller/db_data_controller.dart';
 import 'package:citymall/controller/homegridfavouritecontroller.dart';
 import 'package:citymall/controller/theme_controller.dart';
 import 'package:citymall/homescreen/cameradashboardscreen/cameradeshboard.dart';
@@ -65,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
     },
   ];
 
-  List<Map> menuList = [
+  /* List<Map> menuList = [
     {
       "image": Images.camera,
       "text": "Camera",
@@ -86,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
       "image": Images.food,
       "text": "Food ",
     },
-  ];
+  ]; */
 
   List<Map> weekPromotionList = [
     {
@@ -191,6 +192,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final DBDataController dbDataController = Get.find();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: themeController.isLightTheme.value
@@ -302,11 +304,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: menuList.length,
+                    itemCount: dbDataController.mainCategories.length,
                     shrinkWrap: true,
                     itemBuilder: (context, index) {
+                      final mainCategory =
+                          dbDataController.mainCategories[index];
                       return InkWell(
                         onTap: () {
+                          dbDataController.setSelectedMain(mainCategory.id);
+                          dbDataController.getSubCategories(mainCategory.id);
                           Get.off(CameraDeshBoard());
                         },
                         child: Padding(
@@ -333,10 +339,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    SvgPicture.asset(menuList[index]["image"]),
+                                    Image.network(mainCategory.image),
                                     SizedBox(height: 8),
                                     Text(
-                                      menuList[index]["text"],
+                                      mainCategory.name,
                                       style: TextStyle(
                                         fontSize: 10,
                                         fontFamily: TextFontFamily.SEN_REGULAR,
@@ -355,7 +361,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     }),
               ),
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               Text(
                 "Week Promotion",
                 style: TextStyle(

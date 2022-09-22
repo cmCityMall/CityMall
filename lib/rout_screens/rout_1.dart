@@ -255,7 +255,7 @@ class _NavigationBarBottomState extends State<NavigationBarBottom> {
                                 onTap: () {
                                   final DBDataController dbDataController =
                                       Get.find();
-                                  /* Get.off(NotificationScreen()); */
+                                  Get.off(NotificationScreen());
                                 },
                                 child: SvgPicture.asset(
                                   Images.notification,

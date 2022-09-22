@@ -3,8 +3,8 @@ import 'package:citymall/constant/mock.dart';
 import 'package:citymall/model/auth_user.dart';
 import 'package:citymall/model/brand.dart';
 import 'package:citymall/model/main_category.dart';
-import 'package:citymall/model/review.dart';
 import 'package:citymall/model/week_promotion.dart';
+import 'package:citymall/server/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -15,65 +15,87 @@ import '../model/shop.dart';
 import '../model/sub_category.dart';
 
 class DBDataController extends GetxController {
-  List<MainCategory> mainCategories = [];
-  List<SubCategory> subCategories = [];
+  final _database = Database();
+  RxList<MainCategory> mainCategories = <MainCategory>[].obs;
+  RxMap<String, List<SubCategory>> subCategories =
+      <String, List<SubCategory>>{}.obs;
   List<Brand> brands = [];
   List<Shop> shops = [];
   List<WeekPromotion> weekPromotions = [];
-  List<Product> products = [];
+  RxMap<String, List<Product>> products = <String, List<Product>>{}.obs;
   List<AuthUser> authUsers = [];
-  Future<void> writeSubCategory() async {
-    for (var p = 0; p < 5; p++) {
-      for (var x = 0; x < 50; x++) {
-        for (var u = 0; u < 5; u++) {
-          final id = Uuid().v1();
-          await FirebaseFirestore.instance
-              .collection(reviewCollection)
-              .doc(id)
-              .set(Review(
-                id: id,
-                productId: products[p].id,
-                user: authUsers[u],
-                rating: 1,
-                reviewMessage: "Such a beautiful and good prodct.",
-                dateTime: DateTime.now(),
-              ).toJson());
-        }
+  String mainId = "";
+  String subId = "";
+
+  /**Function */
+  void setSelectedMain(String id) => mainId = id;
+
+  void setSelectedSub(String id) => subId = id;
+
+  /**Main Category Fetch */
+  Future<void> getInitialMainCategories() async {
+    try {
+      final result = await _database.getInitial(mainCategoryCollection);
+      mainCategories.value =
+          result.docs.map((e) => MainCategory.fromJson(e.data())).toList();
+    } catch (e) {
+      debugPrint("******Something was wrong with $e");
+    }
+  }
+
+  /**Sub Category Fetch */
+  Future<void> getSubCategories(String parentId) async {
+    try {
+      final result = await _database.getInitialWhere(
+          subCategoryCollection, "parentId", parentId, 6);
+      subCategories.putIfAbsent(
+          parentId,
+          () =>
+              result.docs.map((e) => SubCategory.fromJson(e.data())).toList());
+      debugPrint("****List: ${result.docs.length}");
+      debugPrint("****ListInsideMap: ${subCategories[parentId]?.length}");
+    } catch (e) {
+      debugPrint("****Something is wrong with $e");
+    }
+  }
+
+/**Product Fetch */
+  Future<void> getInitialProducts(String subCategoryId,
+      [int limit = 10]) async {
+    try {
+      final result = await _database.getInitialWhere(
+          productCollection, "subCategoryId", subCategoryId);
+      products.putIfAbsent(subCategoryId,
+          () => result.docs.map((e) => Product.fromJson(e.data())).toList());
+    } catch (e) {
+      debugPrint("Something went wrong with $e");
+    }
+  }
+
+  Future<void> getMoreProducts(String subCategoryId, List<String> startAfterId,
+      [int limit = 10]) async {
+    debugPrint("***StartAfterId: $startAfterId");
+    debugPrint("***SubCategoryId: $subCategoryId");
+    try {
+      final result = await _database.fetchMoreWhere(
+          productCollection, startAfterId, "subCategoryId", subCategoryId);
+      final previousList = products[subCategoryId];
+      debugPrint(
+          "********ResultFirstProduct: ${Product.fromJson(result.docs.first.data()).name}");
+      debugPrint(
+          "********ResultLastProductID: ${Product.fromJson(result.docs.last.data()).id}");
+      for (var element in result.docs) {
+        previousList?.add(Product.fromJson(element.data()));
       }
+      products[subCategoryId] = previousList ?? [];
+    } catch (e) {
+      debugPrint("Something went wrong with $e");
     }
   }
 
   @override
   void onInit() {
-    getAll();
+    getInitialMainCategories();
     super.onInit();
-  }
-
-  Future<void> getAll() async {
-    FirebaseFirestore.instance
-        .collection(productCollection)
-        .limit(5)
-        .withConverter<Product>(
-            fromFirestore: (snapshot, options) =>
-                Product.fromJson(snapshot.data()!),
-            toFirestore: (m, __) => m.toJson())
-        .get()
-        .then((value) {
-      products = value.docs.map((e) => e.data()).toList();
-      debugPrint(
-          "***********ProductListLength: ${products.length}\n first product: ${products.first.name}");
-    });
-
-    FirebaseFirestore.instance
-        .collection(userCollection)
-        .withConverter<AuthUser>(
-            fromFirestore: (snapshot, options) =>
-                AuthUser.fromJson(snapshot.data()!),
-            toFirestore: (m, __) => m.toJson())
-        .get()
-        .then((value) {
-      authUsers = value.docs.map((e) => e.data()).toList();
-      debugPrint("***********AuthUserLength: ${authUsers.length}");
-    });
   }
 }

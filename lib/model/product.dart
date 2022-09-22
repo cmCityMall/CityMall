@@ -21,6 +21,7 @@ class Product with _$Product {
     @JsonKey(nullable: true) String? shopId,
     @JsonKey(nullable: true) String? brandId,
     @JsonKey(nullable: true) dynamic documentSnapshot,
+    required DateTime dateTime,
   }) = _Product;
 
   factory Product.fromJson(Map<String, dynamic> json) =>
