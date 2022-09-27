@@ -134,7 +134,7 @@ class _ActionScreenState extends State<ActionScreen> {
           height: Get.height,
           width: Get.width,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(
+            borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(30),
               topRight: Radius.circular(30),
             ),
@@ -152,11 +152,23 @@ class _ActionScreenState extends State<ActionScreen> {
                   child: Obx(() {
                     final mainData = dbDataController.products;
                     final dataList = mainData[dbDataController.subId];
-                    debugPrint("******LastId: ${dataList?.last.name}");
+                    final isLoading = dbDataController
+                        .productsLoading[dbDataController.subId];
+                    if (!(isLoading == null) && isLoading == true) {
+                      return const Center(
+                          child: SizedBox(
+                        height: 50,
+                        width: 50,
+                        child: CircularProgressIndicator(),
+                      ));
+                    }
+                    if (dataList == null || dataList.isEmpty) {
+                      return const Center(child: Text("No product found!"));
+                    }
                     return GridView.builder(
                       physics: const BouncingScrollPhysics(),
                       controller: actionController.scrollController,
-                      itemCount: dataList?.length,
+                      itemCount: dataList.length,
                       shrinkWrap: true,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
@@ -169,7 +181,7 @@ class _ActionScreenState extends State<ActionScreen> {
                                 : 1.8 / 2.5,
                       ),
                       itemBuilder: (context, index) {
-                        final product = dataList?[index];
+                        final product = dataList[index];
                         return InkWell(
                           onTap: () {},
                           child: Container(
@@ -208,7 +220,7 @@ class _ActionScreenState extends State<ActionScreen> {
                                           //color: ColorResources.white6,
                                           image: DecorationImage(
                                               image: NetworkImage(
-                                                product?.images.first ?? "",
+                                                product.images.first,
                                               ),
                                               fit: BoxFit.cover),
                                         ),
@@ -218,7 +230,7 @@ class _ActionScreenState extends State<ActionScreen> {
                                         child: Container(
                                           height: 22,
                                           width: 50,
-                                          decoration: BoxDecoration(
+                                          decoration: const BoxDecoration(
                                             borderRadius: BorderRadius.only(
                                               topLeft: Radius.circular(15),
                                               bottomRight: Radius.circular(8),
@@ -227,8 +239,8 @@ class _ActionScreenState extends State<ActionScreen> {
                                           ),
                                           child: Center(
                                             child: Text(
-                                              "${product?.promotion ?? 0}%",
-                                              style: TextStyle(
+                                              "${product.promotion ?? 0}%",
+                                              style: const TextStyle(
                                                 color: ColorResources.white,
                                                 fontSize: 12,
                                                 fontFamily:
@@ -241,7 +253,7 @@ class _ActionScreenState extends State<ActionScreen> {
                                     ],
                                   ),
                                   Text(
-                                    product?.name ?? "NULL",
+                                    product.name,
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontFamily: TextFontFamily.SEN_BOLD,
@@ -255,7 +267,7 @@ class _ActionScreenState extends State<ActionScreen> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        product?.price.toString() ?? "0",
+                                        product.price.toString(),
                                         style: TextStyle(
                                           fontSize: 14,
                                           fontFamily:

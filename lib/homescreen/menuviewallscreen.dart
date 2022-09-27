@@ -1,4 +1,6 @@
 import 'package:citymall/colors/colors.dart';
+import 'package:citymall/controller/db_data_controller.dart';
+import 'package:citymall/controller/menu_view_all_screen_controller.dart';
 import 'package:citymall/controller/theme_controller.dart';
 import 'package:citymall/homescreen/cameradashboardscreen/cameradeshboard.dart';
 import 'package:citymall/images/images.dart';
@@ -10,63 +12,32 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 // ignore: must_be_immutable
-class MenuViewAllScreen extends StatelessWidget {
+class MenuViewAllScreen extends StatefulWidget {
   MenuViewAllScreen({Key? key}) : super(key: key);
 
+  @override
+  State<MenuViewAllScreen> createState() => _MenuViewAllScreenState();
+}
+
+class _MenuViewAllScreenState extends State<MenuViewAllScreen> {
   final ThemeController themeController = Get.put(ThemeController());
-  List<Map> menuGridList = [
-    {
-      "image": Images.camera,
-      "text": "Camera",
-    },
-    {
-      "image": Images.food,
-      "text": "Food ",
-    },
-    {
-      "image": Images.handphone,
-      "text": "Hand\nphone",
-    },
-    {
-      "image": Images.gamming,
-      "text": "Gamming",
-    },
-    {
-      "image": Images.fashionicon,
-      "text": "Fashion",
-    },
-    {
-      "image": Images.healthcareicon,
-      "text": "Health\nCare",
-    },
-    {
-      "image": Images.computericon,
-      "text": "Computer",
-    },
-    {
-      "image": Images.equipmenticon,
-      "text": "Equipment",
-    },
-    {
-      "image": Images.otomotificon,
-      "text": "Otomotif",
-    },
-    {
-      "image": Images.sporticon,
-      "text": "Sport",
-    },
-    {
-      "image": Images.ticketicon,
-      "text": "Ticket\nCinema",
-    },
-    {
-      "image": Images.bookicon,
-      "text": "Book",
-    },
-  ];
+
+  @override
+  void initState() {
+    Get.put(MenuViewAllScreenController());
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    Get.delete<MenuViewAllScreenController>();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final DBDataController dataController = Get.find();
+    final MenuViewAllScreenController menuController = Get.find();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: themeController.isLightTheme.value
@@ -154,65 +125,92 @@ class MenuViewAllScreen extends StatelessWidget {
                 ? ColorResources.white1
                 : ColorResources.black1,
           ),
-          child: GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4,
-                //crossAxisSpacing: 2,
-                mainAxisSpacing: 5,
-                childAspectRatio: 0.78,
-              ),
-              itemCount: menuGridList.length,
-              itemBuilder: (context, index) {
-                return InkWell(
-                  onTap: () {
-                    Get.off(CameraDeshBoard());
-                  },
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.only(top: 20, left: 10, right: 10),
-                    child: Container(
-                      height: 100,
-                      width: 80,
-                      decoration: BoxDecoration(
-                        color: themeController.isLightTheme.value
-                            ? ColorResources.white1
-                            : ColorResources.black1,
-                        borderRadius: BorderRadius.circular(50),
-                        border: Border.all(color: ColorResources.blue2),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Obx(() {
+                final list = dataController.menuMainCategories;
+                return Expanded(
+                  child: GridView.builder(
+                      controller: menuController.scrollController,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 4,
+                        //crossAxisSpacing: 2,
+                        mainAxisSpacing: 5,
+                        childAspectRatio: 0.78,
                       ),
-                      child: Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                            color: themeController.isLightTheme.value
-                                ? ColorResources.white4
-                                : ColorResources.white.withOpacity(0.05),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SvgPicture.asset(menuGridList[index]["image"]),
-                              SizedBox(height: 8),
-                              Text(
-                                menuGridList[index]["text"],
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  fontFamily: TextFontFamily.SEN_REGULAR,
-                                  color: themeController.isLightTheme.value
-                                      ? ColorResources.black2
-                                      : ColorResources.white,
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: list.length,
+                      itemBuilder: (context, index) {
+                        final cat = list[index];
+                        return InkWell(
+                          onTap: () {
+                            Get.off(CameraDeshBoard());
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                top: 20, left: 10, right: 10),
+                            child: Container(
+                              height: 100,
+                              width: 80,
+                              decoration: BoxDecoration(
+                                color: themeController.isLightTheme.value
+                                    ? ColorResources.white1
+                                    : ColorResources.black1,
+                                borderRadius: BorderRadius.circular(50),
+                                border: Border.all(color: ColorResources.blue2),
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(50),
+                                    color: themeController.isLightTheme.value
+                                        ? ColorResources.white4
+                                        : ColorResources.white
+                                            .withOpacity(0.05),
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Image.network(cat.image),
+                                      SizedBox(height: 8),
+                                      Text(
+                                        cat.name,
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          fontFamily:
+                                              TextFontFamily.SEN_REGULAR,
+                                          color:
+                                              themeController.isLightTheme.value
+                                                  ? ColorResources.black2
+                                                  : ColorResources.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ],
+                            ),
                           ),
-                        ),
-                      ),
-                    ),
-                  ),
+                        );
+                      }),
                 );
               }),
+              //Loading
+              Obx(() => menuController.isLoading.value
+                  ? AnimatedContainer(
+                      duration: const Duration(milliseconds: 500),
+                      curve: Curves.easeIn,
+                      height: 35,
+                      width: 35,
+                      child: const CircularProgressIndicator(),
+                    )
+                  : const SizedBox()),
+            ],
+          ),
         ),
       ),
     );

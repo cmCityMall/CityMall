@@ -2,12 +2,24 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Database {
   final firestore = FirebaseFirestore.instance;
+  Stream<QuerySnapshot<Map<String, dynamic>>> watchCollectionWithoutOrder(
+      String collectionPath) {
+    return FirebaseFirestore.instance.collection(collectionPath).snapshots();
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> watchCollection(
+      String collectionPath) {
+    return FirebaseFirestore.instance
+        .collection(collectionPath)
+        .orderBy("dateTime")
+        .snapshots();
+  }
 
   Future<QuerySnapshot<Map<String, dynamic>>> getInitial(String collectionPath,
       [int limit = 10]) async {
     return await FirebaseFirestore.instance
         .collection(collectionPath)
-        .orderBy("dateTime")
+        .orderBy("dateTime", descending: true)
         .limit(limit)
         .get();
   }
@@ -17,8 +29,25 @@ class Database {
       [int limit = 10]) async {
     return await FirebaseFirestore.instance
         .collection(collectionPath)
-        .orderBy("dateTime")
+        .orderBy("dateTime", descending: true)
         .where(field, isEqualTo: compareField)
+        .limit(limit)
+        .get();
+  }
+
+  Future<QuerySnapshot<Map<String, dynamic>>> getInitialWhereTwo(
+      String collectionPath,
+      dynamic field1,
+      dynamic compareField1,
+      dynamic field2,
+      dynamic compareField2,
+      dynamic orderBy,
+      [int limit = 10]) async {
+    return await FirebaseFirestore.instance
+        .collection(collectionPath)
+        .orderBy(orderBy)
+        .where(field1, isEqualTo: compareField1)
+        .where(field2, isGreaterThan: compareField2)
         .limit(limit)
         .get();
   }
@@ -32,7 +61,25 @@ class Database {
     return await FirebaseFirestore.instance
         .collection(collectionPath)
         .where(field, isEqualTo: compareField)
-        .orderBy("dateTime")
+        .orderBy("dateTime", descending: true)
+        .startAfter(startAfterId)
+        .limit(limit)
+        .get();
+  }
+
+  Future<QuerySnapshot<Map<String, dynamic>>> fetchMoreWhereTwo(
+      String collectionPath,
+      List<String> startAfterId,
+      dynamic field1,
+      dynamic compareField1,
+      dynamic field2,
+      dynamic compareField2,
+      [limit = 10]) async {
+    return await FirebaseFirestore.instance
+        .collection(collectionPath)
+        .where(field1, isEqualTo: compareField1)
+        .where(field2, isEqualTo: compareField2)
+        .orderBy("dateTime", descending: true)
         .startAfter(startAfterId)
         .limit(limit)
         .get();
@@ -43,7 +90,7 @@ class Database {
       [limit = 10]) async {
     return await FirebaseFirestore.instance
         .collection(collectionPath)
-        .orderBy("dateTime")
+        .orderBy("dateTime", descending: true)
         .startAfter([startAfterId])
         .limit(limit)
         .get();

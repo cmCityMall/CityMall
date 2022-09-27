@@ -11,7 +11,6 @@ class Brand with _$Brand {
     required String image,
     @JsonKey(nullable: true) String? shopId,
     required DateTime dateTime,
-    @JsonKey(nullable: true) dynamic documentSnapshot,
   }) = _Brand;
 
   factory Brand.fromJson(Map<String, dynamic> json) => _$BrandFromJson(json);

@@ -10,7 +10,6 @@ class Shop with _$Shop {
     required String image,
     required String name,
     required DateTime dateTime,
-    @JsonKey(nullable: true) dynamic documentSnapshot,
   }) = _Shop;
 
   factory Shop.fromJson(Map<String, dynamic> json) => _$ShopFromJson(json);

@@ -12,6 +12,7 @@ class WeekPromotion with _$WeekPromotion {
     required bool isPercentage,
     int? percentage,
     int? descountPrice,
+     DateTime? dateTime,
   }) = _WeekPromotion;
 
   factory WeekPromotion.fromJson(Map<String, dynamic> json) =>

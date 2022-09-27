@@ -10,7 +10,6 @@ class MainCategory with _$MainCategory {
     required String name,
     required String image,
     @JsonKey(defaultValue: false) required bool isMenu,
-    @JsonKey(nullable: true) dynamic documentSnapshot,
     required DateTime dateTime,
   }) = _MainCategory;
 

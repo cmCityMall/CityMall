@@ -60,7 +60,7 @@ const userProfiles = [
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGujC5DzQ77Bi70CpaM3TlK-P_AkLr4ronKg&usqp=CAU",
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5GJXhbYEhFovOt-xcoC3_D7JTlC_PINWCpQ&usqp=CAU",
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRD_4J1hUQnSLEelceAU6WSh7Mnl4XzI5ADHA&usqp=CAU",
-];
+];/* 
 final promotionList = [
   WeekPromotion(
     id: Uuid().v1(),
@@ -91,3 +91,4 @@ final promotionList = [
     descountPrice: 5000,
   ),
 ];
+ */

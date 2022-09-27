@@ -14,13 +14,16 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
+import '../../utils/widgets/empty_widgt.dart';
+import '../../utils/widgets/loading_widget.dart';
+
 // ignore: must_be_immutable
 class CameraDeshBoard extends StatelessWidget {
   CameraDeshBoard({Key? key}) : super(key: key);
   final ThemeController themeController = Get.put(ThemeController());
   final CameraHomeFavouriteController favorite =
       Get.put(CameraHomeFavouriteController());
-  List<Map> cameraSliderlist = [
+  /* List<Map> cameraSliderlist = [
     {
       "image": Images.cameraslider1,
     },
@@ -102,7 +105,7 @@ class CameraDeshBoard extends StatelessWidget {
       "text1": "30%",
       "price": "\$299,43",
     },
-  ];
+  ]; */
 
   @override
   Widget build(BuildContext context) {
@@ -199,58 +202,71 @@ class CameraDeshBoard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CarouselSlider.builder(
-                    itemCount: cameraSliderlist.length,
-                    itemBuilder:
-                        (BuildContext context, index, int pageViewIndex) =>
-                            Stack(
-                      children: [
-                        Container(
-                          height: 200,
-                          width: Get.width,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            image: DecorationImage(
-                              image:
-                                  AssetImage(cameraSliderlist[index]["image"]),
-                              fit: BoxFit.cover,
+                  Obx(() {
+                    final mainData = dbDataController.sliderProducts;
+                    final dataList = mainData[dbDataController.mainId];
+                    final isLoading = dbDataController
+                        .sliderProductsLoading[dbDataController.mainId];
+
+                    if (!(isLoading == null) && isLoading == true) {
+                      return const LoadingWidget();
+                    }
+                    if (dataList == null || dataList.isEmpty) {
+                      return const SizedBox();
+                    }
+                    return CarouselSlider.builder(
+                      itemCount: dataList.length,
+                      itemBuilder:
+                          (BuildContext context, index, int pageViewIndex) =>
+                              Stack(
+                        children: [
+                          Container(
+                            height: 200,
+                            width: Get.width,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              image: DecorationImage(
+                                image:
+                                    NetworkImage(dataList[index].images.first),
+                                fit: BoxFit.cover,
+                              ),
                             ),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(15),
-                            child: Image.asset(
-                              Images.cameracanvas,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Padding(
-                            padding: EdgeInsets.only(bottom: 20),
-                            child: Text(
-                              "Camera Digital",
-                              style: TextStyle(
-                                fontFamily: TextFontFamily.SEN_BOLD,
-                                fontSize: 18,
-                                color: ColorResources.white,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(15),
+                              child: Image.asset(
+                                Images.cameracanvas,
+                                fit: BoxFit.cover,
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    options: CarouselOptions(
-                      height: 200,
-                      autoPlay: true,
-                      autoPlayAnimationDuration: Duration(milliseconds: 800),
-                      enlargeCenterPage: true,
-                      scrollDirection: Axis.horizontal,
-                      initialPage: 3,
-                      viewportFraction: 0.8,
-                      //aspectRatio: 3.0,
-                    ),
-                  ),
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Padding(
+                              padding: EdgeInsets.only(bottom: 20),
+                              child: Text(
+                                dbDataController.mainName,
+                                style: TextStyle(
+                                  fontFamily: TextFontFamily.SEN_BOLD,
+                                  fontSize: 18,
+                                  color: ColorResources.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      options: CarouselOptions(
+                        height: 200,
+                        autoPlay: true,
+                        autoPlayAnimationDuration: Duration(milliseconds: 800),
+                        enlargeCenterPage: true,
+                        scrollDirection: Axis.horizontal,
+                        initialPage: 3,
+                        viewportFraction: 0.8,
+                        //aspectRatio: 3.0,
+                      ),
+                    );
+                  }),
                   SizedBox(height: 20),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 15),
@@ -305,6 +321,14 @@ class CameraDeshBoard extends StatelessWidget {
                           child: Obx(() {
                             final mainData = dbDataController.subCategories;
                             final dataList = mainData[dbDataController.mainId];
+                            final isLoading = dbDataController
+                                .subCategoriesLoading[dbDataController.mainId];
+                            if (!(isLoading == null) && isLoading == true) {
+                              return const LoadingWidget();
+                            }
+                            if (dataList == null || dataList.isEmpty) {
+                              return const EmptyWidget("No SubCategory found");
+                            }
                             return GridView.builder(
                               physics: NeverScrollableScrollPhysics(),
                               gridDelegate:
@@ -312,7 +336,7 @@ class CameraDeshBoard extends StatelessWidget {
                                 crossAxisCount: 3,
                                 childAspectRatio: 2.2,
                               ),
-                              itemCount: dataList?.length,
+                              itemCount: dataList.length,
                               itemBuilder: (context, index) {
                                 final subCategory = dbDataController
                                         .subCategories[dbDataController.mainId]
@@ -322,8 +346,10 @@ class CameraDeshBoard extends StatelessWidget {
                                       const EdgeInsets.only(top: 5, right: 5),
                                   child: InkWell(
                                     onTap: () {
-                                      dbDataController
-                                          .setSelectedSub(subCategory!.id);
+                                      dbDataController.setSelectedSub(
+                                        subCategory!.id,
+                                        subCategory.name,
+                                      );
                                       dbDataController
                                           .getInitialProducts(subCategory.id);
                                       Get.off(ActionScreen());
@@ -332,8 +358,7 @@ class CameraDeshBoard extends StatelessWidget {
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(7),
                                         image: DecorationImage(
-                                          image: AssetImage(
-                                              cameraHomeGridList[0]["image"]),
+                                          image: AssetImage(Images.digital),
                                           fit: BoxFit.cover,
                                         ),
                                       ),
@@ -393,179 +418,198 @@ class CameraDeshBoard extends StatelessWidget {
                           ],
                         ),
                         SizedBox(height: 15),
-                        GridView.builder(
-                          itemCount: itemDiscountList.length,
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 8,
-                            mainAxisSpacing: 8,
-                            childAspectRatio: Get.width > 450
-                                ? 1.58 / 2.1
-                                : Get.width < 370
-                                    ? 1.62 / 2.68
-                                    : 1.8 / 2.5,
-                          ),
-                          itemBuilder: (context, index) {
-                            return InkWell(
-                              onTap: () {},
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: themeController.isLightTheme.value
-                                      ? ColorResources.white
-                                      : ColorResources.black5,
-                                  borderRadius: BorderRadius.circular(20),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      blurRadius: 20,
-                                      color: themeController.isLightTheme.value
-                                          ? ColorResources.blue1
-                                              .withOpacity(0.05)
-                                          : ColorResources.black1,
-                                      spreadRadius: 0,
-                                      offset: Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 10),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Stack(
-                                        children: [
-                                          Container(
-                                            height: 150,
-                                            width: Get.width,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
-                                              //color: ColorResources.white6,
-                                              image: DecorationImage(
-                                                  image: AssetImage(
-                                                    itemDiscountList[index]
-                                                        ["image"],
-                                                  ),
-                                                  fit: BoxFit.cover),
-                                            ),
-                                          ),
-                                          Positioned(
-                                            top: 0,
-                                            child: Container(
-                                              height: 22,
-                                              width: 50,
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.only(
-                                                  topLeft: Radius.circular(15),
-                                                  bottomRight:
-                                                      Radius.circular(8),
-                                                ),
-                                                color: ColorResources.blue1,
-                                              ),
-                                              child: Center(
-                                                child: Text(
-                                                  itemDiscountList[index]
-                                                      ["text1"],
-                                                  style: TextStyle(
-                                                    color: ColorResources.white,
-                                                    fontSize: 12,
-                                                    fontFamily:
-                                                        TextFontFamily.SEN_BOLD,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      Text(
-                                        itemDiscountList[index]["text"],
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontFamily: TextFontFamily.SEN_BOLD,
-                                          color:
-                                              themeController.isLightTheme.value
-                                                  ? ColorResources.black2
-                                                  : ColorResources.white,
-                                        ),
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            itemDiscountList[index]["price"],
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontFamily:
-                                                  TextFontFamily.SEN_EXTRA_BOLD,
-                                              color: ColorResources.blue1,
-                                            ),
-                                          ),
-                                          Obx(
-                                            () => InkWell(
-                                              onTap: () {
-                                                favorite.favourite1[index] =
-                                                    !favorite.favourite1[index];
-                                              },
-                                              child: favorite
-                                                          .favourite1[index] ==
-                                                      false
-                                                  ? SvgPicture.asset(
-                                                      Images.blankfavoriteicon)
-                                                  : SvgPicture.asset(
-                                                      Images.fillfavoriteicon),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          RatingBar(
-                                            itemSize: 16,
-                                            maxRating: 5,
-                                            initialRating: 4,
-                                            itemCount: 5,
-                                            direction: Axis.horizontal,
-                                            ratingWidget: RatingWidget(
-                                              full: Icon(
-                                                Icons.star,
-                                                color: ColorResources.yellow,
-                                              ),
-                                              empty: Icon(
-                                                Icons.star,
-                                                color: ColorResources.white2,
-                                              ),
-                                              half: Icon(Icons.star),
-                                            ),
-                                            onRatingUpdate: (rating) {},
-                                          ),
-                                          Text(
-                                            "932 Sale",
-                                            style: TextStyle(
-                                              fontSize: 10,
-                                              fontFamily:
-                                                  TextFontFamily.SEN_REGULAR,
-                                              color: ColorResources.white3,
-                                            ),
-                                          ),
-                                        ],
+                        Obx(() {
+                          final mainData = dbDataController.discountProducts;
+                          final dataList = mainData[dbDataController.mainId];
+                          final isLoading = dbDataController
+                              .discountProductsLoading[dbDataController.mainId];
+                          if (!(isLoading == null) && isLoading == true) {
+                            return const LoadingWidget();
+                          }
+                          if (dataList == null || dataList.isEmpty) {
+                            return const EmptyWidget("No Discount Items yet.");
+                          }
+                          return GridView.builder(
+                            itemCount: dataList.length,
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 8,
+                              mainAxisSpacing: 8,
+                              childAspectRatio: Get.width > 450
+                                  ? 1.58 / 2.1
+                                  : Get.width < 370
+                                      ? 1.62 / 2.68
+                                      : 1.8 / 2.5,
+                            ),
+                            itemBuilder: (context, index) {
+                              return InkWell(
+                                onTap: () {},
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: themeController.isLightTheme.value
+                                        ? ColorResources.white
+                                        : ColorResources.black5,
+                                    borderRadius: BorderRadius.circular(20),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        blurRadius: 20,
+                                        color:
+                                            themeController.isLightTheme.value
+                                                ? ColorResources.blue1
+                                                    .withOpacity(0.05)
+                                                : ColorResources.black1,
+                                        spreadRadius: 0,
+                                        offset: Offset(0, 4),
                                       ),
                                     ],
                                   ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 10),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Stack(
+                                          children: [
+                                            Container(
+                                              height: 150,
+                                              width: Get.width,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(15),
+                                                //color: ColorResources.white6,
+                                                image: DecorationImage(
+                                                    image: AssetImage(
+                                                      dataList[index]
+                                                          .images
+                                                          .first,
+                                                    ),
+                                                    fit: BoxFit.cover),
+                                              ),
+                                            ),
+                                            Positioned(
+                                              top: 0,
+                                              child: Container(
+                                                height: 22,
+                                                width: 50,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                    topLeft:
+                                                        Radius.circular(15),
+                                                    bottomRight:
+                                                        Radius.circular(8),
+                                                  ),
+                                                  color: ColorResources.blue1,
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    dataList[index]
+                                                        .promotion
+                                                        .toString(),
+                                                    style: TextStyle(
+                                                      color:
+                                                          ColorResources.white,
+                                                      fontSize: 12,
+                                                      fontFamily: TextFontFamily
+                                                          .SEN_BOLD,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Text(
+                                          dataList[index].name,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontFamily: TextFontFamily.SEN_BOLD,
+                                            color: themeController
+                                                    .isLightTheme.value
+                                                ? ColorResources.black2
+                                                : ColorResources.white,
+                                          ),
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              dataList[index].price.toString(),
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontFamily: TextFontFamily
+                                                    .SEN_EXTRA_BOLD,
+                                                color: ColorResources.blue1,
+                                              ),
+                                            ),
+                                            /* Obx(
+                                              () => InkWell(
+                                                onTap: () {
+                                                  favorite.favourite1[index] =
+                                                      !favorite
+                                                          .favourite1[index];
+                                                },
+                                                child: favorite.favourite1[
+                                                            index] ==
+                                                        false
+                                                    ? SvgPicture.asset(Images
+                                                        .blankfavoriteicon)
+                                                    : SvgPicture.asset(Images
+                                                        .fillfavoriteicon),
+                                              ),
+                                            ), */
+                                          ],
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            RatingBar(
+                                              itemSize: 16,
+                                              maxRating: 5,
+                                              initialRating: 4,
+                                              itemCount: 5,
+                                              direction: Axis.horizontal,
+                                              ratingWidget: RatingWidget(
+                                                full: Icon(
+                                                  Icons.star,
+                                                  color: ColorResources.yellow,
+                                                ),
+                                                empty: Icon(
+                                                  Icons.star,
+                                                  color: ColorResources.white2,
+                                                ),
+                                                half: Icon(Icons.star),
+                                              ),
+                                              onRatingUpdate: (rating) {},
+                                            ),
+                                            Text(
+                                              "932 Sale",
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                fontFamily:
+                                                    TextFontFamily.SEN_REGULAR,
+                                                color: ColorResources.white3,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
-                        ),
+                              );
+                            },
+                          );
+                        }),
                         SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -605,179 +649,199 @@ class CameraDeshBoard extends StatelessWidget {
                           ],
                         ),
                         SizedBox(height: 15),
-                        GridView.builder(
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: itemPopularList.length,
-                          shrinkWrap: true,
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 8,
-                            mainAxisSpacing: 8,
-                            childAspectRatio: Get.width > 450
-                                ? 1.58 / 2.1
-                                : Get.width < 370
-                                    ? 1.62 / 2.68
-                                    : 1.8 / 2.5,
-                          ),
-                          itemBuilder: (context, index) {
-                            return InkWell(
-                              onTap: () {},
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: themeController.isLightTheme.value
-                                      ? ColorResources.white
-                                      : ColorResources.black5,
-                                  borderRadius: BorderRadius.circular(20),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      blurRadius: 20,
-                                      color: themeController.isLightTheme.value
-                                          ? ColorResources.blue1
-                                              .withOpacity(0.05)
-                                          : ColorResources.black1,
-                                      spreadRadius: 0,
-                                      offset: Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 10),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Stack(
-                                        children: [
-                                          Container(
-                                            height: 150,
-                                            width: Get.width,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
-                                              //color: ColorResources.white6,
-                                              image: DecorationImage(
-                                                  image: AssetImage(
-                                                    itemPopularList[index]
-                                                        ["image"],
-                                                  ),
-                                                  fit: BoxFit.cover),
-                                            ),
-                                          ),
-                                          Positioned(
-                                            top: 0,
-                                            child: Container(
-                                              height: 22,
-                                              width: 50,
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.only(
-                                                  topLeft: Radius.circular(15),
-                                                  bottomRight:
-                                                      Radius.circular(8),
-                                                ),
-                                                color: ColorResources.blue1,
-                                              ),
-                                              child: Center(
-                                                child: Text(
-                                                  itemPopularList[index]
-                                                      ["text1"],
-                                                  style: TextStyle(
-                                                    color: ColorResources.white,
-                                                    fontSize: 12,
-                                                    fontFamily:
-                                                        TextFontFamily.SEN_BOLD,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      Text(
-                                        itemPopularList[index]["text"],
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontFamily: TextFontFamily.SEN_BOLD,
-                                          color:
-                                              themeController.isLightTheme.value
-                                                  ? ColorResources.black2
-                                                  : ColorResources.white,
-                                        ),
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            itemPopularList[index]["price"],
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontFamily:
-                                                  TextFontFamily.SEN_EXTRA_BOLD,
-                                              color: ColorResources.blue1,
-                                            ),
-                                          ),
-                                          Obx(
-                                            () => InkWell(
-                                              onTap: () {
-                                                favorite.favourite2[index] =
-                                                    !favorite.favourite2[index];
-                                              },
-                                              child: favorite
-                                                          .favourite2[index] ==
-                                                      false
-                                                  ? SvgPicture.asset(
-                                                      Images.blankfavoriteicon)
-                                                  : SvgPicture.asset(
-                                                      Images.fillfavoriteicon),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          RatingBar(
-                                            itemSize: 16,
-                                            maxRating: 5,
-                                            initialRating: 4,
-                                            itemCount: 5,
-                                            direction: Axis.horizontal,
-                                            ratingWidget: RatingWidget(
-                                              full: Icon(
-                                                Icons.star,
-                                                color: ColorResources.yellow,
-                                              ),
-                                              empty: Icon(
-                                                Icons.star,
-                                                color: ColorResources.white2,
-                                              ),
-                                              half: Icon(Icons.star),
-                                            ),
-                                            onRatingUpdate: (rating) {},
-                                          ),
-                                          Text(
-                                            "932 Sale",
-                                            style: TextStyle(
-                                              fontSize: 10,
-                                              fontFamily:
-                                                  TextFontFamily.SEN_REGULAR,
-                                              color: ColorResources.white3,
-                                            ),
-                                          ),
-                                        ],
+                        Obx(() {
+                          final mainData = dbDataController.popularProducts;
+                          final dataList = mainData[dbDataController.mainId];
+                          final isLoading = dbDataController
+                              .popularProductsLoading[dbDataController.mainId];
+                          if (!(isLoading == null) && isLoading == true) {
+                            return const LoadingWidget();
+                          }
+                          if (dataList == null || dataList.isEmpty) {
+                            return const EmptyWidget(
+                                "No Popular Products yet.");
+                          }
+                          return GridView.builder(
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: dataList.length,
+                            shrinkWrap: true,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 8,
+                              mainAxisSpacing: 8,
+                              childAspectRatio: Get.width > 450
+                                  ? 1.58 / 2.1
+                                  : Get.width < 370
+                                      ? 1.62 / 2.68
+                                      : 1.8 / 2.5,
+                            ),
+                            itemBuilder: (context, index) {
+                              return InkWell(
+                                onTap: () {},
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: themeController.isLightTheme.value
+                                        ? ColorResources.white
+                                        : ColorResources.black5,
+                                    borderRadius: BorderRadius.circular(20),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        blurRadius: 20,
+                                        color:
+                                            themeController.isLightTheme.value
+                                                ? ColorResources.blue1
+                                                    .withOpacity(0.05)
+                                                : ColorResources.black1,
+                                        spreadRadius: 0,
+                                        offset: Offset(0, 4),
                                       ),
                                     ],
                                   ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 10),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Stack(
+                                          children: [
+                                            Container(
+                                              height: 150,
+                                              width: Get.width,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(15),
+                                                //color: ColorResources.white6,
+                                                image: DecorationImage(
+                                                    image: AssetImage(
+                                                      dataList[index]
+                                                          .images
+                                                          .first,
+                                                    ),
+                                                    fit: BoxFit.cover),
+                                              ),
+                                            ),
+                                            Positioned(
+                                              top: 0,
+                                              child: Container(
+                                                height: 22,
+                                                width: 50,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                    topLeft:
+                                                        Radius.circular(15),
+                                                    bottomRight:
+                                                        Radius.circular(8),
+                                                  ),
+                                                  color: ColorResources.blue1,
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    dataList[index]
+                                                        .promotion
+                                                        .toString(),
+                                                    style: TextStyle(
+                                                      color:
+                                                          ColorResources.white,
+                                                      fontSize: 12,
+                                                      fontFamily: TextFontFamily
+                                                          .SEN_BOLD,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Text(
+                                          dataList[index].name,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontFamily: TextFontFamily.SEN_BOLD,
+                                            color: themeController
+                                                    .isLightTheme.value
+                                                ? ColorResources.black2
+                                                : ColorResources.white,
+                                          ),
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              dataList[index].price.toString(),
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontFamily: TextFontFamily
+                                                    .SEN_EXTRA_BOLD,
+                                                color: ColorResources.blue1,
+                                              ),
+                                            ),
+                                            /* Obx(
+                                              () => InkWell(
+                                                onTap: () {
+                                                  favorite.favourite2[index] =
+                                                      !favorite
+                                                          .favourite2[index];
+                                                },
+                                                child: favorite.favourite2[
+                                                            index] ==
+                                                        false
+                                                    ? SvgPicture.asset(Images
+                                                        .blankfavoriteicon)
+                                                    : SvgPicture.asset(Images
+                                                        .fillfavoriteicon),
+                                              ),
+                                            ), */
+                                          ],
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            RatingBar(
+                                              itemSize: 16,
+                                              maxRating: 5,
+                                              initialRating: 4,
+                                              itemCount: 5,
+                                              direction: Axis.horizontal,
+                                              ratingWidget: RatingWidget(
+                                                full: Icon(
+                                                  Icons.star,
+                                                  color: ColorResources.yellow,
+                                                ),
+                                                empty: Icon(
+                                                  Icons.star,
+                                                  color: ColorResources.white2,
+                                                ),
+                                                half: Icon(Icons.star),
+                                              ),
+                                              onRatingUpdate: (rating) {},
+                                            ),
+                                            Text(
+                                              "932 Sale",
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                fontFamily:
+                                                    TextFontFamily.SEN_REGULAR,
+                                                color: ColorResources.white3,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
-                        ),
+                              );
+                            },
+                          );
+                        }),
                         SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -817,177 +881,201 @@ class CameraDeshBoard extends StatelessWidget {
                           ],
                         ),
                         SizedBox(height: 15),
-                        GridView.builder(
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: newItemList.length,
-                          shrinkWrap: true,
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 8,
-                            mainAxisSpacing: 8,
-                            childAspectRatio: Get.width > 450
-                                ? 1.58 / 2.1
-                                : Get.width < 370
-                                    ? 1.62 / 2.68
-                                    : 1.8 / 2.5,
-                          ),
-                          itemBuilder: (context, index) {
-                            return InkWell(
-                              onTap: () {},
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: themeController.isLightTheme.value
-                                      ? ColorResources.white
-                                      : ColorResources.black5,
-                                  borderRadius: BorderRadius.circular(20),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      blurRadius: 20,
-                                      color: themeController.isLightTheme.value
-                                          ? ColorResources.blue1
-                                              .withOpacity(0.05)
-                                          : ColorResources.black1,
-                                      spreadRadius: 0,
-                                      offset: Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 10),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Stack(
-                                        children: [
-                                          Container(
-                                            height: 150,
-                                            width: Get.width,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
-                                              //color: ColorResources.white6,
-                                              image: DecorationImage(
-                                                  image: AssetImage(
-                                                    newItemList[index]["image"],
-                                                  ),
-                                                  fit: BoxFit.cover),
-                                            ),
-                                          ),
-                                          Positioned(
-                                            top: 0,
-                                            child: Container(
-                                              height: 22,
-                                              width: 50,
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.only(
-                                                  topLeft: Radius.circular(15),
-                                                  bottomRight:
-                                                      Radius.circular(8),
-                                                ),
-                                                color: ColorResources.blue1,
-                                              ),
-                                              child: Center(
-                                                child: Text(
-                                                  newItemList[index]["text1"],
-                                                  style: TextStyle(
-                                                    color: ColorResources.white,
-                                                    fontSize: 12,
-                                                    fontFamily:
-                                                        TextFontFamily.SEN_BOLD,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      Text(
-                                        newItemList[index]["text"],
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontFamily: TextFontFamily.SEN_BOLD,
-                                          color:
-                                              themeController.isLightTheme.value
-                                                  ? ColorResources.black2
-                                                  : ColorResources.white,
-                                        ),
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            newItemList[index]["price"],
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontFamily:
-                                                  TextFontFamily.SEN_EXTRA_BOLD,
-                                              color: ColorResources.blue1,
-                                            ),
-                                          ),
-                                          Obx(
-                                            () => InkWell(
-                                              onTap: () {
-                                                favorite.favourite3[index] =
-                                                    !favorite.favourite3[index];
-                                              },
-                                              child: favorite
-                                                          .favourite3[index] ==
-                                                      false
-                                                  ? SvgPicture.asset(
-                                                      Images.blankfavoriteicon)
-                                                  : SvgPicture.asset(
-                                                      Images.fillfavoriteicon),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          RatingBar(
-                                            itemSize: 16,
-                                            maxRating: 5,
-                                            initialRating: 4,
-                                            itemCount: 5,
-                                            direction: Axis.horizontal,
-                                            ratingWidget: RatingWidget(
-                                              full: Icon(
-                                                Icons.star,
-                                                color: ColorResources.yellow,
-                                              ),
-                                              empty: Icon(
-                                                Icons.star,
-                                                color: ColorResources.white2,
-                                              ),
-                                              half: Icon(Icons.star),
-                                            ),
-                                            onRatingUpdate: (rating) {},
-                                          ),
-                                          Text(
-                                            "932 Sale",
-                                            style: TextStyle(
-                                              fontSize: 10,
-                                              fontFamily:
-                                                  TextFontFamily.SEN_REGULAR,
-                                              color: ColorResources.white3,
-                                            ),
-                                          ),
-                                        ],
+                        Obx(() {
+                          final mainData = dbDataController.newProducts;
+                          final dataList = mainData[dbDataController.mainId];
+                          final isLoading = dbDataController
+                              .newProductsLoading[dbDataController.mainId];
+                          if (!(isLoading == null) && isLoading == true) {
+                            return const LoadingWidget();
+                          }
+                          if (dataList == null || dataList.isEmpty) {
+                            return const EmptyWidget("No new products yet.");
+                          }
+                          return GridView.builder(
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: dataList.length,
+                            shrinkWrap: true,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 8,
+                              mainAxisSpacing: 8,
+                              childAspectRatio: Get.width > 450
+                                  ? 1.58 / 2.1
+                                  : Get.width < 370
+                                      ? 1.62 / 2.68
+                                      : 1.8 / 2.5,
+                            ),
+                            itemBuilder: (context, index) {
+                              return InkWell(
+                                onTap: () {},
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: themeController.isLightTheme.value
+                                        ? ColorResources.white
+                                        : ColorResources.black5,
+                                    borderRadius: BorderRadius.circular(20),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        blurRadius: 20,
+                                        color:
+                                            themeController.isLightTheme.value
+                                                ? ColorResources.blue1
+                                                    .withOpacity(0.05)
+                                                : ColorResources.black1,
+                                        spreadRadius: 0,
+                                        offset: Offset(0, 4),
                                       ),
                                     ],
                                   ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 10),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Stack(
+                                          children: [
+                                            Container(
+                                              height: 150,
+                                              width: Get.width,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(15),
+                                                //color: ColorResources.white6,
+                                                image: DecorationImage(
+                                                    image: NetworkImage(
+                                                      dataList[index]
+                                                          .images
+                                                          .first,
+                                                    ),
+                                                    fit: BoxFit.cover),
+                                              ),
+                                            ),
+                                            Positioned(
+                                              top: 0,
+                                              child: Container(
+                                                height: 22,
+                                                width: 50,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                    topLeft:
+                                                        Radius.circular(15),
+                                                    bottomRight:
+                                                        Radius.circular(8),
+                                                  ),
+                                                  color: ColorResources.blue1,
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    dataList[index].promotion ==
+                                                            null
+                                                        ? "NEW"
+                                                        : dataList[index]
+                                                            .promotion
+                                                            .toString(),
+                                                    style: TextStyle(
+                                                      color:
+                                                          ColorResources.white,
+                                                      fontSize: 12,
+                                                      fontFamily: TextFontFamily
+                                                          .SEN_BOLD,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Text(
+                                          dataList[index].name,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontFamily: TextFontFamily.SEN_BOLD,
+                                            color: themeController
+                                                    .isLightTheme.value
+                                                ? ColorResources.black2
+                                                : ColorResources.white,
+                                          ),
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              dataList[index].price.toString(),
+                                              style: const TextStyle(
+                                                fontSize: 14,
+                                                fontFamily: TextFontFamily
+                                                    .SEN_EXTRA_BOLD,
+                                                color: ColorResources.blue1,
+                                              ),
+                                            ),
+                                            /*  Obx(
+                                              () => InkWell(
+                                                onTap: () {
+                                                  favorite.favourite3[index] =
+                                                      !favorite
+                                                          .favourite3[index];
+                                                },
+                                                child: favorite.favourite3[
+                                                            index] ==
+                                                        false
+                                                    ? SvgPicture.asset(Images
+                                                        .blankfavoriteicon)
+                                                    : SvgPicture.asset(Images
+                                                        .fillfavoriteicon),
+                                              ),
+                                            ), */
+                                          ],
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            RatingBar(
+                                              itemSize: 16,
+                                              maxRating: 5,
+                                              initialRating: 4,
+                                              itemCount: 5,
+                                              direction: Axis.horizontal,
+                                              ratingWidget: RatingWidget(
+                                                full: Icon(
+                                                  Icons.star,
+                                                  color: ColorResources.yellow,
+                                                ),
+                                                empty: Icon(
+                                                  Icons.star,
+                                                  color: ColorResources.white2,
+                                                ),
+                                                half: Icon(Icons.star),
+                                              ),
+                                              onRatingUpdate: (rating) {},
+                                            ),
+                                            Text(
+                                              "932 Sale",
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                fontFamily:
+                                                    TextFontFamily.SEN_REGULAR,
+                                                color: ColorResources.white3,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
-                        ),
+                              );
+                            },
+                          );
+                        }),
                       ],
                     ),
                   ),

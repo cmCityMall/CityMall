@@ -20,7 +20,7 @@ class Product with _$Product {
     required int remainQuantity,
     @JsonKey(nullable: true) String? shopId,
     @JsonKey(nullable: true) String? brandId,
-    @JsonKey(nullable: true) dynamic documentSnapshot,
+    @JsonKey(nullable: true) String? mainCategoryId,
     required DateTime dateTime,
   }) = _Product;
 

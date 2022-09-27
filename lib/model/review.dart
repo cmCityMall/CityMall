@@ -13,7 +13,6 @@ class Review with _$Review {
     required double rating,
     required String reviewMessage,
     required DateTime dateTime,
-    @JsonKey(nullable: true) dynamic documentSnapshot,
   }) = _Review;
 
   factory Review.fromJson(Map<String, dynamic> json) => _$ReviewFromJson(json);

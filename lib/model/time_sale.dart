@@ -8,6 +8,9 @@ class TimeSale with _$TimeSale {
   factory TimeSale({
     required String id,
     required String image,
+    String? name,
+    String? desc,
+    int? percentage,
     required DateTime startDate,
     required DateTime endDate,
   }) = _TimeSale;

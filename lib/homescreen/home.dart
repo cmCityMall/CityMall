@@ -18,6 +18,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
 
+import '../utils/widgets/loading_widget.dart';
+
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key? key}) : super(key: key);
 
@@ -54,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  List<Map> sliderlist = [
+  /*  List<Map>  = [
     {
       "image": Images.slider1,
     },
@@ -64,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
     {
       "image": Images.slider3,
     },
-  ];
+  ]; */
 
   /* List<Map> menuList = [
     {
@@ -205,61 +207,71 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 20),
-              CarouselSlider.builder(
-                itemCount: sliderlist.length,
-                itemBuilder: (BuildContext context, index, int pageViewIndex) =>
-                    Stack(
-                  children: [
-                    Container(
-                      height: 200,
-                      width: Get.width,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        image: DecorationImage(
-                          image: AssetImage(
-                            sliderlist[index]["image"],
+              //Advertisement
+              Obx(() {
+                if (dbDataController.advertisementLoading.value) {
+                  return const LoadingWidget();
+                }
+                if (dbDataController.advertisements.isEmpty) {
+                  return const SizedBox();
+                }
+                return CarouselSlider.builder(
+                  itemCount: dbDataController.advertisements.length,
+                  itemBuilder:
+                      (BuildContext context, index, int pageViewIndex) => Stack(
+                    children: [
+                      Container(
+                        height: 200,
+                        width: Get.width,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          image: DecorationImage(
+                            image: NetworkImage(
+                              dbDataController.advertisements[index].image,
+                            ),
+                            fit: BoxFit.fill,
                           ),
-                          fit: BoxFit.fill,
                         ),
                       ),
-                    ),
-                    Positioned(
-                      bottom: 20,
-                      left: Get.width >= 411 ? 200 : 150,
-                      child: Row(
-                        children: List.generate(
-                          sliderlist.length,
-                          (position) => Padding(
-                            padding: EdgeInsets.only(right: 8),
-                            child: Container(
-                              width: position == index ? 14 : 5,
-                              height: 5,
-                              decoration: BoxDecoration(
-                                //shape: BoxShape.circle,
-                                borderRadius: BorderRadius.circular(
-                                    index == position ? 7 : 2.5),
-                                color: index == position
-                                    ? ColorResources.blue1
-                                    : ColorResources.white,
+                      Positioned(
+                        bottom: 20,
+                        left: Get.width >= 411 ? 200 : 150,
+                        child: Row(
+                          children: List.generate(
+                            dbDataController.advertisements.length,
+                            (position) => Padding(
+                              padding: EdgeInsets.only(right: 8),
+                              child: Container(
+                                width: position == index ? 14 : 5,
+                                height: 5,
+                                decoration: BoxDecoration(
+                                  //shape: BoxShape.circle,
+                                  borderRadius: BorderRadius.circular(
+                                      index == position ? 7 : 2.5),
+                                  color: index == position
+                                      ? ColorResources.blue1
+                                      : ColorResources.white,
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                options: CarouselOptions(
-                  height: 200,
-                  autoPlay: true,
-                  autoPlayAnimationDuration: Duration(milliseconds: 800),
-                  enlargeCenterPage: true,
-                  scrollDirection: Axis.horizontal,
-                  initialPage: 3,
-                  viewportFraction: 0.98,
-                ),
-              ),
+                    ],
+                  ),
+                  options: CarouselOptions(
+                    height: 200,
+                    autoPlay: true,
+                    autoPlayAnimationDuration: Duration(milliseconds: 800),
+                    enlargeCenterPage: true,
+                    scrollDirection: Axis.horizontal,
+                    initialPage: 3,
+                    viewportFraction: 0.98,
+                  ),
+                );
+              }),
               SizedBox(height: 15),
+              //Menu Main Catgory
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -275,7 +287,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   InkWell(
                     onTap: () {
-                      Get.to(MenuViewAllScreen());
+                      Get.to(() => MenuViewAllScreen());
                     },
                     child: Row(
                       children: [
@@ -304,15 +316,27 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: dbDataController.mainCategories.length,
+                    itemCount: dbDataController.menuMainCategories.length,
                     shrinkWrap: true,
                     itemBuilder: (context, index) {
                       final mainCategory =
-                          dbDataController.mainCategories[index];
+                          dbDataController.menuMainCategories[index];
                       return InkWell(
                         onTap: () {
-                          dbDataController.setSelectedMain(mainCategory.id);
-                          dbDataController.getSubCategories(mainCategory.id);
+                          ///Make Sure To Do Require Function*/
+                          dbDataController.setSelectedMain(
+                            mainCategory.id,
+                            mainCategory.name,
+                          );
+                          dbDataController
+                              .getInitialSubCategories(mainCategory.id);
+                          dbDataController.getSliderProducts(mainCategory.id);
+                          dbDataController
+                              .getInitialDiscountProducts(mainCategory.id);
+                          dbDataController
+                              .getInitialPopularProducts(mainCategory.id);
+                          dbDataController
+                              .getInitialNewProducts(mainCategory.id);
                           Get.off(CameraDeshBoard());
                         },
                         child: Padding(
@@ -373,129 +397,151 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               SizedBox(height: 13),
-              Container(
-                height: 170,
-                width: Get.width,
-                decoration: BoxDecoration(
-                  color: themeController.isLightTheme.value
-                      ? ColorResources.white1
-                      : ColorResources.black1,
-                ),
-                child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: weekPromotionList.length,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      return InkWell(
-                        onTap: () {
-                          Get.to(WeekPromotionScreen());
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 20),
-                          child: Container(
-                            height: 170,
-                            width: 145,
-                            decoration: BoxDecoration(
-                              color: themeController.isLightTheme.value
-                                  ? ColorResources.white5
-                                  : ColorResources.black7,
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  height: 105,
-                                  width: 105,
-                                  decoration: BoxDecoration(
-                                    color: themeController.isLightTheme.value
-                                        ? ColorResources.white5
-                                        : ColorResources.black7,
-                                  ),
-                                  child: Image.asset(
-                                    weekPromotionList[index]["image"],
-                                    fit: BoxFit.fill,
-                                  ),
-                                ),
-                                SizedBox(height: 8),
-                                Text(
-                                  weekPromotionList[index]["text"],
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontFamily: TextFontFamily.SEN_BOLD,
-                                    color: ColorResources.blue1,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    }),
-              ),
-              SizedBox(height: 20),
-              InkWell(
-                onTap: () {
-                  Get.off(FlashSaleScreen());
-                },
-                child: Container(
-                  height: 130,
+              Obx(() {
+                if (dbDataController.promotionsLoading.value) {
+                  return const LoadingWidget();
+                }
+                if (dbDataController.weekPromotions.isEmpty) {
+                  return const SizedBox();
+                }
+                return Container(
+                  height: 170,
                   width: Get.width,
                   decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(Images.promotionimage),
-                      fit: BoxFit.cover,
-                    ),
-                    borderRadius: BorderRadius.circular(5),
+                    color: themeController.isLightTheme.value
+                        ? ColorResources.white1
+                        : ColorResources.black1,
                   ),
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        left: 14,
-                        top: 8,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            text("Super Flash Sale"),
-                            text("50% Off"),
-                          ],
-                        ),
-                      ),
-                      Positioned(
-                        right: 13,
-                        bottom: 13,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              "End Sale In:",
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontFamily: TextFontFamily.SEN_REGULAR,
-                                color: ColorResources.white,
+                  child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: dbDataController.weekPromotions.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        return InkWell(
+                          onTap: () {
+                            Get.to(WeekPromotionScreen());
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 20),
+                            child: Container(
+                              height: 170,
+                              width: 145,
+                              decoration: BoxDecoration(
+                                color: themeController.isLightTheme.value
+                                    ? ColorResources.white5
+                                    : ColorResources.black7,
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    height: 105,
+                                    width: 105,
+                                    decoration: BoxDecoration(
+                                      color: themeController.isLightTheme.value
+                                          ? ColorResources.white5
+                                          : ColorResources.black7,
+                                    ),
+                                    child: Image.network(
+                                      dbDataController
+                                          .weekPromotions[index].image,
+                                      fit: BoxFit.fill,
+                                    ),
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    dbDataController.weekPromotions[index].desc,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontFamily: TextFontFamily.SEN_BOLD,
+                                      color: ColorResources.blue1,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            SizedBox(height: 4),
-                            Row(
-                              children: [
-                                container("08"),
-                                SizedBox(width: 2),
-                                text1(),
-                                SizedBox(width: 2),
-                                container("34"),
-                                SizedBox(width: 2),
-                                text1(),
-                                SizedBox(width: 2),
-                                container("52"),
-                              ],
-                            ),
-                          ],
-                        ),
+                          ),
+                        );
+                      }),
+                );
+              }),
+              SizedBox(height: 20),
+              Obx(() {
+                if (dbDataController.timeSaleLoading.value) {
+                  return const LoadingWidget();
+                }
+                if (dbDataController.timeSale.value == null) {
+                  return const SizedBox();
+                }
+                final timeSale = dbDataController.timeSale.value;
+                final date = timeSale!.endDate;
+                final hour = date.hour;
+                final minute = date.minute;
+                final second = date.second;
+                return InkWell(
+                  onTap: () {
+                    Get.off(FlashSaleScreen());
+                  },
+                  child: Container(
+                    height: 130,
+                    width: Get.width,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: NetworkImage(timeSale.image),
+                        fit: BoxFit.cover,
                       ),
-                    ],
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          left: 14,
+                          top: 8,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              text(timeSale.name!),
+                              text(timeSale.desc!),
+                            ],
+                          ),
+                        ),
+                        Positioned(
+                          right: 13,
+                          bottom: 13,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                "End Sale In:",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontFamily: TextFontFamily.SEN_REGULAR,
+                                  color: ColorResources.white,
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  container("$hour"),
+                                  SizedBox(width: 2),
+                                  text1(),
+                                  SizedBox(width: 2),
+                                  container("$minute"),
+                                  SizedBox(width: 2),
+                                  text1(),
+                                  SizedBox(width: 2),
+                                  container("$second"),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ),
+                );
+              }),
               SizedBox(height: 21),
               Text(
                 "Category",
@@ -508,66 +554,74 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               SizedBox(height: 14),
-              Container(
-                height: 168,
-                width: Get.width,
-                decoration: BoxDecoration(
-                  color: themeController.isLightTheme.value
-                      ? ColorResources.white1
-                      : ColorResources.black1,
-                ),
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: categoryList.length,
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    return Stack(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: InkWell(
-                            onTap: () {
-                              Get.off(FashionManDashboard());
-                            },
-                            child: Container(
-                              height: 168,
-                              width: 122,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                image: DecorationImage(
-                                  image:
-                                      AssetImage(categoryList[index]["image"]),
-                                  fit: BoxFit.cover,
+              Obx(() {
+                if (dbDataController.mainCategoryLoading.value) {
+                  return const LoadingWidget();
+                }
+                if (dbDataController.mainCategories.isEmpty) {
+                  return const SizedBox();
+                }
+                final list = dbDataController.mainCategories;
+                return Container(
+                  height: 168,
+                  width: Get.width,
+                  decoration: BoxDecoration(
+                    color: themeController.isLightTheme.value
+                        ? ColorResources.white1
+                        : ColorResources.black1,
+                  ),
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: list.length,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      return Stack(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: InkWell(
+                              onTap: () {
+                                Get.off(FashionManDashboard());
+                              },
+                              child: Container(
+                                height: 168,
+                                width: 122,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  image: DecorationImage(
+                                    image: NetworkImage(list[index].image),
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(15),
-                                child: Image.asset(
-                                  Images.categoryhomecanvas,
-                                  fit: BoxFit.cover,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(15),
+                                  child: Image.asset(
+                                    Images.categoryhomecanvas,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        Positioned(
-                          bottom: 15,
-                          left: 21,
-                          child: Text(
-                            categoryList[index]["text"],
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontFamily: TextFontFamily.SEN_REGULAR,
-                              fontWeight: FontWeight.w500,
-                              color: ColorResources.white,
+                          Positioned(
+                            bottom: 15,
+                            left: 21,
+                            child: Text(
+                              list[index].name,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontFamily: TextFontFamily.SEN_REGULAR,
+                                fontWeight: FontWeight.w500,
+                                color: ColorResources.white,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ),
+                        ],
+                      );
+                    },
+                  ),
+                );
+              }),
               SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
