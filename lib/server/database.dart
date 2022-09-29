@@ -2,6 +2,22 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Database {
   final firestore = FirebaseFirestore.instance;
+
+  Future<void> write({
+    required String collectionPath,
+    required String documentPath,
+    required Map<String, dynamic> data,
+  }) async {
+    await firestore.collection(collectionPath).doc(documentPath).set(data);
+  }
+
+  Future<void> delete({
+    required String collectionPath,
+    required String documentPath,
+  }) async {
+    await firestore.collection(collectionPath).doc(documentPath).delete();
+  }
+
   Stream<QuerySnapshot<Map<String, dynamic>>> watchCollectionWithoutOrder(
       String collectionPath) {
     return FirebaseFirestore.instance.collection(collectionPath).snapshots();

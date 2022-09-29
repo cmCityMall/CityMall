@@ -262,10 +262,8 @@ class SignUpScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      container(Images.twittericon, ColorResources.blue5),
-                      SizedBox(width: 15),
-                      container(Images.facebookicon, ColorResources.blue6),
-                      SizedBox(width: 15),
+                      container(Images.googleicon, ColorResources.blue5),
+                      const SizedBox(width: 15),
                       container(
                           Images.appleicon,
                           themeController.isLightTheme.value
@@ -273,7 +271,7 @@ class SignUpScreen extends StatelessWidget {
                               : ColorResources.white),
                     ],
                   ),
-                  SizedBox(height: 42),
+                  const SizedBox(height: 42),
                   MaterialButton(
                     onPressed: () {
                       Get.off(NavigationBarBottom());

@@ -27,26 +27,37 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  cached_network_image: ^3.2.1
   carousel_slider: null
   cloud_firestore: ^3.4.8
   country_code_picker: null
   cupertino_icons: null
   dotted_line: null
+  firebase_auth: ^3.10.0
   firebase_core: ^1.22.0
+  firebase_messaging: ^13.0.3
+  firebase_storage: ^10.3.9
   flutter:
     sdk: flutter
+  flutter_material_color_picker: ^1.1.0+2
   flutter_rating_bar: null
   flutter_svg: null
+  flutter_swipe_action_cell: ^3.0.4
   flutter_zoom_drawer: null
+  font_awesome_flutter: ^10.2.1
   freezed: ^2.1.0+1
   freezed_annotation: ^2.1.0
   get: ^4.6.5
+  google_sign_in: ^5.4.2
+  hexcolor: ^2.0.7
+  image_picker: ^0.8.5+3
   json_annotation: ^4.6.0
   json_serializable: ^6.3.2
   nanoid: ^1.0.0
   percent_indicator: null
   pinput: ^2.2.12
   shared_preferences: null
+  shimmer: ^2.0.0
   shrink_sidemenu: null
   uuid: ^3.0.6
 

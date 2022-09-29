@@ -1,6 +1,7 @@
 import 'package:citymall/authscreens/forgotpasswordscreen.dart';
 import 'package:citymall/authscreens/signupscreen.dart';
 import 'package:citymall/colors/colors.dart';
+import 'package:citymall/controller/auth_controller.dart';
 import 'package:citymall/controller/checkcontroller.dart';
 import 'package:citymall/controller/theme_controller.dart';
 import 'package:citymall/images/images.dart';
@@ -93,6 +94,7 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AuthController authController = Get.find();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: themeController.isLightTheme.value
@@ -265,10 +267,11 @@ class LoginScreen extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    container(Images.twittericon, ColorResources.blue5),
-                    SizedBox(width: 15),
-                    container(Images.facebookicon, ColorResources.blue6),
-                    SizedBox(width: 15),
+                    InkWell(
+                        onTap: () => authController.googleSingIn(),
+                        child:
+                            container(Images.googleicon, ColorResources.blue5)),
+                    const SizedBox(width: 15),
                     container(
                         Images.appleicon,
                         themeController.isLightTheme.value
@@ -279,7 +282,7 @@ class LoginScreen extends StatelessWidget {
                 SizedBox(height: 42),
                 MaterialButton(
                   onPressed: () {
-                    Get.off(NavigationBarBottom());
+                    //Get.off(NavigationBarBottom());
                   },
                   child: Text(
                     "Log in",

@@ -1,5 +1,4 @@
 import 'package:citymall/constant/collection_path.dart';
-import 'package:citymall/constant/mock.dart';
 import 'package:citymall/model/advertisement.dart';
 import 'package:citymall/model/auth_user.dart';
 import 'package:citymall/model/brand.dart';
@@ -7,10 +6,8 @@ import 'package:citymall/model/main_category.dart';
 import 'package:citymall/model/time_sale.dart';
 import 'package:citymall/model/week_promotion.dart';
 import 'package:citymall/server/database.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:uuid/uuid.dart';
 
 import '../model/product.dart';
 import '../model/shop.dart';
@@ -55,8 +52,10 @@ class DBDataController extends GetxController {
   String subId = "";
   String mainName = "";
   String subName = "";
+  Product? editProduct;
 
   ///For temporary Function */
+  void setEditProduct(Product? value) => editProduct = value;
   void setSelectedMain(String id, String name) {
     mainId = id;
     mainName = name;

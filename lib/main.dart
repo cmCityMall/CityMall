@@ -1,3 +1,4 @@
+import 'package:citymall/controller/auth_controller.dart';
 import 'package:citymall/controller/db_data_controller.dart';
 import 'package:citymall/controller/theme_controller.dart';
 import 'package:citymall/splashscreen/splash.dart';
@@ -7,6 +8,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+
+import 'rout_screens/rout_1.dart';
 //import 'package:get/get.dart';
 
 Future<void> main() async {
@@ -17,6 +20,7 @@ Future<void> main() async {
   await Firebase.initializeApp();
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  Get.put(AuthController());
   Get.put(DBDataController());
   runApp(CityMall());
 }
@@ -34,7 +38,19 @@ class CityMall extends StatelessWidget {
       darkTheme: ThemeData.dark(),
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      home: const RedirectWidget(),
     );
+  }
+}
+
+class RedirectWidget extends StatelessWidget {
+  const RedirectWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final AuthController authController = Get.find();
+    return Obx(() => authController.currentUser.value!.status! > 0
+        ? NavigationBarBottom()
+        : SplashScreen());
   }
 }

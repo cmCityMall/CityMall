@@ -11,10 +11,11 @@ class Images {
   static const String onboarddark3 = "assets/images/onboarddark3.svg";
   static const String mail = "assets/images/mail.svg";
   static const String password = "assets/images/password.svg";
-  static const String twittericon = "assets/images/twittericon.svg";
+  static const String googleicon = "assets/images/google.svg";
   static const String facebookicon = "assets/images/facebookicon.svg";
   static const String appleicon = "assets/images/appleicon.svg";
   static const String user = "assets/images/user.svg";
+  static const String addImageIcon = "assets/images/add_image.svg";
   static const String phone = "assets/images/phone.svg";
   static const String drawericon = "assets/images/drawericon.svg";
   static const String notification = "assets/images/notification.svg";
@@ -141,5 +142,6 @@ class Images {
   static const String darktrack2 = "assets/images/darktrack2.svg";
   static const String darktrack3 = "assets/images/darktrack3.svg";
   static const String darktrack4 = "assets/images/darktrack4.svg";
-  static const String darktrackhomeimage = "assets/images/darktrackhomeimage.svg";
+  static const String darktrackhomeimage =
+      "assets/images/darktrackhomeimage.svg";
 }
