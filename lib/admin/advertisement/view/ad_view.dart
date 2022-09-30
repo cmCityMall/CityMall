@@ -45,6 +45,16 @@ class AdView extends StatelessWidget {
                 pickImage: () => adController.pickImage(),
               );
             }),
+            //ImagePickFormError
+            Obx(() {
+              return adController.isFirstTimePressed.value &&
+                      adController.pickedImage.isEmpty
+                  ? const Text("Image is required.",
+                      style: TextStyle(
+                        color: Colors.red,
+                      ))
+                  : const SizedBox();
+            }),
             Padding(
                 padding: const EdgeInsets.only(
                   left: 20,

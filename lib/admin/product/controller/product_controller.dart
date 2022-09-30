@@ -297,7 +297,7 @@ class ProductController extends GetxController {
     return resultImages;
   }
 
-  Future<void> edit() async {
+  /* Future<void> edit() async {
     //final element = _homeController.editProduct!;
     if (formKey.currentState?.validate() == true && checkSelectType()) {
       showLoading();
@@ -367,7 +367,7 @@ class ProductController extends GetxController {
         Get.snackbar("Failed!", "Try again.");
       } */
     }
-  }
+  } */
 
   Future<void> save() async {
     isFirstTimePressed.value = true;
@@ -420,7 +420,7 @@ class ProductController extends GetxController {
           images = pickedImage.map<File>((e) => File(e)).toList();
         }
         await uploadMultipleImages(images, id).then((value) async {
-          uploadIfSizeImage(id).then((v) async {
+          await uploadIfSizeImage(id).then((v) async {
             var sizeMap = <String, dynamic>{};
             if (colorImagePriceSize.isNotEmpty) {
               //check for empty sizemap\
@@ -461,7 +461,6 @@ class ProductController extends GetxController {
             );
             isFirstTimePressed.value = false;
           });
-
           clearAll();
           hideLoading();
         });

@@ -18,7 +18,7 @@ class MCController extends GetxController {
   final TextEditingController nameController = TextEditingController();
   var pickedImage = "".obs;
   var isMenu = true.obs;
-
+  var isFirstTimePressed = false.obs;
   void changeIsMenu(bool value) => isMenu.value = value;
 
   String? validate(String? value) {
@@ -42,8 +42,10 @@ class MCController extends GetxController {
   }
 
   Future<void> save() async {
-    showLoading();
+    isFirstTimePressed.value = true;
+
     if (formKey.currentState?.validate() == true && pickedImage.isNotEmpty) {
+      showLoading();
       try {
         await FirebaseStorage.instance
             .ref()
@@ -63,15 +65,17 @@ class MCController extends GetxController {
               documentPath: ad.id,
               data: ad.toJson(),
             );
+            isFirstTimePressed.value = false;
             clearAll();
+            hideLoading();
           });
         });
       } catch (e) {
+        hideLoading();
         Get.snackbar("Failed!", "Try Again");
         debugPrint("****$e");
       }
     }
-    hideLoading();
   }
 
   pickImage() async {

@@ -45,176 +45,182 @@ class SCView extends StatelessWidget {
           right: 16.0,
           bottom: 16.0,
         ),
-        child: Form(
-          key: scController.formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              /**Form*/
-              CustomTextForm(
-                padding: 0,
-                rightPadding: 45,
-                height: 85,
-                textFieldPaddingLeft: 10,
-                controller: scController.nameController,
-                isUnderlineBorder: false,
-                validator: scController.validate,
-                labelText: "Ad Name",
-              ),
-              Obx(() {
-                final pickedImage = scController.pickedImage.value;
-                final isEmpty = pickedImage.isEmpty;
-                return ImagePickForm(
-                  labelText: isEmpty ? "pick an image" : pickedImage,
-                  pickImage: () => scController.pickImage(),
-                );
-              }),
-              Obx(() {
-                return SizedBox(
-                  height: 25,
-                  child: Text(scController.pickedImageError.value,
-                      style: const TextStyle(
-                        color: Colors.red,
-                      )),
-                );
-              }),
-              Obx(() {
-                return InkWell(
-                  onTap: () {
-                    Get.bottomSheet(
-                      Container(
-                        color: Colors.grey.shade300,
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: scController.mainCategories.length,
-                          itemBuilder: (context, index) {
-                            final cat = scController.mainCategories[index];
-                            return TextButton(
-                              onPressed: () {
-                                scController.setSelectedParentId(cat.id);
-                                scController.setParentError("");
-                                Get.back();
-                              },
-                              child: Container(
-                                width: double.infinity,
-                                color: scController.selectedParentId.value ==
-                                        cat.id
-                                    ? Colors.blue
-                                    : Colors.grey.shade300,
-                                padding: const EdgeInsets.all(10),
-                                child: Text(
-                                  cat.name,
-                                  style: TextStyle(
-                                    color:
-                                        scController.selectedParentId.value ==
-                                                cat.id
-                                            ? Colors.white
-                                            : Colors.black,
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    );
-                  },
-                  child: UpDownChoice(
-                    items: scController.mainCategories,
-                    hint: "Select Main Category",
-                    isError: scController.isFirstTimePressed.value &&
-                    scController.selectedParentId.isEmpty,
-                    increase: scController.increaseIndex,
-                    decrease: scController.decreaseIndex,
-                    isEmpty: scController.selectedParentId.isEmpty,
-                    selectedValue: scController.selectedParentId.value,
-                  ),
-                );
-              }),
-              Obx(() {
-                return SizedBox(
-                  height: 25,
-                  child: Text(scController.selectedParentError.value,
-                      style: const TextStyle(
-                        color: Colors.red,
-                      )),
-                );
-              }),
-              const SizedBox(height: 15),
-              /**Advertisement List*/
-              Expanded(
-                child: Obx(
-                  () {
-                    if (scController.subCatgories.isEmpty) {
-                      return const Center(
-                          child: Text(
-                        "No sub categories yet....",
-                      ));
-                    }
-
-                    return ListView.builder(
-                      itemCount: scController.subCatgories.length,
-                      itemBuilder: (context, index) {
-                        var subCategory = scController.subCatgories[index];
-
-                        return SwipeActionCell(
-                          key: ValueKey(subCategory.id),
-                          trailingActions: [
-                            SwipeAction(
-                              onTap: (CompletionHandler _) async {
-                                await _(true);
-                                await scController.delete(subCategory.id);
-                              },
-                              content: Container(
-                                color: Colors.red,
-                                height: 35,
-                                child: const Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Text(
-                                    "DELETE",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              color: Colors.white,
-                            ),
-                          ],
-                          child: ConstrainedBox(
-                            constraints: const BoxConstraints(
-                              minHeight: 50,
-                              maxHeight: 80,
-                            ),
-                            child: Card(
-                                child: Padding(
-                              padding: const EdgeInsets.only(left: 25),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  Text(
-                                    subCategory.name,
-                                  ),
-                                  Text(
-                                    scController.getMainCategory(
-                                      subCategory.parentId,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )),
-                          ),
-                        );
-                      },
-                    );
-                  },
+        child: Obx(() {
+          return Form(
+            key: scController.formKey,
+            autovalidateMode: scController.isFirstTimePressed.value
+                ? AutovalidateMode.onUserInteraction
+                : AutovalidateMode.disabled,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                /**Form*/
+                CustomTextForm(
+                  padding: 0,
+                  rightPadding: 45,
+                  height: 85,
+                  maxLines: 1,
+                  textFieldPaddingLeft: 10,
+                  controller: scController.nameController,
+                  isUnderlineBorder: false,
+                  validator: scController.validate,
+                  labelText: "Ad Name",
                 ),
-              ),
-            ],
-          ),
-        ),
+                Obx(() {
+                  final pickedImage = scController.pickedImage.value;
+                  final isEmpty = pickedImage.isEmpty;
+                  return ImagePickForm(
+                    labelText: isEmpty ? "pick an image" : pickedImage,
+                    pickImage: () => scController.pickImage(),
+                  );
+                }),
+                Obx(() {
+                  return SizedBox(
+                    height: 25,
+                    child: Text(scController.pickedImageError.value,
+                        style: const TextStyle(
+                          color: Colors.red,
+                        )),
+                  );
+                }),
+                Obx(() {
+                  return InkWell(
+                    onTap: () {
+                      Get.bottomSheet(
+                        Container(
+                          color: Colors.grey.shade300,
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: scController.mainCategories.length,
+                            itemBuilder: (context, index) {
+                              final cat = scController.mainCategories[index];
+                              return TextButton(
+                                onPressed: () {
+                                  scController.setSelectedParentId(cat.id);
+                                  scController.setParentError("");
+                                  Get.back();
+                                },
+                                child: Container(
+                                  width: double.infinity,
+                                  color: scController.selectedParentId.value ==
+                                          cat.id
+                                      ? Colors.blue
+                                      : Colors.grey.shade300,
+                                  padding: const EdgeInsets.all(10),
+                                  child: Text(
+                                    cat.name,
+                                    style: TextStyle(
+                                      color:
+                                          scController.selectedParentId.value ==
+                                                  cat.id
+                                              ? Colors.white
+                                              : Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                    child: UpDownChoice(
+                      items: scController.mainCategories,
+                      hint: "Select Main Category",
+                      isError: scController.isFirstTimePressed.value &&
+                          scController.selectedParentId.isEmpty,
+                      increase: scController.increaseIndex,
+                      decrease: scController.decreaseIndex,
+                      isEmpty: scController.selectedParentId.isEmpty,
+                      selectedValue: scController.selectedParentId.value,
+                    ),
+                  );
+                }),
+                Obx(() {
+                  return SizedBox(
+                    height: 25,
+                    child: Text(scController.selectedParentError.value,
+                        style: const TextStyle(
+                          color: Colors.red,
+                        )),
+                  );
+                }),
+                const SizedBox(height: 15),
+                /**Advertisement List*/
+                Expanded(
+                  child: Obx(
+                    () {
+                      if (scController.subCatgories.isEmpty) {
+                        return const Center(
+                            child: Text(
+                          "No sub categories yet....",
+                        ));
+                      }
+
+                      return ListView.builder(
+                        itemCount: scController.subCatgories.length,
+                        itemBuilder: (context, index) {
+                          var subCategory = scController.subCatgories[index];
+
+                          return SwipeActionCell(
+                            key: ValueKey(subCategory.id),
+                            trailingActions: [
+                              SwipeAction(
+                                onTap: (CompletionHandler _) async {
+                                  await _(true);
+                                  await scController.delete(subCategory.id);
+                                },
+                                content: Container(
+                                  color: Colors.red,
+                                  height: 35,
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text(
+                                      "DELETE",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                color: Colors.white,
+                              ),
+                            ],
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(
+                                minHeight: 50,
+                                maxHeight: 80,
+                              ),
+                              child: Card(
+                                  child: Padding(
+                                padding: const EdgeInsets.only(left: 25),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    Text(
+                                      subCategory.name,
+                                    ),
+                                    Text(
+                                      scController.getMainCategory(
+                                        subCategory.parentId,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
       ),
     );
   }

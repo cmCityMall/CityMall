@@ -69,30 +69,32 @@ class SCController extends GetxController {
 
   Future<void> save() async {
     isFirstTimePressed.value = true;
-    showLoading();
     if (pickedImage.isEmpty) {
       pickedImageError.value = "Image is required";
     }
     if (selectedParentId.isEmpty) {
       selectedParentError.value = "Main Category is required to select.";
     }
+
     if (formKey.currentState?.validate() == true &&
         pickedImage.isNotEmpty &&
         selectedParentId.value.isNotEmpty) {
+      var parentId = mainCategories
+          .where((e) => e.name == selectedParentId.value)
+          .first
+          .id;
+      showLoading();
       setEmptyError();
       try {
         final ad = SubCategory(
           id: Uuid().v1(),
           name: nameController.text,
-          parentId: mainCategories
-              .where((e) => e.name == selectedParentId.value)
-              .first
-              .id,
+          parentId: parentId,
           dateTime: DateTime.now(),
         );
         await FirebaseStorage.instance
             .ref()
-            .child("mainCategories/${Uuid().v1()}")
+            .child("subCategories/${Uuid().v1()}")
             .putFile(File(pickedImage.value))
             .then((snapshot) async {
           await snapshot.ref.getDownloadURL().then((value) async {
@@ -102,15 +104,16 @@ class SCController extends GetxController {
               data: ad.copyWith(image: value).toJson(),
             );
             isFirstTimePressed.value = false;
+            hideLoading();
             clearAll();
           });
         });
       } catch (e) {
+        hideLoading();
         Get.snackbar("Failed!", "Try Again");
         debugPrint("****$e");
       }
     }
-    hideLoading();
   }
 
   void decreaseIndex() {

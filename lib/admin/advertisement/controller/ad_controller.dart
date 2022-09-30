@@ -17,7 +17,7 @@ class ADController extends GetxController {
   RxList<Product> addedProducts = <Product>[].obs;
   var pickedImage = "".obs;
   var isLoading = false.obs;
-
+  var isFirstTimePressed = false.obs;
   void clearAll() {
     pickedImage.value = "";
   }
@@ -30,6 +30,7 @@ class ADController extends GetxController {
   }
 
   Future<void> save() async {
+    isFirstTimePressed.value = true;
     showLoading();
     if (isLoading.value) {
       return;
@@ -54,6 +55,7 @@ class ADController extends GetxController {
               data: ad.toJson(),
             );
             isLoading.value = false;
+            isFirstTimePressed.value = true;
             clearAll();
           });
         });
