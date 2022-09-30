@@ -76,6 +76,8 @@ class BrandView extends StatelessWidget {
                     setSelectedIdError: (value) =>
                         brandController.setSelectedShopIdError(value),
                     hint: "Select Shop",
+                    isError: brandController.isFirstTimePressed.value &&
+                        brandController.selectedShopId.isEmpty,
                     isEmpty: brandController.selectedShopId.isEmpty,
                     selectedValue: brandController.selectedShopId.value,
                     list: brandController.shopList.map((e) => e.name).toList(),

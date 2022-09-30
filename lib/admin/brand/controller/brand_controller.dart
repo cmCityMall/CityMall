@@ -21,7 +21,7 @@ class BrandController extends GetxController {
   final TextEditingController subNameController = TextEditingController();
   List<Shop> shopList = <Shop>[].obs;
   final TextEditingController statusController = TextEditingController();
-
+  var isFirstTimePressed = false.obs;
   //Error
   var pickImageError = "".obs;
   var selectedShopIdError = "".obs;
@@ -56,6 +56,7 @@ class BrandController extends GetxController {
   }
 
   Future<void> save() async {
+    isFirstTimePressed.value = true;
     if (pickedImage.isEmpty) {
       pickImageError.value = "Image is required.";
     }
@@ -85,6 +86,7 @@ class BrandController extends GetxController {
               documentPath: ad.id,
               data: ad.toJson(),
             );
+            isFirstTimePressed.value = false;
             clearAll();
           });
         });

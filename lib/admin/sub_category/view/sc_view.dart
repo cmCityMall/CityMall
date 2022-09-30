@@ -122,6 +122,8 @@ class SCView extends StatelessWidget {
                   child: UpDownChoice(
                     items: scController.mainCategories,
                     hint: "Select Main Category",
+                    isError: scController.isFirstTimePressed.value &&
+                    scController.selectedParentId.isEmpty,
                     increase: scController.increaseIndex,
                     decrease: scController.decreaseIndex,
                     isEmpty: scController.selectedParentId.isEmpty,
@@ -227,6 +229,7 @@ class UpDownChoice<T> extends StatelessWidget {
     required this.decrease,
     required this.isEmpty,
     required this.selectedValue,
+    required this.isError,
   }) : super(key: key);
 
   final List<T> items;
@@ -235,6 +238,7 @@ class UpDownChoice<T> extends StatelessWidget {
   final void Function() decrease;
   final String hint;
   final bool isEmpty;
+  final bool isError;
 
   @override
   Widget build(BuildContext context) {
@@ -245,7 +249,7 @@ class UpDownChoice<T> extends StatelessWidget {
       child: Container(
         height: 50,
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey),
+          border: Border.all(color: isError ? Colors.red : Colors.grey),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
-import 'package:citymall/constant/mock.dart';
 import 'package:citymall/controller/db_data_controller.dart';
 import 'package:citymall/model/cips.dart';
 import 'package:citymall/model/main_category.dart';
@@ -65,7 +63,8 @@ class ProductController extends GetxController {
   var selectedShopIdError = "".obs;
   var selectedPromotionIdError = "".obs;
   //Temporary
-  Product? currentProduct;
+  var isLoading = true.obs;
+  var isFirstTimePressed = false.obs;
   //
   Future<void> setSelectedMainCategoryId(String value) async {
     selectedMainCategoryId.value = value;
@@ -138,33 +137,65 @@ class ProductController extends GetxController {
         .toList();
   }
 
-  void configureForEditProduct(Product product) {
-    currentProduct = product;
-    nameController.text = product.name;
-    descriptionController.text = product.description;
-    priceController.text = product.price.toString();
-    totalQuantityController.text = (product.totalQuantity).toString();
-    remainQuantityController.text = (product.remainQuantity).toString();
-    pickedImage.value = product.images;
-    if (!(product.sizeColorImagePrice == null) ||
-        product.sizeColorImagePrice?.isNotEmpty == true) {
-      for (var element in product.sizeColorImagePrice!.entries) {
-        colorImagePriceSize.putIfAbsent(
-            element.key,
-            () => CIPS.initial().copyWith(
-                  color: element.value["color"] as String,
-                  image: element.value["image"],
-                  price: TextEditingController(
-                      text: element.value["price"].toString()),
-                  size: TextEditingController(text: element.value["size"]),
-                ));
+  Future<void> configureForEditProduct() async {
+    if (_dataController.editProduct == null) {
+      isLoading.value = false;
+    } else {
+      final product = _dataController.editProduct!;
+      isLoading.value = true;
+      nameController.text = product.name;
+      descriptionController.text = product.description;
+      priceController.text = product.price.toString();
+      totalQuantityController.text = (product.totalQuantity).toString();
+      remainQuantityController.text = (product.remainQuantity).toString();
+      pickedImage.value = product.images;
+      if (!(product.sizeColorImagePrice == null) ||
+          product.sizeColorImagePrice?.isNotEmpty == true) {
+        for (var element in product.sizeColorImagePrice!.entries) {
+          colorImagePriceSize.putIfAbsent(
+              element.key,
+              () => CIPS.initial().copyWith(
+                    color: element.value["color"] as String,
+                    image: element.value["image"],
+                    price: TextEditingController(
+                        text: element.value["price"].toString()),
+                    size: TextEditingController(text: element.value["size"]),
+                  ));
+        }
       }
+      //Selected Type
+      if (!(product.brandId == null) && product.brandId!.isNotEmpty) {
+        selectedBrandId.value =
+            brands.where((e) => e.id == product.brandId).first.name;
+      }
+      if (!(product.shopId == null) && product.shopId!.isNotEmpty) {
+        selectedShopId.value =
+            shops.where((e) => e.id == product.shopId).first.name;
+      }
+      if (!(product.promotionId == null) && product.promotionId!.isNotEmpty) {
+        selectedPromotionId.value = _dataController.weekPromotions
+            .where((e) => e.id == product.promotionId)
+            .first
+            .desc;
+      }
+
+      if (!(product.mainCategoryId == null) &&
+          product.mainCategoryId!.isNotEmpty) {
+        selectedMainCategoryId.value = mainCategories
+            .where((e) => e.id == product.mainCategoryId)
+            .first
+            .name;
+      }
+      fetchSubCategories().then((value) {
+        if (subCategories.isNotEmpty && product.subCategoryId.isNotEmpty) {
+          selectedSubCategoryId.value = subCategories
+              .where((e) => e.id == product.subCategoryId)
+              .first
+              .name;
+        }
+        isLoading.value = false;
+      });
     }
-    selectedBrandId.value = product.brandId ?? "";
-    if (product.mainCategoryId?.isNotEmpty == true) {
-      setSelectedMainCategoryId(product.mainCategoryId!);
-    }
-    selectedShopId.value = product.shopId ?? "";
   }
 
   pickSizeImage(String key) async {
@@ -216,6 +247,7 @@ class ProductController extends GetxController {
     selectedMainCategoryId.value = "";
     selectedSubCategoryId.value = "";
     selectedPromotionId.value = "";
+    colorImagePriceSize.clear();
     isFile.value = false;
   }
 
@@ -229,7 +261,10 @@ class ProductController extends GetxController {
   bool checkSelectType() {
     if (pickedImage.isEmpty ||
         selectedBrandId.isEmpty ||
-        selectedSubCategoryId.isEmpty) {
+        selectedSubCategoryId.isEmpty ||
+        selectedMainCategoryId.isEmpty ||
+        selectedShopId.isEmpty ||
+        selectedPromotionId.isEmpty) {
       return false;
     } else {
       return true;
@@ -244,6 +279,10 @@ class ProductController extends GetxController {
   Future<List<String>> uploadMultipleImages(
       List<File> images, String productId) async {
     final List<String> resultImages = [];
+    if (images.isEmpty) {
+      //Check for edit
+      return resultImages;
+    }
     for (var element in images) {
       await FirebaseStorage.instance
           .ref()
@@ -331,37 +370,88 @@ class ProductController extends GetxController {
   }
 
   Future<void> save() async {
+    isFirstTimePressed.value = true;
+    var mainId = "";
+    var subId = "";
+    var brandId = "";
+    var shopId = "";
+    var promoId = "";
+    var promotion = 0;
+    var tQuantity = 0;
+    var rQuantity = 0;
+    var name = nameController.text;
+    var desc = descriptionController.text;
+    var price = int.tryParse(priceController.text) ?? 0;
+    try {
+      mainId = mainCategories
+          .where((e) => e.name == selectedMainCategoryId.value)
+          .first
+          .id;
+      subId = subCategories
+          .where((e) => e.name == selectedSubCategoryId.value)
+          .first
+          .id;
+      brandId = brands.where((e) => e.name == selectedBrandId.value).first.id;
+      shopId = shops.where((e) => e.name == selectedShopId.value).first.id;
+      promoId = _dataController.weekPromotions
+          .where((e) => e.desc == selectedPromotionId.value)
+          .first
+          .id;
+      promotion = _dataController.weekPromotions
+              .where((e) => e.desc == selectedPromotionId.value)
+              .first
+              .percentage ??
+          0;
+      tQuantity = int.parse(totalQuantityController.text.removeAllWhitespace);
+      rQuantity = int.parse(remainQuantityController.text.removeAllWhitespace);
+    } catch (e) {
+      debugPrint("******$e");
+    }
+
     if (formKey.currentState?.validate() == true && checkSelectType()) {
       showLoading();
       try {
-        final id = Uuid().v1();
-        final images = pickedImage.map<File>((e) => File(e)).toList();
+        final id = _dataController.editProduct == null
+            ? Uuid().v1()
+            : _dataController.editProduct!.id;
+        List<File> images = [];
+        if (isFile.value) {
+          //Check for save and edit
+          images = pickedImage.map<File>((e) => File(e)).toList();
+        }
         await uploadMultipleImages(images, id).then((value) async {
           uploadIfSizeImage(id).then((v) async {
+            var sizeMap = <String, dynamic>{};
+            if (colorImagePriceSize.isNotEmpty) {
+              //check for empty sizemap\
+              for (var element in colorImagePriceSize.entries) {
+                sizeMap.putIfAbsent(
+                    element.key,
+                    () => {
+                          "color": element.value.color,
+                          "image": element.value.image,
+                          "price": element.value.price.text,
+                          "size": element.value.size.text,
+                        });
+              }
+            }
+            debugPrint("**SizeMap: $sizeMap");
             final product = Product(
               id: id,
-              name: nameController.text,
-              images: value,
-              description: descriptionController.text,
-              price: int.tryParse(priceController.text) ?? 0,
-              /* promotion: _dataController.weekPromotions
-                  .where((e) => e.desc == selectedPromotionId.value)
-                  .first
-                  .percentage, */
-              promotionId: selectedPromotionId.value,
-              subCategoryId: subCategories
-                  .where((e) => e.name == selectedSubCategoryId.value)
-                  .first
-                  .id,
-              mainCategoryId: mainCategories
-                  .where((e) => e.name == selectedMainCategoryId.value)
-                  .first
-                  .id,
-              shopId: selectedShopId.value,
-              brandId: selectedBrandId.value,
+              name: name,
+              images: value.isNotEmpty ? value : pickedImage,
+              description: desc,
+              price: price,
+              promotion: promotion,
+              promotionId: promoId,
+              mainCategoryId: mainId,
+              subCategoryId: subId,
+              shopId: shopId,
+              brandId: brandId,
               reviewCount: 0,
-              totalQuantity: int.parse(totalQuantityController.text),
-              remainQuantity: int.parse(remainQuantityController.text),
+              totalQuantity: tQuantity,
+              remainQuantity: rQuantity,
+              sizeColorImagePrice: sizeMap,
               dateTime: DateTime.now(),
             );
             await _database.write(
@@ -369,6 +459,7 @@ class ProductController extends GetxController {
               documentPath: product.id,
               data: product.toJson(),
             );
+            isFirstTimePressed.value = false;
           });
 
           clearAll();
@@ -413,13 +504,6 @@ class ProductController extends GetxController {
     _database.firestore.collection(mainCategoryCollection).get().then((value) =>
         mainCategories.value =
             value.docs.map((e) => MainCategory.fromJson(e.data())).toList());
-    if (!(currentProduct == null)) {
-      final mainName = mainCategories
-          .where((p0) => p0.id == currentProduct!.mainCategoryId!)
-          .first
-          .name;
-      setSelectedMainCategoryId(mainName);
-    }
     super.onInit();
   }
 

@@ -7,6 +7,7 @@ class SelectedBottomSheet extends StatelessWidget {
   final String hint;
   final bool isEmpty;
   final String selectedValue;
+  final bool isError;
   final List<String> list;
   final void Function(String value) setSelectedId;
   final void Function(String value) setSelectedIdError;
@@ -18,6 +19,7 @@ class SelectedBottomSheet extends StatelessWidget {
     required this.isEmpty,
     required this.selectedValue,
     required this.list,
+    required this.isError,
   }) : super(key: key);
 
   @override
@@ -61,6 +63,7 @@ class SelectedBottomSheet extends StatelessWidget {
       child: UpDownChoice(
         items: const [],
         hint: hint,
+        isError: isError,
         increase: () {},
         decrease: () {},
         isEmpty: isEmpty,

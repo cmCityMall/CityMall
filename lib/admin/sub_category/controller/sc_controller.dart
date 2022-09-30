@@ -24,6 +24,7 @@ class SCController extends GetxController {
   var pickedImage = "".obs;
   var pickedImageError = "".obs;
   var selectedParentError = "".obs;
+  var isFirstTimePressed = false.obs;
   final TextEditingController nameController = TextEditingController();
   void setSelectedParentId(String value) => selectedParentId.value = value;
   String? validate(String? value) {
@@ -67,6 +68,7 @@ class SCController extends GetxController {
   }
 
   Future<void> save() async {
+    isFirstTimePressed.value = true;
     showLoading();
     if (pickedImage.isEmpty) {
       pickedImageError.value = "Image is required";
@@ -99,6 +101,7 @@ class SCController extends GetxController {
               documentPath: ad.id,
               data: ad.copyWith(image: value).toJson(),
             );
+            isFirstTimePressed.value = false;
             clearAll();
           });
         });

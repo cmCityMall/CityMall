@@ -47,6 +47,7 @@ class ManageProduct extends StatelessWidget {
         onPressed: () {
           dataController.setEditProduct(null);
           Get.to(() => const UploadProduct());
+          productController.configureForEditProduct();
         },
       ),
       body: Column(
@@ -91,7 +92,7 @@ class ManageProduct extends StatelessWidget {
                           onTap: (CompletionHandler _) async {
                             await _(false);
                             dataController.setEditProduct(item);
-                            productController.configureForEditProduct(item);
+                            productController.configureForEditProduct();
                             Get.to(() => const UploadProduct());
                           },
                           title: 'Edit',
