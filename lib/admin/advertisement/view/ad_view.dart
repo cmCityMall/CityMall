@@ -27,6 +27,18 @@ class AdView extends StatelessWidget {
                 style: TextStyle(
                   color: Colors.black,
                 ))),
+        actions: [
+          Padding(
+              padding: const EdgeInsets.only(
+                top: 5,
+                bottom: 5,
+                right: 10,
+              ),
+              child: ElevatedButton(
+                onPressed: () => adController.save(),
+                child: const Text("Save"),
+              )),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.only(
@@ -55,15 +67,6 @@ class AdView extends StatelessWidget {
                       ))
                   : const SizedBox();
             }),
-            Padding(
-                padding: const EdgeInsets.only(
-                  left: 20,
-                  right: 40,
-                ),
-                child: ElevatedButton(
-                  onPressed: () => adController.save(),
-                  child: const Text("Save"),
-                )),
             const SizedBox(height: 15),
             /**Advertisement List*/
             Expanded(

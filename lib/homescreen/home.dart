@@ -466,16 +466,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       }),
                 );
               }),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Obx(() {
                 if (dbDataController.timeSaleLoading.value) {
                   return const LoadingWidget();
                 }
-                if (dbDataController.timeSale.value == null) {
+                if (dbDataController.timeSales.isEmpty) {
                   return const SizedBox();
                 }
-                final timeSale = dbDataController.timeSale.value;
-                final date = timeSale!.endDate;
+                final timeSale = dbDataController.timeSales.first;
+                final date = timeSale.endDate;
                 final hour = date.hour;
                 final minute = date.minute;
                 final second = date.second;
@@ -512,7 +512,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Text(
+                              const Text(
                                 "End Sale In:",
                                 style: TextStyle(
                                   fontSize: 14,
@@ -520,17 +520,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                   color: ColorResources.white,
                                 ),
                               ),
-                              SizedBox(height: 4),
+                              const SizedBox(height: 4),
                               Row(
                                 children: [
                                   container("$hour"),
-                                  SizedBox(width: 2),
+                                  const SizedBox(width: 2),
                                   text1(),
-                                  SizedBox(width: 2),
+                                  const SizedBox(width: 2),
                                   container("$minute"),
-                                  SizedBox(width: 2),
+                                  const SizedBox(width: 2),
                                   text1(),
-                                  SizedBox(width: 2),
+                                  const SizedBox(width: 2),
                                   container("$second"),
                                 ],
                               ),
@@ -542,7 +542,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 );
               }),
-              SizedBox(height: 21),
+              const SizedBox(height: 21),
               Text(
                 "Category",
                 style: TextStyle(
@@ -553,7 +553,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       : ColorResources.white,
                 ),
               ),
-              SizedBox(height: 14),
+              const SizedBox(height: 14),
               Obx(() {
                 if (dbDataController.mainCategoryLoading.value) {
                   return const LoadingWidget();

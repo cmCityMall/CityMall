@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:citymall/admin/shop/controller/shop_controller.dart';
 import 'package:citymall/controller/db_data_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swipe_action_cell/core/cell.dart';
@@ -12,15 +13,13 @@ import '../../../widgets/form/selected_bottom_sheet.dart';
 import '../../../widgets/form/text_form.dart';
 import '../../sub_category/view/sc_view.dart';
 import '../../week_promotion/view/week_promotion_view.dart';
-import '../controller/brand_controller.dart';
 
-class BrandView extends StatelessWidget {
-  const BrandView({Key? key}) : super(key: key);
+class ShopView extends StatelessWidget {
+  const ShopView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final BrandController brandController = Get.find();
-    final DBDataController dataController = Get.find();
+    final ShopController shopController = Get.find();
     return Scaffold(
       appBar: AppBar(
         iconTheme: const IconThemeData(
@@ -29,7 +28,7 @@ class BrandView extends StatelessWidget {
         backgroundColor: Colors.white,
         title: const Center(
             child: Text(
-          "Brands",
+          "Shops",
           style: TextStyle(
             color: Colors.black,
           ),
@@ -42,7 +41,7 @@ class BrandView extends StatelessWidget {
               right: 10,
             ),
             child: ElevatedButton(
-              onPressed: () => brandController.save(),
+              onPressed: () => shopController.save(),
               child: const Text("Save"),
             ),
           )
@@ -50,8 +49,8 @@ class BrandView extends StatelessWidget {
       ),
       body: Obx(() {
         return Form(
-          key: brandController.formKey,
-          autovalidateMode: brandController.isFirstTimePressed.value
+          key: shopController.formKey,
+          autovalidateMode: shopController.isFirstTimePressed.value
               ? AutovalidateMode.onUserInteraction
               : AutovalidateMode.disabled,
           child: SingleChildScrollView(
@@ -71,52 +70,27 @@ class BrandView extends StatelessWidget {
                     height: 85,
                     maxLines: 1,
                     textFieldPaddingLeft: 10,
-                    controller: brandController.nameController,
+                    controller: shopController.nameController,
                     isUnderlineBorder: false,
                     validator: (value) =>
-                        brandController.validate(value, "Name"),
-                    labelText: "Brand Name",
+                        shopController.validate(value, "Name"),
+                    labelText: "Shop Name",
                   ),
                   const SizedBox(
                     height: 10,
                   ),
-                  //Shop Id To Select
                   Obx(() {
-                    return SelectedBottomSheet(
-                      setSelectedId: (value) =>
-                          brandController.setSelectedShopId(value),
-                      setSelectedIdError: (value) =>
-                          brandController.setSelectedShopIdError(value),
-                      hint: "Select Shop",
-                      isError: brandController.isFirstTimePressed.value &&
-                          brandController.selectedShopId.isEmpty,
-                      isEmpty: brandController.selectedShopId.isEmpty,
-                      selectedValue: brandController.selectedShopId.value,
-                      list:
-                          brandController.shopList.map((e) => e.name).toList(),
-                    );
-                  }),
-                  Obx(() {
-                    return SizedBox(
-                      height: 25,
-                      child: Text(brandController.selectedShopIdError.value,
-                          style: const TextStyle(
-                            color: Colors.red,
-                          )),
-                    );
-                  }),
-                  Obx(() {
-                    final pickedImage = brandController.pickedImage.value;
+                    final pickedImage = shopController.pickedImage.value;
                     final isEmpty = pickedImage.isEmpty;
                     return ImagePickForm(
                       labelText: isEmpty ? "pick an image" : pickedImage,
-                      pickImage: () => brandController.pickImage(),
+                      pickImage: () => shopController.pickImage(),
                     );
                   }),
                   Obx(() {
                     return SizedBox(
                       height: 25,
-                      child: Text(brandController.pickImageError.value,
+                      child: Text(shopController.pickImageError.value,
                           style: const TextStyle(
                             color: Colors.red,
                           )),
@@ -126,19 +100,19 @@ class BrandView extends StatelessWidget {
                   /**Advertisement List*/
                   Obx(
                     () {
-                      if (brandController.brandList.isEmpty) {
+                      if (shopController.shopList.isEmpty) {
                         return const Center(
                             child: Text(
-                          "No brands yet....",
+                          "No shops yet....",
                         ));
                       }
 
                       return ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount: brandController.brandList.length,
+                        itemCount: shopController.shopList.length,
                         itemBuilder: (context, index) {
-                          var advertisement = brandController.brandList[index];
+                          var advertisement = shopController.shopList[index];
 
                           return SwipeActionCell(
                             key: ValueKey(advertisement.id),
@@ -146,8 +120,7 @@ class BrandView extends StatelessWidget {
                               SwipeAction(
                                 onTap: (CompletionHandler _) async {
                                   await _(true);
-                                  await brandController
-                                      .delete(advertisement.id);
+                                  await shopController.delete(advertisement.id);
                                 },
                                 content: Container(
                                   color: Colors.red,
@@ -168,38 +141,38 @@ class BrandView extends StatelessWidget {
                               SwipeAction(
                                 onTap: (CompletionHandler _) async {
                                   await _(false);
-                                  await brandController
-                                      .getProductsExceptCurrentBrand(
+                                  await shopController
+                                      .getProductsExceptCurrentShop(
                                           advertisement.id);
                                   Get.bottomSheet(
                                     Obx(() {
-                                      if (brandController
+                                      if (shopController
                                           .addProductLoading.value) {
                                         return const Card(
                                             child: LoadingWidget());
                                       }
-                                      if (brandController.productList.isEmpty) {
+                                      if (shopController.productList.isEmpty) {
                                         return const Card(
                                           child:
                                               EmptyWidget("No products found."),
                                         );
                                       }
                                       return SelectableBottomSheet(
-                                        list: brandController.productList,
+                                        list: shopController.productList,
                                         selectedObxMap:
-                                            brandController.selectedProductsMap,
+                                            shopController.selectedProductsMap,
                                         pressedCancelButton: () {
-                                          brandController.selectedProductsMap
+                                          shopController.selectedProductsMap
                                               .clear();
-                                          brandController.productList.clear();
+                                          shopController.productList.clear();
                                         },
                                         pressedSaveButton: () {
-                                          brandController.addProductsToBrand(
+                                          shopController.addProductsToShop(
                                             advertisement.id,
                                           );
                                         },
                                         selectedProduct: (p) {
-                                          brandController.selectProductOrNot(p);
+                                          shopController.selectProductOrNot(p);
                                         },
                                       );
                                     }),
@@ -225,14 +198,14 @@ class BrandView extends StatelessWidget {
                               SwipeAction(
                                 onTap: (CompletionHandler _) async {
                                   await _(false);
-                                  await brandController
-                                      .getProductsWithBrandId(advertisement.id);
+                                  await shopController
+                                      .getProductsFromShop(advertisement.id);
                                   Get.bottomSheet(
                                     Obx(() {
-                                      final isLoading = brandController
+                                      final isLoading = shopController
                                           .removeProductLoading.value;
                                       final selectedMap =
-                                          brandController.selectedProductsMap;
+                                          shopController.selectedProductsMap;
                                       if (isLoading) {
                                         return const Card(
                                             child: LoadingWidget());
@@ -244,21 +217,21 @@ class BrandView extends StatelessWidget {
                                         );
                                       }
                                       return SelectableBottomSheet(
-                                        list: brandController
+                                        list: shopController
                                             .selectedProductsMap.entries
                                             .map((e) => e.value)
                                             .toList(),
                                         selectedObxMap:
-                                            brandController.removedProductsMap,
+                                            shopController.removedProductsMap,
                                         pressedCancelButton: () {
-                                          brandController.removedProductsMap
+                                          shopController.removedProductsMap
                                               .clear();
-                                          brandController.selectedProductsMap
+                                          shopController.selectedProductsMap
                                               .clear();
                                         },
                                         pressedSaveButton: () {},
                                         selectedProduct: (p) =>
-                                            brandController.addIntoRemoveMap(p),
+                                            shopController.addIntoRemoveMap(p),
                                       );
                                     }),
                                     isDismissible: false,

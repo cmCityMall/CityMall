@@ -27,7 +27,7 @@ class Database {
       String collectionPath) {
     return FirebaseFirestore.instance
         .collection(collectionPath)
-        .orderBy("dateTime")
+        .orderBy("dateTime", descending: true)
         .snapshots();
   }
 

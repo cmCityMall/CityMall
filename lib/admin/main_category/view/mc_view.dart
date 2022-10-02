@@ -27,6 +27,15 @@ class MCView extends StatelessWidget {
               color: Colors.black,
             ),
           )),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: ElevatedButton(
+                onPressed: () => mcController.save(),
+                child: const Text("Save"),
+              ),
+            )
+          ],
         ),
         body: Padding(
             padding: const EdgeInsets.only(
@@ -97,10 +106,6 @@ class MCView extends StatelessWidget {
                                 }),
                               ],
                             ),
-                            ElevatedButton(
-                              onPressed: () => mcController.save(),
-                              child: const Text("Save"),
-                            )
                           ],
                         ),
                       ),

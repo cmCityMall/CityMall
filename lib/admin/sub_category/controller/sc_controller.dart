@@ -134,9 +134,7 @@ class SCController extends GetxController {
 
   @override
   void onInit() {
-    _database
-        .watchCollectionWithoutOrder(subCategoryCollection)
-        .listen((event) {
+    _database.watchCollection(subCategoryCollection).listen((event) {
       if (event.docs.isNotEmpty) {
         subCatgories.value =
             event.docs.map((e) => SubCategory.fromJson(e.data())).toList();

@@ -1,13 +1,11 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:citymall/controller/db_data_controller.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:citymall/constant/collection_path.dart';
-import 'package:citymall/model/brand.dart';
 import 'package:citymall/show_loading/show_loading.dart';
 import 'package:uuid/uuid.dart';
 
@@ -15,30 +13,25 @@ import '../../../model/product.dart';
 import '../../../model/shop.dart';
 import '../../../server/database.dart';
 
-class BrandController extends GetxController {
+class ShopController extends GetxController {
   final _database = Database();
-  RxList<Brand> brandList = <Brand>[].obs;
   RxList<Product> productList = <Product>[].obs;
   RxMap<String, Product> selectedProductsMap = <String, Product>{}.obs;
   RxMap<String, Product> removedProductsMap = <String, Product>{}.obs;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController subNameController = TextEditingController();
-  List<Shop> shopList = <Shop>[].obs;
-  final TextEditingController statusController = TextEditingController();
+  RxList<Shop> shopList = <Shop>[].obs;
   var isFirstTimePressed = false.obs;
   //Error
   var pickImageError = "".obs;
-  var selectedShopIdError = "".obs;
   //
   var pickedImage = "".obs;
-  var selectedShopId = "".obs;
 
   //Loading for bottomsheet
   var removeProductLoading = false.obs;
   var addProductLoading = false.obs;
 
-  //*********For Andding , Subtracting Products */
+  //**********For Adding , Substracting Produ cts */
   void addIntoRemoveMap(Product p) {
     removedProductsMap.putIfAbsent(p.id, () => p);
   }
@@ -50,7 +43,7 @@ class BrandController extends GetxController {
     }
   }
 
-  Future<void> removeProductsFromBrand() async {
+  Future<void> removeProductsFromShop() async {
     if (removedProductsMap.isNotEmpty) {
       try {
         showLoading();
@@ -59,7 +52,7 @@ class BrandController extends GetxController {
               .collection(productCollection)
               .doc(element.value.id)
               .update({
-            "brandId": "",
+            "shopId": "",
           });
         }
         hideLoading();
@@ -78,7 +71,7 @@ class BrandController extends GetxController {
     }
   }
 
-  Future<void> addProductsToBrand(String brandId) async {
+  Future<void> addProductsToShop(String shopId) async {
     if (selectedProductsMap.isNotEmpty) {
       try {
         showLoading();
@@ -87,7 +80,7 @@ class BrandController extends GetxController {
               .collection(productCollection)
               .doc(element.value.id)
               .update({
-            "brandId": brandId,
+            "shopId": shopId,
           });
         }
         hideLoading();
@@ -105,12 +98,12 @@ class BrandController extends GetxController {
     }
   }
 
-  Future<void> getProductsWithBrandId(String brandId) async {
+  Future<void> getProductsFromShop(String shopId) async {
     removeProductLoading.value = true;
     try {
       _database.firestore
           .collection(productCollection)
-          .where("brandId", isEqualTo: brandId)
+          .where("shopId", isEqualTo: shopId)
           .get()
           .then((value) {
         if (value.docs.isNotEmpty) {
@@ -127,12 +120,12 @@ class BrandController extends GetxController {
     }
   }
 
-  Future<void> getProductsExceptCurrentBrand(String brandId) async {
+  Future<void> getProductsExceptCurrentShop(String shopId) async {
     addProductLoading.value = true;
     try {
       _database.firestore
           .collection(productCollection)
-          .where("brandId", isNotEqualTo: brandId)
+          .where("shopId", isNotEqualTo: shopId)
           .get()
           .then((value) {
         productList.value =
@@ -145,12 +138,8 @@ class BrandController extends GetxController {
       Get.snackbar("Failed!", "No products found.");
     }
   }
-  /*************************End */
+  /**End */
 
-  void setSelectedShopIdError(String value) =>
-      selectedShopIdError.value = value;
-
-  void setSelectedShopId(String value) => selectedShopId.value = value;
   String? validate(String? value, String label) {
     if (!(value == null) && value.isNotEmpty) {
       return null;
@@ -161,14 +150,12 @@ class BrandController extends GetxController {
 
   void clearAll() {
     nameController.clear();
-    subNameController.clear();
-    statusController.clear();
     pickedImage.value = "";
   }
 
   Future<void> delete(String id) async {
     await _database.delete(
-      collectionPath: brandCollection,
+      collectionPath: shopCollection,
       documentPath: id,
     );
   }
@@ -178,29 +165,23 @@ class BrandController extends GetxController {
     if (pickedImage.isEmpty) {
       pickImageError.value = "Image is required.";
     }
-    if (selectedShopId.isEmpty) {
-      selectedShopIdError.value = "Shop Id is required to select";
-    }
-    if (formKey.currentState?.validate() == true &&
-        pickedImage.isNotEmpty &&
-        selectedShopId.isNotEmpty) {
+    if (formKey.currentState?.validate() == true && pickedImage.isNotEmpty) {
       showLoading();
       try {
         await FirebaseStorage.instance
             .ref()
-            .child("brands/${Uuid().v1()}")
+            .child("shops/${Uuid().v1()}")
             .putFile(File(pickedImage.value))
             .then((snapshot) async {
           await snapshot.ref.getDownloadURL().then((value) async {
-            final ad = Brand(
+            final ad = Shop(
               id: Uuid().v1(),
               image: value,
               name: nameController.text,
-              shopId: selectedShopId.value,
               dateTime: DateTime.now(),
             );
             await _database.write(
-              collectionPath: brandCollection,
+              collectionPath: shopCollection,
               documentPath: ad.id,
               data: ad.toJson(),
             );
@@ -229,14 +210,12 @@ class BrandController extends GetxController {
 
   @override
   void onInit() {
-    _database.watchCollectionWithoutOrder(brandCollection).listen((event) {
+    _database.watchCollection(shopCollection).listen((event) {
       if (event.docs.isNotEmpty) {
-        brandList.value =
-            event.docs.map((e) => Brand.fromJson(e.data())).toList();
+        shopList.value =
+            event.docs.map((e) => Shop.fromJson(e.data())).toList();
       }
     });
-    _database.firestore.collection(shopCollection).get().then((value) =>
-        shopList = value.docs.map((e) => Shop.fromJson(e.data())).toList());
     super.onInit();
   }
 }

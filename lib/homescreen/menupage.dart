@@ -5,8 +5,13 @@ import 'package:citymall/admin/main_category/bin/mc_binding.dart';
 import 'package:citymall/admin/main_category/view/mc_view.dart';
 import 'package:citymall/admin/product/bin/product_binding.dart';
 import 'package:citymall/admin/product/view/manage_product.dart';
+import 'package:citymall/admin/shop/bin/shop_binding.dart';
+import 'package:citymall/admin/shop/view/shop_view.dart';
 import 'package:citymall/admin/sub_category/bin/sc_binding.dart';
 import 'package:citymall/admin/sub_category/view/sc_view.dart';
+import 'package:citymall/admin/time_sale/bin/time_sale_binding.dart';
+import 'package:citymall/admin/week_promotion/bin/week_promotion_binding.dart';
+import 'package:citymall/admin/week_promotion/view/week_promotion_view.dart';
 import 'package:citymall/colors/colors.dart';
 import 'package:citymall/controller/auth_controller.dart';
 import 'package:citymall/controller/theme_controller.dart';
@@ -23,6 +28,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
 import '../admin/advertisement/view/ad_view.dart';
+import '../admin/time_sale/view/time_sale_view.dart';
 import '../splashscreen/splash.dart';
 
 class MenuPage extends GetView {
@@ -122,6 +128,19 @@ class MenuPage extends GetView {
                             binding: ADBinding(),
                           );
                         }),
+                        inkwell(Images.categoryicon, "Manage Week Promotions",
+                            () {
+                          Get.to(
+                            () => const WeekPromotionView(),
+                            binding: WeekPromotionBinding(),
+                          );
+                        }),
+                        inkwell(Images.categoryicon, "Manage Flash Sales", () {
+                          Get.to(
+                            () => const TimeSaleView(),
+                            binding: TimeSaleBinding(),
+                          );
+                        }),
                         inkwell(Images.categoryicon, "Manage Main Category",
                             () {
                           Get.to(
@@ -133,6 +152,12 @@ class MenuPage extends GetView {
                           Get.to(
                             () => const SCView(),
                             binding: SCBinding(),
+                          );
+                        }),
+                        inkwell(Images.categoryicon, "Manage Shop", () {
+                          Get.to(
+                            () => const ShopView(),
+                            binding: ShopBinding(),
                           );
                         }),
                         inkwell(Images.categoryicon, "Manage Brand", () {

@@ -1,26 +1,26 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:citymall/admin/week_promotion/controller/week_promotion_controller.dart';
 import 'package:citymall/controller/db_data_controller.dart';
+import 'package:citymall/model/week_promotion.dart';
+import 'package:citymall/utils/widgets/empty_widgt.dart';
+import 'package:citymall/utils/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swipe_action_cell/core/cell.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../../utils/widgets/empty_widgt.dart';
-import '../../../utils/widgets/loading_widget.dart';
+import '../../../model/product.dart';
+import '../../../widgets/form/custon_swich.dart';
 import '../../../widgets/form/image_pick_form.dart';
-import '../../../widgets/form/selected_bottom_sheet.dart';
 import '../../../widgets/form/text_form.dart';
-import '../../sub_category/view/sc_view.dart';
-import '../../week_promotion/view/week_promotion_view.dart';
-import '../controller/brand_controller.dart';
 
-class BrandView extends StatelessWidget {
-  const BrandView({Key? key}) : super(key: key);
+class WeekPromotionView extends StatelessWidget {
+  const WeekPromotionView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final BrandController brandController = Get.find();
     final DBDataController dataController = Get.find();
+    final WeekPromotionController weekPromotionController = Get.find();
     return Scaffold(
       appBar: AppBar(
         iconTheme: const IconThemeData(
@@ -29,7 +29,7 @@ class BrandView extends StatelessWidget {
         backgroundColor: Colors.white,
         title: const Center(
             child: Text(
-          "Brands",
+          "Week Promotions",
           style: TextStyle(
             color: Colors.black,
           ),
@@ -42,7 +42,7 @@ class BrandView extends StatelessWidget {
               right: 10,
             ),
             child: ElevatedButton(
-              onPressed: () => brandController.save(),
+              onPressed: () => weekPromotionController.save(),
               child: const Text("Save"),
             ),
           )
@@ -50,8 +50,8 @@ class BrandView extends StatelessWidget {
       ),
       body: Obx(() {
         return Form(
-          key: brandController.formKey,
-          autovalidateMode: brandController.isFirstTimePressed.value
+          key: weekPromotionController.formKey,
+          autovalidateMode: weekPromotionController.isFirstTimePressed.value
               ? AutovalidateMode.onUserInteraction
               : AutovalidateMode.disabled,
           child: SingleChildScrollView(
@@ -71,74 +71,97 @@ class BrandView extends StatelessWidget {
                     height: 85,
                     maxLines: 1,
                     textFieldPaddingLeft: 10,
-                    controller: brandController.nameController,
+                    controller: weekPromotionController.nameController,
                     isUnderlineBorder: false,
                     validator: (value) =>
-                        brandController.validate(value, "Name"),
-                    labelText: "Brand Name",
+                        weekPromotionController.validate(value, "Name"),
+                    labelText: "Name",
                   ),
                   const SizedBox(
                     height: 10,
                   ),
-                  //Shop Id To Select
                   Obx(() {
-                    return SelectedBottomSheet(
-                      setSelectedId: (value) =>
-                          brandController.setSelectedShopId(value),
-                      setSelectedIdError: (value) =>
-                          brandController.setSelectedShopIdError(value),
-                      hint: "Select Shop",
-                      isError: brandController.isFirstTimePressed.value &&
-                          brandController.selectedShopId.isEmpty,
-                      isEmpty: brandController.selectedShopId.isEmpty,
-                      selectedValue: brandController.selectedShopId.value,
-                      list:
-                          brandController.shopList.map((e) => e.name).toList(),
+                    return CustomTextForm(
+                      padding: 0,
+                      rightPadding: 0,
+                      height: 85,
+                      maxLines: 1,
+                      maxLength:
+                          weekPromotionController.isPercentage.value ? 3 : null,
+                      textFieldPaddingLeft: 10,
+                      controller: weekPromotionController.promoController,
+                      isUnderlineBorder: false,
+                      validator: (value) =>
+                          weekPromotionController.validate(value, "Promotion"),
+                      labelText: "Promotion",
                     );
                   }),
+                  const SizedBox(
+                    height: 10,
+                  ),
                   Obx(() {
-                    return SizedBox(
-                      height: 25,
-                      child: Text(brandController.selectedShopIdError.value,
-                          style: const TextStyle(
-                            color: Colors.red,
-                          )),
-                    );
-                  }),
-                  Obx(() {
-                    final pickedImage = brandController.pickedImage.value;
+                    final pickedImage =
+                        weekPromotionController.pickedImage.value;
                     final isEmpty = pickedImage.isEmpty;
                     return ImagePickForm(
                       labelText: isEmpty ? "pick an image" : pickedImage,
-                      pickImage: () => brandController.pickImage(),
+                      pickImage: () => weekPromotionController.pickImage(),
                     );
                   }),
                   Obx(() {
                     return SizedBox(
                       height: 25,
-                      child: Text(brandController.pickImageError.value,
+                      child: Text(weekPromotionController.pickImageError.value,
                           style: const TextStyle(
                             color: Colors.red,
                           )),
                     );
                   }),
-
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 20,
+                      right: 40,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const Text("Percentage"),
+                            const SizedBox(height: 5),
+                            Obx(() {
+                              final isHot =
+                                  weekPromotionController.isPercentage.value;
+                              return CustomSwitch(
+                                value: isHot,
+                                onChanged: (value) => weekPromotionController
+                                    .changeIsPercentage(),
+                              );
+                            }),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
                   /**Advertisement List*/
                   Obx(
                     () {
-                      if (brandController.brandList.isEmpty) {
+                      if (dataController.weekPromotions.isEmpty) {
                         return const Center(
                             child: Text(
-                          "No brands yet....",
+                          "No week promotions yet....",
                         ));
                       }
 
                       return ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount: brandController.brandList.length,
+                        itemCount: dataController.weekPromotions.length,
                         itemBuilder: (context, index) {
-                          var advertisement = brandController.brandList[index];
+                          var advertisement =
+                              dataController.weekPromotions[index];
 
                           return SwipeActionCell(
                             key: ValueKey(advertisement.id),
@@ -146,7 +169,7 @@ class BrandView extends StatelessWidget {
                               SwipeAction(
                                 onTap: (CompletionHandler _) async {
                                   await _(true);
-                                  await brandController
+                                  await weekPromotionController
                                       .delete(advertisement.id);
                                 },
                                 content: Container(
@@ -168,38 +191,45 @@ class BrandView extends StatelessWidget {
                               SwipeAction(
                                 onTap: (CompletionHandler _) async {
                                   await _(false);
-                                  await brandController
-                                      .getProductsExceptCurrentBrand(
+                                  await weekPromotionController
+                                      .getProductsExceptCurrentPromotion(
                                           advertisement.id);
                                   Get.bottomSheet(
                                     Obx(() {
-                                      if (brandController
+                                      if (weekPromotionController
                                           .addProductLoading.value) {
                                         return const Card(
                                             child: LoadingWidget());
                                       }
-                                      if (brandController.productList.isEmpty) {
+                                      if (weekPromotionController
+                                          .productList.isEmpty) {
                                         return const Card(
                                           child:
                                               EmptyWidget("No products found."),
                                         );
                                       }
                                       return SelectableBottomSheet(
-                                        list: brandController.productList,
-                                        selectedObxMap:
-                                            brandController.selectedProductsMap,
+                                        list:
+                                            weekPromotionController.productList,
+                                        selectedObxMap: weekPromotionController
+                                            .selectedProductsMap,
                                         pressedCancelButton: () {
-                                          brandController.selectedProductsMap
+                                          weekPromotionController
+                                              .selectedProductsMap
                                               .clear();
-                                          brandController.productList.clear();
+                                          weekPromotionController.productList
+                                              .clear();
                                         },
                                         pressedSaveButton: () {
-                                          brandController.addProductsToBrand(
+                                          weekPromotionController
+                                              .addProductsToPromotion(
                                             advertisement.id,
+                                            advertisement.percentage ?? 0,
                                           );
                                         },
                                         selectedProduct: (p) {
-                                          brandController.selectProductOrNot(p);
+                                          weekPromotionController
+                                              .selectProductOrNot(p);
                                         },
                                       );
                                     }),
@@ -225,14 +255,16 @@ class BrandView extends StatelessWidget {
                               SwipeAction(
                                 onTap: (CompletionHandler _) async {
                                   await _(false);
-                                  await brandController
-                                      .getProductsWithBrandId(advertisement.id);
+                                  await weekPromotionController
+                                      .getProductsFromPromotion(
+                                          advertisement.id);
                                   Get.bottomSheet(
                                     Obx(() {
-                                      final isLoading = brandController
+                                      final isLoading = weekPromotionController
                                           .removeProductLoading.value;
                                       final selectedMap =
-                                          brandController.selectedProductsMap;
+                                          weekPromotionController
+                                              .selectedProductsMap;
                                       if (isLoading) {
                                         return const Card(
                                             child: LoadingWidget());
@@ -244,21 +276,24 @@ class BrandView extends StatelessWidget {
                                         );
                                       }
                                       return SelectableBottomSheet(
-                                        list: brandController
+                                        list: weekPromotionController
                                             .selectedProductsMap.entries
                                             .map((e) => e.value)
                                             .toList(),
-                                        selectedObxMap:
-                                            brandController.removedProductsMap,
+                                        selectedObxMap: weekPromotionController
+                                            .removedProductsMap,
                                         pressedCancelButton: () {
-                                          brandController.removedProductsMap
+                                          weekPromotionController
+                                              .removedProductsMap
                                               .clear();
-                                          brandController.selectedProductsMap
+                                          weekPromotionController
+                                              .selectedProductsMap
                                               .clear();
                                         },
                                         pressedSaveButton: () {},
                                         selectedProduct: (p) =>
-                                            brandController.addIntoRemoveMap(p),
+                                            weekPromotionController
+                                                .addIntoRemoveMap(p),
                                       );
                                     }),
                                     isDismissible: false,
@@ -313,7 +348,7 @@ class BrandView extends StatelessWidget {
                                     //Type
                                     Expanded(
                                       child: Text(
-                                        advertisement.name,
+                                        advertisement.desc,
                                       ),
                                     ),
                                   ],
@@ -331,6 +366,82 @@ class BrandView extends StatelessWidget {
           ),
         );
       }),
+    );
+  }
+}
+
+class SelectableBottomSheet extends StatelessWidget {
+  const SelectableBottomSheet({
+    Key? key,
+    required this.list,
+    required this.selectedObxMap,
+    required this.pressedCancelButton,
+    required this.pressedSaveButton,
+    required this.selectedProduct,
+  }) : super(key: key);
+
+  final List<Product> list;
+  final RxMap<String, Product> selectedObxMap;
+  final void Function(Product product) selectedProduct;
+  final void Function() pressedCancelButton;
+  final void Function() pressedSaveButton;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Colors.white,
+      child: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: list.length,
+              itemBuilder: (context, index) {
+                final product = list[index];
+
+                return Obx(() {
+                  final map = selectedObxMap;
+                  final isSelected = map.containsKey(product.id);
+                  return InkWell(
+                    onTap: () => selectedProduct(product),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        color: isSelected ? Colors.green : Colors.white,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(product.name,
+                              style: TextStyle(
+                                color: isSelected ? Colors.white : Colors.black,
+                              )),
+                        ),
+                      ),
+                    ),
+                  );
+                });
+              },
+            ),
+          ),
+          SizedBox(
+              height: 50,
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Get.back();
+                        pressedCancelButton();
+                      },
+                      child: const Text("Cancel"),
+                    ),
+                    const SizedBox(width: 15),
+                    ElevatedButton(
+                      onPressed: () => pressedSaveButton(),
+                      child: const Text("Save"),
+                    ),
+                  ])),
+        ],
+      ),
     );
   }
 }

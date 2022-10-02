@@ -16,6 +16,7 @@ class CustomTextForm extends StatelessWidget {
     this.leftPadding,
     this.rightPadding,
     this.error,
+    this.maxLength,
     this.autoExpanded = false,
     this.keyboaType,
     this.maxLines,
@@ -45,6 +46,7 @@ class CustomTextForm extends StatelessWidget {
   final double? textFieldPaddingTop;
   final double? textFieldPaddingBottom;
   final double? textFieldPaddingRight;
+  final int? maxLength;
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +62,7 @@ class CustomTextForm extends StatelessWidget {
           validator: validator,
           keyboardType: keyboaType,
           maxLines: maxLines,
+          maxLength: maxLength,
           decoration: InputDecoration(
             counter: null,
             counterText: "",

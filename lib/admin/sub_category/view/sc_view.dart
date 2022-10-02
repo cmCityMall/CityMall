@@ -96,14 +96,14 @@ class SCView extends StatelessWidget {
                               final cat = scController.mainCategories[index];
                               return TextButton(
                                 onPressed: () {
-                                  scController.setSelectedParentId(cat.id);
+                                  scController.setSelectedParentId(cat.name);
                                   scController.setParentError("");
                                   Get.back();
                                 },
                                 child: Container(
                                   width: double.infinity,
                                   color: scController.selectedParentId.value ==
-                                          cat.id
+                                          cat.name
                                       ? Colors.blue
                                       : Colors.grey.shade300,
                                   padding: const EdgeInsets.all(10),
@@ -112,7 +112,7 @@ class SCView extends StatelessWidget {
                                     style: TextStyle(
                                       color:
                                           scController.selectedParentId.value ==
-                                                  cat.id
+                                                  cat.name
                                               ? Colors.white
                                               : Colors.black,
                                     ),

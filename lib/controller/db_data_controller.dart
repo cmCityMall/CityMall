@@ -25,7 +25,7 @@ class DBDataController extends GetxController {
   /// For Real Data */
   RxList<MainCategory> menuMainCategories = <MainCategory>[].obs;
   RxList<MainCategory> mainCategories = <MainCategory>[].obs;
-  Rxn<TimeSale?> timeSale = Rxn<TimeSale?>();
+  RxList<TimeSale> timeSales = <TimeSale>[].obs;
   RxList<WeekPromotion> weekPromotions = <WeekPromotion>[].obs;
   RxList<Advertisement> advertisements = <Advertisement>[].obs;
   RxMap<String, List<Product>> products = <String, List<Product>>{}.obs;
@@ -318,7 +318,8 @@ class DBDataController extends GetxController {
     });
     _database.watchCollectionWithoutOrder(timeSaleCollection).listen((event) {
       if (event.docs.isNotEmpty) {
-        timeSale.value = TimeSale.fromJson(event.docs.first.data());
+        timeSales.value =
+            event.docs.map((e) => TimeSale.fromJson(e.data())).toList();
       }
       if (timeSaleLoading.value) {
         timeSaleLoading.value = false;
