@@ -1,5 +1,6 @@
 import 'package:citymall/controller/auth_controller.dart';
 import 'package:citymall/controller/db_data_controller.dart';
+import 'package:citymall/controller/flash_sale_controller.dart';
 import 'package:citymall/controller/theme_controller.dart';
 import 'package:citymall/splashscreen/splash.dart';
 import 'package:citymall/theme/dark_theme.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+import 'controller/week_promotion_controller.dart';
 import 'rout_screens/rout_1.dart';
 //import 'package:get/get.dart';
 
@@ -33,6 +35,8 @@ class CityMall extends StatelessWidget {
   //final navigatorkey = GlobalKey<NavigatorState>();
   @override
   Widget build(BuildContext context) {
+    Get.put(WeekPromotionControllerUser());
+    Get.put(FlashSaleController());
     return GetMaterialApp(
       theme: themeController.isLightTheme.value ? light : dark,
       darkTheme: ThemeData.dark(),

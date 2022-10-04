@@ -32,6 +32,12 @@ class TimeSaleController extends GetxController {
   var removeProductLoading = false.obs;
   var addProductLoading = false.obs;
 //**Method for instance variable */
+  void changeStartDate(DateTime d) {
+    startDate.value = d;
+    debugPrint("***Change Start Date: ${startDate.toString()}");
+  }
+
+  void changeEndDate(DateTime d) => endDate.value = d;
   void clearAll() {
     nameController.clear();
     descController.clear();
@@ -71,7 +77,7 @@ class TimeSaleController extends GetxController {
     isFirstTimePressed.value = true;
     if (formKey.currentState?.validate() == true &&
         pickedImage.isNotEmpty &&
-        startDate.value.millisecondsSinceEpoch >=
+        startDate.value.millisecondsSinceEpoch >
             DateTime.now().millisecondsSinceEpoch &&
         endDate.value.millisecondsSinceEpoch >
             DateTime.now().millisecondsSinceEpoch) {
@@ -87,7 +93,10 @@ class TimeSaleController extends GetxController {
           await snapshot.ref.getDownloadURL().then((value) async {
             final ad = TimeSale(
               id: Uuid().v1(),
-              image: pickedImage.value,
+              image: value,
+              name: nameController.text,
+              desc: descController.text,
+              percentage: int.parse(percentageController.text),
               startDate: startDate.value,
               endDate: endDate.value,
             );
@@ -105,6 +114,8 @@ class TimeSaleController extends GetxController {
         debugPrint("****$e");
       }
       hideLoading();
+    } else {
+      debugPrint("********TimeSaleForm not validate");
     }
   }
   //**End */

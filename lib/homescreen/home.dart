@@ -1,8 +1,10 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:citymall/colors/colors.dart';
 import 'package:citymall/controller/db_data_controller.dart';
+import 'package:citymall/controller/flash_sale_controller.dart';
 import 'package:citymall/controller/homegridfavouritecontroller.dart';
 import 'package:citymall/controller/theme_controller.dart';
+import 'package:citymall/controller/week_promotion_controller.dart';
 import 'package:citymall/homescreen/cameradashboardscreen/cameradeshboard.dart';
 import 'package:citymall/homescreen/fashionmandashboardscreen/fashionmandashboardscreen.dart';
 import 'package:citymall/homescreen/flashdashboard/flashdashboard.dart';
@@ -194,6 +196,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final FlashSaleController flashController = Get.find();
+    final WeekPromotionControllerUser weekPromotionController = Get.find();
     final DBDataController dbDataController = Get.find();
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -417,9 +421,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemCount: dbDataController.weekPromotions.length,
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
+                        final weekPromo =
+                            dbDataController.weekPromotions[index];
                         return InkWell(
                           onTap: () {
-                            Get.to(WeekPromotionScreen());
+                            weekPromotionController
+                                .setSelectedWeekPromotion(weekPromo);
+                            weekPromotionController
+                                .getInitialProducts(weekPromo.id);
+                            Get.to(() => WeekPromotionScreen());
                           },
                           child: Padding(
                             padding: const EdgeInsets.only(right: 20),
@@ -481,7 +491,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 final second = date.second;
                 return InkWell(
                   onTap: () {
-                    Get.off(FlashSaleScreen());
+                    flashController.setSelectedFlash(timeSale);
+                    flashController.getInitialProducts(timeSale.id);
+                    Get.off(() => FlashSaleScreen());
                   },
                   child: Container(
                     height: 130,

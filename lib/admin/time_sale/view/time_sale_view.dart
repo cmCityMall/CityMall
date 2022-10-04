@@ -5,8 +5,10 @@ import 'package:citymall/controller/db_data_controller.dart';
 import 'package:citymall/utils/widgets/empty_widgt.dart';
 import 'package:citymall/utils/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_swipe_action_cell/core/cell.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../model/product.dart';
@@ -130,6 +132,102 @@ class TimeSaleView extends StatelessWidget {
                                 )),
                           )
                         : const SizedBox();
+                  }),
+                  const SizedBox(height: 10),
+                  //StartDate && EndDate
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Select StartTime:",
+                        style: TextStyle(
+                          color: Colors.black,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      InkWell(
+                        onTap: () => showTimePicker(context, (d) {
+                          debugPrint("*******StartDate: ${d.toString()}");
+                          timeSaleController.changeStartDate(d);
+                        }),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border.all(
+                                color: Colors.black,
+                              )),
+                          padding: const EdgeInsets.all(10),
+                          child: Obx(() {
+                            final date = timeSaleController.startDate.value;
+                            return Text(getDateString(date));
+                          }),
+                        ),
+                      ),
+                      //Error
+                      timeSaleController
+                                      .startDate.value.millisecondsSinceEpoch <
+                                  DateTime.now().millisecondsSinceEpoch &&
+                              timeSaleController.isFirstTimePressed.value
+                          ? const SizedBox(
+                              height: 25,
+                              child: Text(
+                                  "Start time can't be less than current time.",
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                  )),
+                            )
+                          : const SizedBox(),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  //EndDate
+                  Obx(() {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Select EndTime:",
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        InkWell(
+                          onTap: () => showTimePicker(context, (d) {
+                            debugPrint("*******EndDate: ${d.toString()}");
+                            timeSaleController.changeEndDate(d);
+                          }),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(
+                                  color: Colors.black,
+                                )),
+                            padding: const EdgeInsets.all(10),
+                            child: Text(getDateString(
+                                timeSaleController.endDate.value)),
+                          ),
+                        ),
+                        //Error
+                        timeSaleController
+                                        .endDate.value.millisecondsSinceEpoch <=
+                                    DateTime.now().millisecondsSinceEpoch &&
+                                timeSaleController.isFirstTimePressed.value
+                            ? const SizedBox(
+                                height: 25,
+                                child: Text(
+                                    "End time can't be less than (or) equal to current time.",
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                    )),
+                              )
+                            : const SizedBox(),
+                      ],
+                    );
                   }),
                   /**Advertisement List*/
                   Obx(
@@ -350,6 +448,10 @@ class TimeSaleView extends StatelessWidget {
   }
 }
 
+String getDateString(DateTime dateTime) {
+  return DateFormat.yMEd().add_jms().format(dateTime);
+}
+
 class SelectableBottomSheet extends StatelessWidget {
   const SelectableBottomSheet({
     Key? key,
@@ -424,4 +526,11 @@ class SelectableBottomSheet extends StatelessWidget {
       ),
     );
   }
+}
+
+void showTimePicker(BuildContext context, void Function(DateTime d) onConfirm) {
+  DatePicker.showDateTimePicker(
+    context,
+    onConfirm: onConfirm,
+  );
 }
