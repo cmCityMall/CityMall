@@ -95,7 +95,7 @@ class FlashSaleScreen extends StatelessWidget {
                 : ColorResources.black1,
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
             child: Column(
               children: [
                 Row(
@@ -178,152 +178,148 @@ class FlashSaleScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 20),
                 Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 15, vertical: 20),
-                    child: Obx(() {
-                      final mainData = flashController.products;
-                      final dataList =
-                          mainData[flashController.selectedFlash.value!.id];
-                      final isLoading = flashController.productsLoading[
-                          flashController.selectedFlash.value!.id];
-                      if (!(isLoading == null) && isLoading == true) {
-                        return const Center(
-                            child: SizedBox(
-                          height: 50,
-                          width: 50,
-                          child: CircularProgressIndicator(),
-                        ));
-                      }
-                      if (dataList == null || dataList.isEmpty) {
-                        return const Center(child: Text("No product found!"));
-                      }
-                      return GridView.builder(
-                        physics: const BouncingScrollPhysics(),
-                        controller: flashController.scrollController,
-                        itemCount: dataList.length,
-                        shrinkWrap: true,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 8,
-                          mainAxisSpacing: 8,
-                          childAspectRatio: Get.width > 450
-                              ? 1.58 / 2.1
-                              : Get.width < 370
-                                  ? 1.62 / 2.68
-                                  : 1.8 / 2.5,
-                        ),
-                        itemBuilder: (context, index) {
-                          final p = dataList[index];
-                          final percentForTopBannerUI =
-                              "${flashController.selectedFlash.value!.percentage!}%";
-                          final product = p.copyWith(
-                            promotion: ((p.price / 100) *
-                                    flashController
-                                        .selectedFlash.value!.percentage!)
-                                .round(),
-                          );
-                          return InkWell(
-                            onTap: () {
-                              Get.off(CameraDetailScreen());
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: themeController.isLightTheme.value
-                                    ? ColorResources.white
-                                    : ColorResources.black5,
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
-                                  BoxShadow(
-                                    blurRadius: 20,
-                                    color: themeController.isLightTheme.value
-                                        ? ColorResources.blue1.withOpacity(0.05)
-                                        : ColorResources.black1,
-                                    spreadRadius: 0,
-                                    offset: Offset(0, 4),
+                  child: Obx(() {
+                    final mainData = flashController.products;
+                    final dataList =
+                        mainData[flashController.selectedFlash.value!.id];
+                    final isLoading = flashController.productsLoading[
+                        flashController.selectedFlash.value!.id];
+                    if (!(isLoading == null) && isLoading == true) {
+                      return const Center(
+                          child: SizedBox(
+                        height: 50,
+                        width: 50,
+                        child: CircularProgressIndicator(),
+                      ));
+                    }
+                    if (dataList == null || dataList.isEmpty) {
+                      return const Center(child: Text("No product found!"));
+                    }
+                    return GridView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      controller: flashController.scrollController,
+                      itemCount: dataList.length,
+                      shrinkWrap: true,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 8,
+                        mainAxisSpacing: 8,
+                        childAspectRatio: Get.width > 450
+                            ? 1.58 / 2.1
+                            : Get.width < 370
+                                ? 1.62 / 2.68
+                                : 1.8 / 2.5,
+                      ),
+                      itemBuilder: (context, index) {
+                        final p = dataList[index];
+                        final percentForTopBannerUI =
+                            "${flashController.selectedFlash.value!.percentage!}%";
+                        final product = p.copyWith(
+                          promotion: ((p.price / 100) *
+                                  flashController
+                                      .selectedFlash.value!.percentage!)
+                              .round(),
+                        );
+                        return InkWell(
+                          onTap: () {
+                            Get.off(CameraDetailScreen());
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: themeController.isLightTheme.value
+                                  ? ColorResources.white
+                                  : ColorResources.black5,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  blurRadius: 20,
+                                  color: themeController.isLightTheme.value
+                                      ? ColorResources.blue1.withOpacity(0.05)
+                                      : ColorResources.black1,
+                                  spreadRadius: 0,
+                                  offset: Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(
+                                    height: 150,
+                                    width: Get.width,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(15),
+                                      //color: ColorResources.white6,
+                                      image: DecorationImage(
+                                          image: NetworkImage(
+                                            product.images.first,
+                                          ),
+                                          fit: BoxFit.cover),
+                                    ),
                                   ),
-                                ],
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 10),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Container(
-                                      height: 150,
-                                      width: Get.width,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(15),
-                                        //color: ColorResources.white6,
-                                        image: DecorationImage(
-                                            image: NetworkImage(
-                                              product.images.first,
-                                            ),
-                                            fit: BoxFit.cover),
+                                  Text(
+                                    product.name,
+                                    maxLines: 2,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontFamily: TextFontFamily.SEN_BOLD,
+                                      color: themeController.isLightTheme.value
+                                          ? ColorResources.black2
+                                          : ColorResources.white,
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "${product.promotion ?? 0}",
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontFamily:
+                                              TextFontFamily.SEN_EXTRA_BOLD,
+                                          color: ColorResources.blue1,
+                                        ),
                                       ),
-                                    ),
-                                    Text(
-                                      product.name,
-                                      maxLines: 2,
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontFamily: TextFontFamily.SEN_BOLD,
-                                        color:
-                                            themeController.isLightTheme.value
-                                                ? ColorResources.black2
-                                                : ColorResources.white,
+                                      SizedBox(width: 5),
+                                      Text(
+                                        "${product.price}",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontFamily:
+                                              TextFontFamily.SEN_REGULAR,
+                                          color: ColorResources.white3,
+                                        ),
                                       ),
-                                    ),
-                                    Row(
-                                      children: [
-                                        Text(
-                                          "${product.promotion ?? 0}",
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontFamily:
-                                                TextFontFamily.SEN_EXTRA_BOLD,
-                                            color: ColorResources.blue1,
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      RatingBar(
+                                        itemSize: 16,
+                                        maxRating: 5,
+                                        initialRating: 4,
+                                        itemCount: 5,
+                                        direction: Axis.horizontal,
+                                        ratingWidget: RatingWidget(
+                                          full: Icon(
+                                            Icons.star,
+                                            color: ColorResources.yellow,
                                           ),
-                                        ),
-                                        SizedBox(width: 5),
-                                        Text(
-                                          "${product.price}",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontFamily:
-                                                TextFontFamily.SEN_REGULAR,
-                                            color: ColorResources.white3,
+                                          empty: Icon(
+                                            Icons.star,
+                                            color: ColorResources.white2,
                                           ),
+                                          half: Icon(Icons.star),
                                         ),
-                                      ],
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        RatingBar(
-                                          itemSize: 16,
-                                          maxRating: 5,
-                                          initialRating: 4,
-                                          itemCount: 5,
-                                          direction: Axis.horizontal,
-                                          ratingWidget: RatingWidget(
-                                            full: Icon(
-                                              Icons.star,
-                                              color: ColorResources.yellow,
-                                            ),
-                                            empty: Icon(
-                                              Icons.star,
-                                              color: ColorResources.white2,
-                                            ),
-                                            half: Icon(Icons.star),
-                                          ),
-                                          onRatingUpdate: (rating) {},
-                                        ),
-                                        /*  Obx(
+                                        onRatingUpdate: (rating) {},
+                                      ),
+                                      /*  Obx(
                                       () => InkWell(
                                         onTap: () {
                                           controller.favourite3[index] =
@@ -337,38 +333,36 @@ class FlashSaleScreen extends StatelessWidget {
                                                 Images.fillfavoriteicon),
                                       ),
                                     ), */
-                                      ],
+                                    ],
+                                  ),
+                                  Text(
+                                    "${product.remainQuantity} available",
+                                    style: TextStyle(
+                                      fontSize: 8,
+                                      fontFamily: TextFontFamily.SEN_REGULAR,
+                                      color: themeController.isLightTheme.value
+                                          ? ColorResources.black2
+                                          : ColorResources.white,
                                     ),
-                                    Text(
-                                      "${product.remainQuantity}",
-                                      style: TextStyle(
-                                        fontSize: 8,
-                                        fontFamily: TextFontFamily.SEN_REGULAR,
-                                        color:
-                                            themeController.isLightTheme.value
-                                                ? ColorResources.black2
-                                                : ColorResources.white,
-                                      ),
-                                    ),
-                                    LinearPercentIndicator(
-                                      width: MediaQuery.of(context).size.width /
-                                          2.5,
-                                      lineHeight: 3,
-                                      percent: (product.remainQuantity /
-                                          product.totalQuantity),
-                                      padding: EdgeInsets.zero,
-                                      backgroundColor: ColorResources.blue4,
-                                      progressColor: ColorResources.green2,
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                  LinearPercentIndicator(
+                                    width:
+                                        MediaQuery.of(context).size.width / 2.5,
+                                    lineHeight: 3,
+                                    percent: (product.remainQuantity /
+                                        product.totalQuantity),
+                                    padding: EdgeInsets.zero,
+                                    backgroundColor: ColorResources.blue4,
+                                    progressColor: ColorResources.green2,
+                                  ),
+                                ],
                               ),
                             ),
-                          );
-                        },
-                      );
-                    }),
-                  ),
+                          ),
+                        );
+                      },
+                    );
+                  }),
                 ),
                 Align(
                   alignment: Alignment.bottomCenter,

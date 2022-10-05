@@ -6,6 +6,7 @@ import 'package:citymall/model/main_category.dart';
 import 'package:citymall/model/time_sale.dart';
 import 'package:citymall/model/week_promotion.dart';
 import 'package:citymall/server/database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -23,6 +24,8 @@ class DBDataController extends GetxController {
   List<Shop> shops = [];
 
   /// For Real Data */
+  RxList<Product> homePopularProducts = <Product>[].obs;
+
   RxList<MainCategory> menuMainCategories = <MainCategory>[].obs;
   RxList<MainCategory> mainCategories = <MainCategory>[].obs;
   RxList<TimeSale> timeSales = <TimeSale>[].obs;
@@ -292,10 +295,57 @@ class DBDataController extends GetxController {
     }
   }
 
+  var homePopularProductsLoading = false.obs;
+  //**For Popular Products Home Screen */
+  Future<void> getInitialHomeProducts([int limit = 10]) async {
+    homePopularProductsLoading.value = true;
+    try {
+      final result = await FirebaseFirestore.instance
+          .collection(productCollection)
+          .orderBy("reviewCount")
+          .orderBy("name")
+          .orderBy("dateTime")
+          .where("reviewCount", isGreaterThanOrEqualTo: 3)
+          .limit(limit)
+          .get();
+      homePopularProducts.value =
+          result.docs.map((e) => Product.fromJson(e.data())).toList();
+      debugPrint("******HomePopularProducts: ${homePopularProducts.length}");
+    } catch (e) {
+      debugPrint(
+          "Something went wrong with in Get Initial Home Popular products $e");
+    }
+    homePopularProductsLoading.value = false;
+  }
+
+  Future<void> getMoreHomePopularProducts(List<Object> startAfterId,
+      [int limit = 10]) async {
+    try {
+      debugPrint("**********LastHomeProductId: $startAfterId");
+      final result = await FirebaseFirestore.instance
+          .collection(productCollection)
+          .orderBy("reviewCount")
+          .orderBy("name")
+          .orderBy("dateTime")
+          .where("reviewCount", isGreaterThanOrEqualTo: 3)
+          .startAfter(startAfterId)
+          .limit(limit)
+          .get();
+      debugPrint("**********MoreHomePopularProducts: ${result.docs.length}");
+      for (var element in result.docs) {
+        homePopularProducts.add(Product.fromJson(element.data()));
+      }
+    } catch (e) {
+      debugPrint("Something went wrong with $e");
+    }
+  }
+  //**End */
+
   @override
   void onInit() {
     getInitialMenuMainCategories();
     getInitialMainCategories();
+    getInitialHomeProducts();
     watchStream();
     super.onInit();
   }

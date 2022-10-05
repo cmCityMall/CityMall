@@ -127,29 +127,6 @@ class _HomeScreenState extends State<HomeScreen> {
     },
   ];
 
-  List<Map> homeGridList = [
-    {
-      "image": Images.purseimage,
-      "text": "Nike Air Max 270 React ENG",
-      "price": "\$299,43",
-    },
-    {
-      "image": Images.shoesimage,
-      "text": "Nike Air Max 270 React ENG",
-      "price": "\$299,43",
-    },
-    {
-      "image": Images.clothesimage,
-      "text": "Mentli Solid Blue Sliim Fit",
-      "price": "\$50,00",
-    },
-    {
-      "image": Images.nacklessimage,
-      "text": "Korea Choker The Black",
-      "price": "\$29,43",
-    },
-  ];
-
   Text text(String text) {
     return Text(
       text,
@@ -639,7 +616,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Recomended",
+                    "Popular product",
                     style: TextStyle(
                       fontSize: 22,
                       fontFamily: TextFontFamily.SEN_BOLD,
@@ -670,7 +647,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(height: 15),
               GridView.builder(
-                itemCount: homeGridList.length,
+                itemCount: 4,
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -684,6 +661,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           : 1.8 / 2.5,
                 ),
                 itemBuilder: (context, index) {
+                  final product = dbDataController.homePopularProducts[index];
                   return InkWell(
                     onTap: () {
                       Get.off(ProductDetailScreen());
@@ -720,8 +698,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   title: "",
                                   titlePadding: EdgeInsets.zero,
                                   content: Center(
-                                    child: Image.asset(
-                                      homeGridList[index]["image"],
+                                    child: Image.network(
+                                      product.images.first,
                                     ),
                                   ),
                                 );
@@ -735,14 +713,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.all(5),
-                                  child: Image.asset(
-                                    homeGridList[index]["image"],
+                                  child: Image.network(
+                                    product.images.first,
                                   ),
                                 ),
                               ),
                             ),
                             Text(
-                              homeGridList[index]["text"],
+                              product.name,
                               style: TextStyle(
                                 fontSize: 12,
                                 fontFamily: TextFontFamily.SEN_BOLD,
@@ -755,14 +733,14 @@ class _HomeScreenState extends State<HomeScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  homeGridList[index]["price"],
-                                  style: TextStyle(
+                                  "${product.price}",
+                                  style: const TextStyle(
                                     fontSize: 14,
                                     fontFamily: TextFontFamily.SEN_EXTRA_BOLD,
                                     color: ColorResources.blue1,
                                   ),
                                 ),
-                                Obx(
+                                /* Obx(
                                   () => InkWell(
                                     onTap: () {
                                       controller.favourite[index] =
@@ -774,7 +752,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         : SvgPicture.asset(
                                             Images.fillfavoriteicon),
                                   ),
-                                ),
+                                ), */
                               ],
                             ),
                             Row(

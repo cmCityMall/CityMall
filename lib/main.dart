@@ -1,6 +1,7 @@
 import 'package:citymall/controller/auth_controller.dart';
 import 'package:citymall/controller/db_data_controller.dart';
 import 'package:citymall/controller/flash_sale_controller.dart';
+import 'package:citymall/controller/recommend_screen_controller.dart';
 import 'package:citymall/controller/theme_controller.dart';
 import 'package:citymall/splashscreen/splash.dart';
 import 'package:citymall/theme/dark_theme.dart';
@@ -37,6 +38,7 @@ class CityMall extends StatelessWidget {
   Widget build(BuildContext context) {
     Get.put(WeekPromotionControllerUser());
     Get.put(FlashSaleController());
+    Get.put(RecommendScreenController());
     return GetMaterialApp(
       theme: themeController.isLightTheme.value ? light : dark,
       darkTheme: ThemeData.dark(),
