@@ -3,25 +3,21 @@ import 'package:citymall/colors/colors.dart';
 import 'package:citymall/controller/db_data_controller.dart';
 import 'package:citymall/controller/recomendedfavoritecontroller.dart';
 import 'package:citymall/controller/theme_controller.dart';
-import 'package:citymall/images/images.dart';
-import 'package:citymall/rout_screens/rout_1.dart';
+import 'package:citymall/shop/shop_detail_controller.dart';
 import 'package:citymall/textstylefontfamily/textfontfamily.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
-import 'brand_detail_view_controller.dart';
-
 // ignore: must_be_immutable
-class BrandsDetailView extends StatefulWidget {
-  const BrandsDetailView({Key? key}) : super(key: key);
+class ShopDetailView extends StatefulWidget {
+  const ShopDetailView({Key? key}) : super(key: key);
 
   @override
-  State<BrandsDetailView> createState() => _BrandsDetailViewState();
+  State<ShopDetailView> createState() => _ShopDetailViewState();
 }
 
-class _BrandsDetailViewState extends State<BrandsDetailView> {
+class _ShopDetailViewState extends State<ShopDetailView> {
   final ThemeController themeController = Get.put(ThemeController());
 
   final RecomendedFavouriteController controller =
@@ -29,19 +25,19 @@ class _BrandsDetailViewState extends State<BrandsDetailView> {
 
   @override
   void initState() {
-    Get.put(BrandDetailViewController());
+    Get.put(ShopDetailController());
     super.initState();
   }
 
   @override
   void dispose() {
-    Get.delete<BrandDetailViewController>();
+    Get.delete<ShopDetailController>();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final BrandDetailViewController brandController = Get.find();
+    final ShopDetailController shopController = Get.find();
     final DBDataController dataController = Get.find();
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -95,15 +91,15 @@ class _BrandsDetailViewState extends State<BrandsDetailView> {
                 alignment: Alignment.bottomCenter,
                 children: [
                   Image.network(
-                    dataController.selectedBrand.value?.image ?? "",
+                    dataController.selectedShop.value?.image ?? "",
                     fit: BoxFit.cover,
                     width: Get.width,
                   ),
                   Padding(
-                    padding: EdgeInsets.only(bottom: 30),
+                    padding: const EdgeInsets.only(bottom: 30),
                     child: Text(
-                      dataController.selectedBrand.value?.name ?? "",
-                      style: TextStyle(
+                      dataController.selectedShop.value?.name ?? "",
+                      style: const TextStyle(
                         fontFamily: TextFontFamily.SEN_BOLD,
                         fontSize: 30,
                         color: ColorResources.black2,
@@ -119,7 +115,7 @@ class _BrandsDetailViewState extends State<BrandsDetailView> {
               [
                 Container(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
+                    borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(30),
                       topRight: Radius.circular(30),
                     ),
@@ -131,10 +127,14 @@ class _BrandsDetailViewState extends State<BrandsDetailView> {
                     padding:
                         const EdgeInsets.only(left: 15, right: 15, bottom: 20),
                     child: GridView.builder(
-                      itemCount: dataController
-                          .brandProducts[
-                              dataController.selectedBrand.value!.id]!
-                          .length,
+                      itemCount: dataController.shopProducts[
+                                  dataController.selectedShop.value!.id] ==
+                              null
+                          ? 0
+                          : dataController
+                              .shopProducts[
+                                  dataController.selectedShop.value!.id]!
+                              .length,
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -187,8 +187,8 @@ class _BrandsDetailViewState extends State<BrandsDetailView> {
                                         content: Center(
                                           child: Image.network(
                                             dataController
-                                                .brandProducts[dataController
-                                                    .selectedBrand
+                                                .shopProducts[dataController
+                                                    .selectedShop
                                                     .value!
                                                     .id]![index]
                                                 .images
@@ -208,8 +208,8 @@ class _BrandsDetailViewState extends State<BrandsDetailView> {
                                         padding: const EdgeInsets.all(5),
                                         child: Image.network(
                                           dataController
-                                              .brandProducts[dataController
-                                                  .selectedBrand
+                                              .shopProducts[dataController
+                                                  .selectedShop
                                                   .value!
                                                   .id]![index]
                                               .images
@@ -220,8 +220,8 @@ class _BrandsDetailViewState extends State<BrandsDetailView> {
                                   ),
                                   Text(
                                     dataController
-                                        .brandProducts[dataController
-                                            .selectedBrand.value!.id]![index]
+                                        .shopProducts[dataController
+                                            .selectedShop.value!.id]![index]
                                         .name,
                                     style: TextStyle(
                                       fontSize: 12,
@@ -237,10 +237,8 @@ class _BrandsDetailViewState extends State<BrandsDetailView> {
                                     children: [
                                       Text(
                                         dataController
-                                            .brandProducts[dataController
-                                                .selectedBrand
-                                                .value!
-                                                .id]![index]
+                                            .shopProducts[dataController
+                                                .selectedShop.value!.id]![index]
                                             .price
                                             .toString(),
                                         style: TextStyle(
@@ -311,7 +309,7 @@ class _BrandsDetailViewState extends State<BrandsDetailView> {
                 ),
                 Align(
                   alignment: Alignment.bottomCenter,
-                  child: Obx(() => brandController.isLoading.value
+                  child: Obx(() => shopController.isLoading.value
                       ? AnimatedContainer(
                           duration: const Duration(milliseconds: 500),
                           curve: Curves.easeIn,

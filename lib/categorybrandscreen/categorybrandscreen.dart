@@ -66,7 +66,7 @@ class CategoryBrandScreen extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 10),
                   child: InkWell(
                     onTap: () {
-                      Get.off(SubCategoryScreen1());
+                      Get.off(BrandsDetailView());
                     },
                     child: Container(
                       height: 141,

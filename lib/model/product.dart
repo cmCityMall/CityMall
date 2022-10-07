@@ -26,4 +26,17 @@ class Product with _$Product {
 
   factory Product.fromJson(Map<String, dynamic> json) =>
       _$ProductFromJson(json);
+
+  factory Product.initial() => Product(
+        id: '',
+        name: '',
+        images: [],
+        description: '',
+        price: 0,
+        subCategoryId: '',
+        reviewCount: 0,
+        totalQuantity: 0,
+        remainQuantity: 0,
+        dateTime: DateTime.now(),
+      );
 }

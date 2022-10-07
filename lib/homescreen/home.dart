@@ -1,4 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:citymall/admin/week_promotion/view/week_promotion_view.dart';
+import 'package:citymall/categorybrandscreen/brand_view_all.dart';
 import 'package:citymall/colors/colors.dart';
 import 'package:citymall/controller/db_data_controller.dart';
 import 'package:citymall/controller/flash_sale_controller.dart';
@@ -13,13 +15,20 @@ import 'package:citymall/homescreen/recomendedscreen.dart';
 import 'package:citymall/homescreen/weekpromotionscreen.dart';
 import 'package:citymall/images/images.dart';
 import 'package:citymall/productdetailsscreen/productdetailscreen.dart';
+import 'package:citymall/shop/shop_detail_view.dart';
+import 'package:citymall/shop/shop_view_all.dart';
 import 'package:citymall/textstylefontfamily/textfontfamily.dart';
+import 'package:citymall/week_promotion/week_promotion_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
 
+import '../categorybrandscreen/brand_view_all_binding.dart';
+import '../categorybrandscreen/subcategory1.dart';
+import '../productdetailsscreen/product_detail_binding.dart';
+import '../shop/shop_view_all_binding.dart';
 import '../utils/widgets/loading_widget.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -257,7 +266,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Menu",
+                    "Categories",
                     style: TextStyle(
                       fontSize: 22,
                       fontFamily: TextFontFamily.SEN_BOLD,
@@ -287,95 +296,102 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               SizedBox(height: 13),
-              Container(
-                height: 100,
-                width: Get.width,
-                decoration: BoxDecoration(
-                  color: themeController.isLightTheme.value
-                      ? ColorResources.white1
-                      : ColorResources.black1,
-                ),
-                child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: dbDataController.menuMainCategories.length,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      final mainCategory =
-                          dbDataController.menuMainCategories[index];
-                      return InkWell(
-                        onTap: () {
-                          ///Make Sure To Do Require Function*/
-                          dbDataController.setSelectedMain(
-                            mainCategory.id,
-                            mainCategory.name,
-                          );
-                          dbDataController
-                              .getInitialSubCategories(mainCategory.id);
-                          dbDataController.getSliderProducts(mainCategory.id);
-                          dbDataController
-                              .getInitialDiscountProducts(mainCategory.id);
-                          dbDataController
-                              .getInitialPopularProducts(mainCategory.id);
-                          dbDataController
-                              .getInitialNewProducts(mainCategory.id);
-                          Get.off(CameraDeshBoard());
-                        },
+              GridView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4,
+                    childAspectRatio: 0.6,
+                    crossAxisSpacing: 1,
+                    mainAxisSpacing: 1,
+                  ),
+                  itemCount: dbDataController.menuMainCategories.length > 12
+                      ? 12
+                      : dbDataController.menuMainCategories.length,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    final mainCategory =
+                        dbDataController.menuMainCategories[index];
+                    return InkWell(
+                      onTap: () {
+                        ///Make Sure To Do Require Function*/
+                        dbDataController.setSelectedMain(
+                          mainCategory.id,
+                          mainCategory.name,
+                        );
+                        dbDataController
+                            .getInitialSubCategories(mainCategory.id);
+                        dbDataController.getSliderProducts(mainCategory.id);
+                        dbDataController
+                            .getInitialDiscountProducts(mainCategory.id);
+                        dbDataController
+                            .getInitialPopularProducts(mainCategory.id);
+                        dbDataController.getInitialNewProducts(mainCategory.id);
+                        Get.off(CameraDeshBoard());
+                      },
+                      child: Card(
+                        elevation: 5,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                         child: Padding(
-                          padding: const EdgeInsets.only(right: 20),
-                          child: Container(
-                            height: 100,
-                            width: 80,
-                            decoration: BoxDecoration(
-                              color: themeController.isLightTheme.value
-                                  ? ColorResources.white1
-                                  : ColorResources.black1,
-                              borderRadius: BorderRadius.circular(50),
-                              border: Border.all(color: ColorResources.blue2),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                  child: Image.network(mainCategory.image)),
+                              const SizedBox(height: 8),
+                              Text(
+                                mainCategory.name,
+                                maxLines: 2,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontFamily: TextFontFamily.SEN_REGULAR,
                                   color: themeController.isLightTheme.value
-                                      ? ColorResources.white4
-                                      : ColorResources.white.withOpacity(0.05),
-                                ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Image.network(mainCategory.image),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      mainCategory.name,
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        fontFamily: TextFontFamily.SEN_REGULAR,
-                                        color:
-                                            themeController.isLightTheme.value
-                                                ? ColorResources.black2
-                                                : ColorResources.white,
-                                      ),
-                                    ),
-                                  ],
+                                      ? ColorResources.black2
+                                      : ColorResources.white,
                                 ),
                               ),
-                            ),
+                            ],
                           ),
                         ),
-                      );
-                    }),
-              ),
+                      ),
+                    );
+                  }),
+
               const SizedBox(height: 15),
-              Text(
-                "Week Promotion",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontFamily: TextFontFamily.SEN_BOLD,
-                  color: themeController.isLightTheme.value
-                      ? ColorResources.black2
-                      : ColorResources.white,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Week Promotions",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontFamily: TextFontFamily.SEN_BOLD,
+                      color: themeController.isLightTheme.value
+                          ? ColorResources.black2
+                          : ColorResources.white,
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Get.to(() => WeekPromotionViewAll());
+                    },
+                    child: Row(
+                      children: [
+                        Text(
+                          "View all  ",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontFamily: TextFontFamily.SEN_REGULAR,
+                            color: ColorResources.blue1,
+                          ),
+                        ),
+                        SvgPicture.asset(Images.viewallarrow),
+                      ],
+                    ),
+                  ),
+                ],
               ),
               SizedBox(height: 13),
               Obx(() {
@@ -531,7 +547,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 );
               }),
-              const SizedBox(height: 21),
+              /* const SizedBox(height: 21),
               Text(
                 "Category",
                 style: TextStyle(
@@ -610,6 +626,114 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                 );
+              }), */
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Shops",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontFamily: TextFontFamily.SEN_BOLD,
+                      color: themeController.isLightTheme.value
+                          ? ColorResources.black2
+                          : ColorResources.white,
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Get.to(() => ShopViewAll(),
+                          binding: ShopViewAllBinding());
+                    },
+                    child: Row(
+                      children: [
+                        const Text(
+                          "View all  ",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontFamily: TextFontFamily.SEN_REGULAR,
+                            color: ColorResources.blue1,
+                          ),
+                        ),
+                        SvgPicture.asset(Images.viewallarrow),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 13),
+              Obx(() {
+                if (dbDataController.shopLoading.value) {
+                  return const LoadingWidget();
+                }
+                if (dbDataController.shopRxList.isEmpty) {
+                  return const SizedBox();
+                }
+                return Container(
+                  height: 170,
+                  width: Get.width,
+                  decoration: BoxDecoration(
+                    color: themeController.isLightTheme.value
+                        ? ColorResources.white1
+                        : ColorResources.black1,
+                  ),
+                  child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: dbDataController.shopRxList.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        final weekPromo = dbDataController.shopRxList[index];
+                        return InkWell(
+                          onTap: () {
+                            dbDataController.setSelectedShop(weekPromo);
+                            dbDataController
+                                .getInitialShopProducts(weekPromo.id);
+                            Get.to(() => const ShopDetailView());
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 20),
+                            child: Container(
+                              height: 170,
+                              width: 145,
+                              decoration: BoxDecoration(
+                                color: themeController.isLightTheme.value
+                                    ? ColorResources.white5
+                                    : ColorResources.black7,
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    height: 105,
+                                    width: 105,
+                                    decoration: BoxDecoration(
+                                      color: themeController.isLightTheme.value
+                                          ? ColorResources.white5
+                                          : ColorResources.black7,
+                                    ),
+                                    child: Image.network(
+                                      dbDataController.shopRxList[index].image,
+                                      fit: BoxFit.fill,
+                                    ),
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    dbDataController.shopRxList[index].name,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontFamily: TextFontFamily.SEN_BOLD,
+                                      color: ColorResources.blue1,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                );
               }),
               SizedBox(height: 20),
               Row(
@@ -664,7 +788,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   final product = dbDataController.homePopularProducts[index];
                   return InkWell(
                     onTap: () {
-                      Get.off(ProductDetailScreen());
+                      dbDataController.setSelectedProduct(product);
+                      Get.to(
+                        () => ProductDetailScreen(),
+                        binding: ProductDetailBinding(),
+                      );
                     },
                     child: Container(
                       decoration: BoxDecoration(
@@ -795,7 +923,195 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 15),
+
+              Obx(() {
+                if (dbDataController.timeSaleLoading.value) {
+                  return const LoadingWidget();
+                }
+                if (dbDataController.timeSales.isEmpty) {
+                  return const SizedBox();
+                }
+                final timeSale = dbDataController.timeSales[1];
+                final date = timeSale.endDate;
+                final hour = date.hour;
+                final minute = date.minute;
+                final second = date.second;
+                return InkWell(
+                  onTap: () {
+                    flashController.setSelectedFlash(timeSale);
+                    flashController.getInitialProducts(timeSale.id);
+                    Get.to(() => FlashSaleScreen());
+                  },
+                  child: Container(
+                    height: 130,
+                    width: Get.width,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: NetworkImage(timeSale.image),
+                        fit: BoxFit.cover,
+                      ),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          left: 14,
+                          top: 8,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              text(timeSale.name!),
+                              text(timeSale.desc!),
+                            ],
+                          ),
+                        ),
+                        Positioned(
+                          right: 13,
+                          bottom: 13,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              const Text(
+                                "End Sale In:",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontFamily: TextFontFamily.SEN_REGULAR,
+                                  color: ColorResources.white,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  container("$hour"),
+                                  const SizedBox(width: 2),
+                                  text1(),
+                                  const SizedBox(width: 2),
+                                  container("$minute"),
+                                  const SizedBox(width: 2),
+                                  text1(),
+                                  const SizedBox(width: 2),
+                                  container("$second"),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+              SizedBox(height: 13),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Brands",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontFamily: TextFontFamily.SEN_BOLD,
+                      color: themeController.isLightTheme.value
+                          ? ColorResources.black2
+                          : ColorResources.white,
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Get.to(
+                        () => BrandViewAll(),
+                        binding: BrandViewAllBinding(),
+                      );
+                    },
+                    child: Row(
+                      children: [
+                        Text(
+                          "View all  ",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontFamily: TextFontFamily.SEN_REGULAR,
+                            color: ColorResources.blue1,
+                          ),
+                        ),
+                        SvgPicture.asset(Images.viewallarrow),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Obx(() {
+                if (dbDataController.brandLoading.value) {
+                  return const LoadingWidget();
+                }
+                if (dbDataController.brandRxList.isEmpty) {
+                  return const SizedBox();
+                }
+                return Container(
+                  height: 170,
+                  width: Get.width,
+                  decoration: BoxDecoration(
+                    color: themeController.isLightTheme.value
+                        ? ColorResources.white1
+                        : ColorResources.black1,
+                  ),
+                  child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: dbDataController.brandRxList.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        final weekPromo = dbDataController.brandRxList[index];
+                        return InkWell(
+                          onTap: () {
+                            dbDataController.setSelectedBrand(weekPromo);
+                            dbDataController
+                                .getInitialBrandProducts(weekPromo.id);
+                            Get.to(() => const BrandsDetailView());
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 20),
+                            child: Container(
+                              height: 170,
+                              width: 145,
+                              decoration: BoxDecoration(
+                                color: themeController.isLightTheme.value
+                                    ? ColorResources.white5
+                                    : ColorResources.black7,
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    height: 105,
+                                    width: 105,
+                                    decoration: BoxDecoration(
+                                      color: themeController.isLightTheme.value
+                                          ? ColorResources.white5
+                                          : ColorResources.black7,
+                                    ),
+                                    child: Image.network(
+                                      dbDataController.brandRxList[index].image,
+                                      fit: BoxFit.fill,
+                                    ),
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    dbDataController.brandRxList[index].name,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontFamily: TextFontFamily.SEN_BOLD,
+                                      color: ColorResources.blue1,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                );
+              }),
             ],
           ),
         ),

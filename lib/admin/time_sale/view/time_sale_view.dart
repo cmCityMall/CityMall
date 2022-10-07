@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:citymall/admin/selectable_products.dart';
 import 'package:citymall/admin/time_sale/controller/time_sale_controller.dart';
 import 'package:citymall/admin/week_promotion/controller/week_promotion_controller.dart';
 import 'package:citymall/controller/db_data_controller.dart';
@@ -15,6 +16,7 @@ import '../../../model/product.dart';
 import '../../../widgets/form/custon_swich.dart';
 import '../../../widgets/form/image_pick_form.dart';
 import '../../../widgets/form/text_form.dart';
+import '../../selectable_bottom_sheet.dart';
 
 class TimeSaleView extends StatelessWidget {
   const TimeSaleView({Key? key}) : super(key: key);
@@ -275,7 +277,7 @@ class TimeSaleView extends StatelessWidget {
                                 onTap: (CompletionHandler _) async {
                                   await _(false);
                                   await timeSaleController
-                                      .getProductsExceptCurrentTimeSale(
+                                      .getProductsExceptCurrentPromotion(
                                           advertisement.id);
                                   Get.bottomSheet(
                                     Obx(() {
@@ -303,7 +305,7 @@ class TimeSaleView extends StatelessWidget {
                                         },
                                         pressedSaveButton: () {
                                           timeSaleController
-                                              .addProductsFromTimeSale(
+                                              .addProductsToPromotion(
                                             advertisement.id,
                                             advertisement.percentage ?? 0,
                                           );
@@ -337,7 +339,7 @@ class TimeSaleView extends StatelessWidget {
                                 onTap: (CompletionHandler _) async {
                                   await _(false);
                                   await timeSaleController
-                                      .getProductsFromTimeSale(
+                                      .getProductsFromPromotion(
                                           advertisement.id);
                                   Get.bottomSheet(
                                     Obx(() {
@@ -450,82 +452,6 @@ class TimeSaleView extends StatelessWidget {
 
 String getDateString(DateTime dateTime) {
   return DateFormat.yMEd().add_jms().format(dateTime);
-}
-
-class SelectableBottomSheet extends StatelessWidget {
-  const SelectableBottomSheet({
-    Key? key,
-    required this.list,
-    required this.selectedObxMap,
-    required this.pressedCancelButton,
-    required this.pressedSaveButton,
-    required this.selectedProduct,
-  }) : super(key: key);
-
-  final List<Product> list;
-  final RxMap<String, Product> selectedObxMap;
-  final void Function(Product product) selectedProduct;
-  final void Function() pressedCancelButton;
-  final void Function() pressedSaveButton;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white,
-      child: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: list.length,
-              itemBuilder: (context, index) {
-                final product = list[index];
-
-                return Obx(() {
-                  final map = selectedObxMap;
-                  final isSelected = map.containsKey(product.id);
-                  return InkWell(
-                    onTap: () => selectedProduct(product),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        color: isSelected ? Colors.green : Colors.white,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(product.name,
-                              style: TextStyle(
-                                color: isSelected ? Colors.white : Colors.black,
-                              )),
-                        ),
-                      ),
-                    ),
-                  );
-                });
-              },
-            ),
-          ),
-          SizedBox(
-              height: 50,
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Get.back();
-                        pressedCancelButton();
-                      },
-                      child: const Text("Cancel"),
-                    ),
-                    const SizedBox(width: 15),
-                    ElevatedButton(
-                      onPressed: () => pressedSaveButton(),
-                      child: const Text("Save"),
-                    ),
-                  ])),
-        ],
-      ),
-    );
-  }
 }
 
 void showTimePicker(BuildContext context, void Function(DateTime d) onConfirm) {

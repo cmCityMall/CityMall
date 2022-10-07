@@ -66,7 +66,7 @@ class SubCategoryScreen2 extends StatelessWidget {
           padding: const EdgeInsets.only(left: 25),
           child: InkWell(
             onTap: () {
-              Get.off(SubCategoryScreen1());
+              Get.off(BrandsDetailView());
             },
             child: Container(
               decoration: BoxDecoration(

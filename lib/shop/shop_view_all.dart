@@ -11,33 +11,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
+import 'shop_view_all_controller.dart';
+
 // ignore: must_be_immutable
-class MenuViewAllScreen extends StatefulWidget {
-  MenuViewAllScreen({Key? key}) : super(key: key);
+class ShopViewAll extends StatelessWidget {
+  ShopViewAll({Key? key}) : super(key: key);
 
-  @override
-  State<MenuViewAllScreen> createState() => _MenuViewAllScreenState();
-}
-
-class _MenuViewAllScreenState extends State<MenuViewAllScreen> {
   final ThemeController themeController = Get.put(ThemeController());
-
-  @override
-  void initState() {
-    Get.put(MenuViewAllScreenController());
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    Get.delete<MenuViewAllScreenController>();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     final DBDataController dataController = Get.find();
-    final MenuViewAllScreenController menuController = Get.find();
+    final ShopViewAllController menuController = Get.find();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: themeController.isLightTheme.value
@@ -85,7 +70,7 @@ class _MenuViewAllScreenState extends State<MenuViewAllScreen> {
           ),
         ),
         title: Text(
-          "Categories",
+          "Shops",
           style: TextStyle(
             fontFamily: TextFontFamily.SEN_BOLD,
             fontSize: 22,
@@ -117,14 +102,14 @@ class _MenuViewAllScreenState extends State<MenuViewAllScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Obx(() {
-              final list = dataController.menuMainCategories;
+              final list = dataController.shopRxList;
               return Expanded(
                 child: GridView.builder(
                     controller: menuController.scrollController,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 4,
-                      childAspectRatio: 0.6,
+                      crossAxisCount: 3,
+                      childAspectRatio: 0.7,
                       crossAxisSpacing: 1,
                       mainAxisSpacing: 1,
                     ),

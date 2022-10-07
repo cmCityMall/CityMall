@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
@@ -27,11 +28,13 @@ class TimeSaleController extends GetxController {
   var startDate = DateTime.now().obs;
   var endDate = DateTime.now().obs;
   var pickedImage = "".obs;
+  Rxn<TimeSale> selectedTimeSale = Rxn<TimeSale>();
 //ui state
   var isFirstTimePressed = false.obs;
   var removeProductLoading = false.obs;
   var addProductLoading = false.obs;
 //**Method for instance variable */
+  void setSelectedTimeSale(TimeSale t) => selectedTimeSale.value = t;
   void changeStartDate(DateTime d) {
     startDate.value = d;
     debugPrint("***Change Start Date: ${startDate.toString()}");
@@ -121,10 +124,10 @@ class TimeSaleController extends GetxController {
   //**End */
 
   //**Method for Add,Remove Product */
-  void addIntoRemoveMap(Product p) {
+/*   void addIntoRemoveMap(Product p) {
     removedProductsMap.putIfAbsent(p.id, () => p);
   }
-
+ */
   void selectProductOrNot(Product product) {
     log("******selected product or not");
     if (!selectedProductsMap.containsKey(product.id)) {
@@ -132,7 +135,11 @@ class TimeSaleController extends GetxController {
     }
   }
 
-  Future<void> removeProductsFromTimeSale() async {
+  void addIntoRemoveMap(Product p) {
+    removedProductsMap.putIfAbsent(p.id, () => p);
+  }
+
+  Future<void> removeProductsToPromotion() async {
     if (removedProductsMap.isNotEmpty) {
       try {
         showLoading();
@@ -161,8 +168,7 @@ class TimeSaleController extends GetxController {
     }
   }
 
-  Future<void> addProductsFromTimeSale(
-      String promotionId, int promotion) async {
+  Future<void> addProductsToPromotion(String promotionId, int promotion) async {
     if (selectedProductsMap.isNotEmpty) {
       try {
         showLoading();
@@ -190,7 +196,7 @@ class TimeSaleController extends GetxController {
     }
   }
 
-  Future<void> getProductsFromTimeSale(String promotionId) async {
+  Future<void> getProductsFromPromotion(String promotionId) async {
     removeProductLoading.value = true;
     try {
       _database.firestore
@@ -212,14 +218,10 @@ class TimeSaleController extends GetxController {
     }
   }
 
-  Future<void> getProductsExceptCurrentTimeSale(String promotionId) async {
+  Future<void> getProductsExceptCurrentPromotion(String promotionId) async {
     addProductLoading.value = true;
     try {
-      _database.firestore
-          .collection(productCollection)
-          .where("promotionId", isNotEqualTo: promotionId)
-          .get()
-          .then((value) {
+      _database.firestore.collection(productCollection).get().then((value) {
         productList.value =
             value.docs.map((e) => Product.fromJson(e.data())).toList();
         addProductLoading.value = false;
@@ -227,8 +229,10 @@ class TimeSaleController extends GetxController {
       });
     } catch (e) {
       addProductLoading.value = false;
-      Get.snackbar("Failed!", "No products found.");
+      log("*****Eror: $e");
     }
   }
+
   //**End */
+
 }

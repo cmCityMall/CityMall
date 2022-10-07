@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:citymall/colors/colors.dart';
+import 'package:citymall/controller/db_data_controller.dart';
 import 'package:citymall/controller/flash_sale_controller.dart';
 import 'package:citymall/controller/theme_controller.dart';
 import 'package:citymall/controller/weekpromotionfavoritecontroller.dart';
@@ -23,6 +24,7 @@ class FlashSaleScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final DBDataController dataController = Get.find();
     final FlashSaleController flashController = Get.find();
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -40,11 +42,7 @@ class FlashSaleScreen extends StatelessWidget {
           padding: const EdgeInsets.only(left: 25),
           child: InkWell(
             onTap: () {
-              selectedIndex = 0;
-              Navigator.of(context, rootNavigator: true)
-                  .pushReplacement(MaterialPageRoute(
-                builder: (context) => NavigationBarBottom(),
-              ));
+              Get.back();
             },
             child: Container(
               decoration: BoxDecoration(
@@ -222,7 +220,11 @@ class FlashSaleScreen extends StatelessWidget {
                         );
                         return InkWell(
                           onTap: () {
-                            Get.off(CameraDetailScreen());
+                            dataController.setSelectedTimeSale(
+                                flashController.selectedFlash.value!);
+                            dataController.setSelectedProduct(product);
+
+                            Get.to(() => CameraDetailScreen());
                           },
                           child: Container(
                             decoration: BoxDecoration(

@@ -1,9 +1,12 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:citymall/colors/colors.dart';
 import 'package:citymall/controller/clickcontroller.dart';
+import 'package:citymall/controller/db_data_controller.dart';
 import 'package:citymall/controller/theme_controller.dart';
 import 'package:citymall/images/images.dart';
 import 'package:citymall/productdetailsscreen/addaddressscreen.dart';
 import 'package:citymall/productdetailsscreen/confirmaddressscreen.dart';
+import 'package:citymall/productdetailsscreen/product_detail_controller.dart';
 import 'package:citymall/productdetailsscreen/viewallreviewscreen.dart';
 import 'package:citymall/rout_screens/rout_1.dart';
 import 'package:citymall/textstylefontfamily/textfontfamily.dart';
@@ -11,6 +14,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:hexcolor/hexcolor.dart';
+import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
+
+import '../widgets/other/cache_image.dart';
 
 // ignore: must_be_immutable
 class ProductDetailScreen extends StatelessWidget {
@@ -24,7 +32,7 @@ class ProductDetailScreen extends StatelessWidget {
       Get.put(ArrowClickController());
   final AddressClickController1 addressClickController1 =
       Get.put(AddressClickController1());
-  List<Map> topRatedProductList = [
+  /*  List<Map> topRatedProductList = [
     {
       "image": Images.purseimage,
       "text": "Nike Air Max 270\nReact ENG",
@@ -50,10 +58,13 @@ class ProductDetailScreen extends StatelessWidget {
       "text1": "Office Address",
       "text2": "+91 98765 43210",
     },
-  ];
+  ]; */
 
   @override
   Widget build(BuildContext context) {
+    final DBDataController dataController = Get.find();
+    final ProductDetailController detailController = Get.find();
+    final currentProduct = dataController.selectedProduct.value;
     return Scaffold(
       backgroundColor: themeController.isLightTheme.value
           ? ColorResources.white6
@@ -69,11 +80,7 @@ class ProductDetailScreen extends StatelessWidget {
           padding: const EdgeInsets.only(left: 25),
           child: InkWell(
             onTap: () {
-              selectedIndex = 0;
-              Navigator.of(context, rootNavigator: true)
-                  .pushReplacement(MaterialPageRoute(
-                builder: (context) => NavigationBarBottom(),
-              ));
+              Get.back();
             },
             child: Container(
               decoration: BoxDecoration(
@@ -163,10 +170,16 @@ class ProductDetailScreen extends StatelessWidget {
                             color: themeController.isLightTheme.value
                                 ? ColorResources.white6
                                 : ColorResources.black4,
-                            child: Image.asset(
-                              Images.clothesimage,
-                              fit: BoxFit.cover,
-                            ),
+                            child: Obx(() {
+                              return CustomCacheNetworkImage(
+                                //Proudct first image
+                                imageUrl:
+                                    detailController.selectedImage.isNotEmpty
+                                        ? detailController.selectedImage.value
+                                        : currentProduct!.images.first,
+                                boxFit: BoxFit.cover,
+                              );
+                            }),
                           ),
                         ),
                         //SizedBox(width: Get.width / 10.27),
@@ -219,6 +232,7 @@ class ProductDetailScreen extends StatelessWidget {
                                           thickness: 0.6,
                                           color: ColorResources.grey6,
                                         ),
+                                        //Images for Product to Choose
                                         ListView.builder(
                                           physics:
                                               NeverScrollableScrollPhysics(),
@@ -227,7 +241,7 @@ class ProductDetailScreen extends StatelessWidget {
                                                       .click.value ==
                                                   false
                                               ? 1
-                                              : 3,
+                                              : currentProduct!.images.length,
                                           itemBuilder: (BuildContext context,
                                               int index) {
                                             return Padding(
@@ -242,12 +256,14 @@ class ProductDetailScreen extends StatelessWidget {
                                                   color: ColorResources.grey6,
                                                 ),
                                                 child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(4),
-                                                  child: Image.asset(
-                                                    Images.clothesimage,
-                                                  ),
-                                                ),
+                                                    padding:
+                                                        const EdgeInsets.all(4),
+                                                    child:
+                                                        CustomCacheNetworkImage(
+                                                      imageUrl: currentProduct!
+                                                          .images[index],
+                                                      boxFit: BoxFit.contain,
+                                                    )),
                                               ),
                                             );
                                           },
@@ -293,16 +309,20 @@ class ProductDetailScreen extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                "Mentli Solid Blue\nSliim Fit",
-                                style: TextStyle(
-                                  fontFamily: TextFontFamily.SEN_BOLD,
-                                  fontSize: 24,
-                                  color: themeController.isLightTheme.value
-                                      ? ColorResources.black2
-                                      : ColorResources.white,
+                              //Product Name
+                              Expanded(
+                                child: Text(
+                                  currentProduct!.name,
+                                  style: TextStyle(
+                                    fontFamily: TextFontFamily.SEN_BOLD,
+                                    fontSize: 24,
+                                    color: themeController.isLightTheme.value
+                                        ? ColorResources.black2
+                                        : ColorResources.white,
+                                  ),
                                 ),
                               ),
+                              //Rating Star
                               Padding(
                                 padding:
                                     const EdgeInsets.only(top: 30, right: 5),
@@ -332,14 +352,20 @@ class ProductDetailScreen extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                "\$50,00",
-                                style: TextStyle(
-                                  fontFamily: TextFontFamily.SEN_EXTRA_BOLD,
-                                  fontSize: 25,
-                                  color: ColorResources.blue1,
-                                ),
-                              ),
+                              //Product Price
+                              Obx(() {
+                                return Text(
+                                  detailController.selectedPrice.value == 0
+                                      ? "${currentProduct.price}"
+                                      : "${detailController.selectedPrice.value}",
+                                  style: TextStyle(
+                                    fontFamily: TextFontFamily.SEN_EXTRA_BOLD,
+                                    fontSize: 25,
+                                    color: ColorResources.blue1,
+                                  ),
+                                );
+                              }),
+                              //TOtal Sale
                               Text(
                                 "(932 Sale)",
                                 style: TextStyle(
@@ -360,425 +386,196 @@ class ProductDetailScreen extends StatelessWidget {
                                 : ColorResources.white.withOpacity(0.2),
                           ),
                           SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "COLOR",
-                                style: TextStyle(
-                                  fontFamily: TextFontFamily.SEN_REGULAR,
-                                  fontSize: 13,
-                                  color: ColorResources.grey11,
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 100),
-                                child: Text(
-                                  "SIZE",
-                                  style: TextStyle(
-                                    fontFamily: TextFontFamily.SEN_REGULAR,
-                                    fontSize: 13,
-                                    color: ColorResources.grey11,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Obx(
-                                    () => InkWell(
-                                      onTap: () {
-                                        if (ontapColorController.one.isTrue ||
-                                            ontapColorController.two.isTrue ||
-                                            ontapColorController.three.isTrue ||
-                                            ontapColorController.four.isTrue ||
-                                            ontapColorController.five.isTrue) {
-                                          ontapColorController.one(false);
-                                          ontapColorController.two(false);
-                                          ontapColorController.three(false);
-                                          ontapColorController.four(false);
-                                          ontapColorController.five(false);
-                                        }
-                                        ontapColorController.one(true);
-                                      },
-                                      child: Container(
-                                        height: 35,
-                                        width: 35,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          color: themeController
-                                                  .isLightTheme.value
-                                              ? ontapColorController.one.isTrue
-                                                  ? ColorResources.white9
-                                                  : ColorResources.white
-                                              : ontapColorController.one.isTrue
-                                                  ? ColorResources.white9
-                                                  : ColorResources.black1,
-                                        ),
-                                        child: Center(
-                                          child: CircleAvatar(
-                                            radius:
-                                                ontapColorController.one.isTrue
-                                                    ? 9
-                                                    : 6,
-                                            backgroundColor:
-                                                ColorResources.navyblue2,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Obx(
-                                    () => InkWell(
-                                      onTap: () {
-                                        if (ontapColorController.one.isTrue ||
-                                            ontapColorController.two.isTrue ||
-                                            ontapColorController.three.isTrue ||
-                                            ontapColorController.four.isTrue ||
-                                            ontapColorController.five.isTrue) {
-                                          ontapColorController.one(false);
-                                          ontapColorController.two(false);
-                                          ontapColorController.three(false);
-                                          ontapColorController.four(false);
-                                          ontapColorController.five(false);
-                                        }
-                                        ontapColorController.two(true);
-                                      },
-                                      child: Container(
-                                        height: 35,
-                                        width: 35,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          color: themeController
-                                                  .isLightTheme.value
-                                              ? ontapColorController.two.isTrue
-                                                  ? ColorResources.white9
-                                                  : ColorResources.white
-                                              : ontapColorController.two.isTrue
-                                                  ? ColorResources.white9
-                                                  : ColorResources.black1,
-                                        ),
-                                        child: Center(
-                                          child: CircleAvatar(
-                                            radius:
-                                                ontapColorController.two.isTrue
-                                                    ? 9
-                                                    : 6,
-                                            backgroundColor:
-                                                ColorResources.white10,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Obx(
-                                    () => InkWell(
-                                      onTap: () {
-                                        if (ontapColorController.one.isTrue ||
-                                            ontapColorController.two.isTrue ||
-                                            ontapColorController.three.isTrue ||
-                                            ontapColorController.four.isTrue ||
-                                            ontapColorController.five.isTrue) {
-                                          ontapColorController.one(false);
-                                          ontapColorController.two(false);
-                                          ontapColorController.three(false);
-                                          ontapColorController.four(false);
-                                          ontapColorController.five(false);
-                                        }
-                                        ontapColorController.three(true);
-                                      },
-                                      child: Container(
-                                        height: 35,
-                                        width: 35,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          color:
-                                              themeController.isLightTheme.value
-                                                  ? ontapColorController
-                                                          .three.isTrue
-                                                      ? ColorResources.white9
-                                                      : ColorResources.white
-                                                  : ontapColorController
-                                                          .three.isTrue
-                                                      ? ColorResources.white9
-                                                      : ColorResources.black1,
-                                        ),
-                                        child: Center(
-                                          child: CircleAvatar(
-                                            radius: ontapColorController
-                                                    .three.isTrue
-                                                ? 9
-                                                : 6,
-                                            backgroundColor:
-                                                ColorResources.yellow1,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Obx(
-                                    () => InkWell(
-                                      onTap: () {
-                                        if (ontapSizeController.one.isTrue ||
-                                            ontapSizeController.two.isTrue ||
-                                            ontapSizeController.three.isTrue) {
-                                          ontapSizeController.one(false);
-                                          ontapSizeController.two(false);
-                                          ontapSizeController.three(false);
-                                        }
-                                        ontapSizeController.one(true);
-                                      },
-                                      child: Container(
-                                        height: 40,
-                                        width: 40,
-                                        decoration: BoxDecoration(
-                                          color: themeController
-                                                  .isLightTheme.value
-                                              ? ontapSizeController.one.isTrue
-                                                  ? ColorResources.blue1
-                                                  : ColorResources.white
-                                              : ontapSizeController.one.isTrue
-                                                  ? ColorResources.blue1
-                                                  : ColorResources.black1,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          border: Border.all(
-                                              width: 1.5,
-                                              color:
-                                                  ontapSizeController.one.isTrue
-                                                      ? ColorResources.blue1
-                                                      : ColorResources.white9),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            "S",
+                          !(currentProduct.sizeColorImagePrice == null) &&
+                                  currentProduct.sizeColorImagePrice!.isNotEmpty
+                              ? Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    //Color
+                                    Expanded(
+                                      child: Column(
+                                        children: [
+                                          //Label
+                                          const Text(
+                                            "COLOR",
                                             style: TextStyle(
                                               fontFamily:
                                                   TextFontFamily.SEN_REGULAR,
-                                              fontSize: 20,
-                                              color:
-                                                  ontapSizeController.one.isTrue
-                                                      ? ColorResources.white
-                                                      : ColorResources.blue1,
+                                              fontSize: 13,
+                                              color: ColorResources.grey11,
                                             ),
                                           ),
-                                        ),
+                                          const SizedBox(height: 10),
+                                          //Child
+                                          Wrap(
+                                            children: currentProduct
+                                                .sizeColorImagePrice!.entries
+                                                .map((e) {
+                                              final color = e.value["color"];
+                                              return Obx(
+                                                () => InkWell(
+                                                  onTap: () {
+                                                    detailController
+                                                            .setSelectedColor =
+                                                        color;
+                                                    detailController
+                                                            .setSelectedPrice =
+                                                        e.value["price"];
+                                                    detailController
+                                                            .setSelectedImage =
+                                                        e.value["image"];
+                                                  },
+                                                  child: Container(
+                                                    height: 35,
+                                                    width: 35,
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                      color: themeController
+                                                              .isLightTheme
+                                                              .value
+                                                          ? detailController
+                                                                      .selectedColor ==
+                                                                  color
+                                                              ? ColorResources
+                                                                  .white9
+                                                              : ColorResources
+                                                                  .white
+                                                          : detailController
+                                                                      .selectedColor ==
+                                                                  color
+                                                              ? ColorResources
+                                                                  .white9
+                                                              : ColorResources
+                                                                  .black1,
+                                                    ),
+                                                    child: Center(
+                                                      child: CircleAvatar(
+                                                        radius: detailController
+                                                                    .selectedColor ==
+                                                                color
+                                                            ? 9
+                                                            : 6,
+                                                        backgroundColor:
+                                                            HexColor(color),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            }).toList(),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ),
-                                  SizedBox(width: 10),
-                                  Obx(
-                                    () => InkWell(
-                                      onTap: () {
-                                        if (ontapSizeController.one.isTrue ||
-                                            ontapSizeController.two.isTrue ||
-                                            ontapSizeController.three.isTrue) {
-                                          ontapSizeController.one(false);
-                                          ontapSizeController.two(false);
-                                          ontapSizeController.three(false);
-                                        }
-                                        ontapSizeController.two(true);
-                                      },
-                                      child: Container(
-                                        height: 40,
-                                        width: 40,
-                                        decoration: BoxDecoration(
-                                          color: themeController
-                                                  .isLightTheme.value
-                                              ? ontapSizeController.two.isTrue
-                                                  ? ColorResources.blue1
-                                                  : ColorResources.white
-                                              : ontapSizeController.two.isTrue
-                                                  ? ColorResources.blue1
-                                                  : ColorResources.black1,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          border: Border.all(
-                                              width: 1.5,
-                                              color:
-                                                  ontapSizeController.two.isTrue
-                                                      ? ColorResources.blue1
-                                                      : ColorResources.white9),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            "M",
+                                    //Size
+                                    Expanded(
+                                      child: Column(
+                                        children: [
+                                          //Label
+                                          const Text(
+                                            "SIZE",
                                             style: TextStyle(
                                               fontFamily:
                                                   TextFontFamily.SEN_REGULAR,
-                                              fontSize: 20,
-                                              color:
-                                                  ontapSizeController.two.isTrue
-                                                      ? ColorResources.white
-                                                      : ColorResources.blue1,
+                                              fontSize: 13,
+                                              color: ColorResources.grey11,
                                             ),
                                           ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 10),
-                                  Obx(
-                                    () => InkWell(
-                                      onTap: () {
-                                        if (ontapSizeController.one.isTrue ||
-                                            ontapSizeController.two.isTrue ||
-                                            ontapSizeController.three.isTrue) {
-                                          ontapSizeController.one(false);
-                                          ontapSizeController.two(false);
-                                          ontapSizeController.three(false);
-                                        }
-                                        ontapSizeController.three(true);
-                                      },
-                                      child: Container(
-                                        height: 40,
-                                        width: 40,
-                                        decoration: BoxDecoration(
-                                          color: themeController
-                                                  .isLightTheme.value
-                                              ? ontapSizeController.three.isTrue
-                                                  ? ColorResources.blue1
-                                                  : ColorResources.white
-                                              : ontapSizeController.three.isTrue
-                                                  ? ColorResources.blue1
-                                                  : ColorResources.black1,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          border: Border.all(
-                                              width: 1.5,
-                                              color: ontapSizeController
-                                                      .three.isTrue
-                                                  ? ColorResources.blue1
-                                                  : ColorResources.white9),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            "L",
-                                            style: TextStyle(
-                                              fontFamily:
-                                                  TextFontFamily.SEN_REGULAR,
-                                              fontSize: 20,
-                                              color: ontapSizeController
-                                                      .three.isTrue
-                                                  ? ColorResources.white
-                                                  : ColorResources.blue1,
-                                            ),
+                                          const SizedBox(height: 10),
+                                          //Child
+                                          Wrap(
+                                            children: currentProduct
+                                                .sizeColorImagePrice!.entries
+                                                .map((e) {
+                                              final size =
+                                                  e.value["size"] as String;
+                                              return Padding(
+                                                padding: const EdgeInsets.only(
+                                                    right: 10),
+                                                child: Obx(
+                                                  () => InkWell(
+                                                    onTap: () {
+                                                      detailController
+                                                              .setSelectedSize =
+                                                          size;
+                                                      detailController
+                                                              .setSelectedPrice =
+                                                          e.value["price"];
+                                                      /*  detailController
+                                                        .setSelectedImage =
+                                                    e.value["image"]; */
+                                                    },
+                                                    child: Container(
+                                                      height: 40,
+                                                      width: 40,
+                                                      decoration: BoxDecoration(
+                                                        color: themeController
+                                                                .isLightTheme
+                                                                .value
+                                                            ? detailController
+                                                                        .selectedSize
+                                                                        .value ==
+                                                                    size
+                                                                ? ColorResources
+                                                                    .blue1
+                                                                : ColorResources
+                                                                    .white
+                                                            : detailController
+                                                                        .selectedSize
+                                                                        .value ==
+                                                                    size
+                                                                ? ColorResources
+                                                                    .blue1
+                                                                : ColorResources
+                                                                    .black1,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
+                                                        border: Border.all(
+                                                            width: 1.5,
+                                                            color: detailController
+                                                                        .selectedSize
+                                                                        .value ==
+                                                                    size
+                                                                ? ColorResources
+                                                                    .blue1
+                                                                : ColorResources
+                                                                    .white9),
+                                                      ),
+                                                      child: Center(
+                                                        child: Text(
+                                                          size,
+                                                          style: TextStyle(
+                                                            fontFamily:
+                                                                TextFontFamily
+                                                                    .SEN_REGULAR,
+                                                            fontSize: 20,
+                                                            color: detailController
+                                                                        .selectedSize
+                                                                        .value ==
+                                                                    size
+                                                                ? ColorResources
+                                                                    .white
+                                                                : ColorResources
+                                                                    .blue1,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            }).toList(),
                                           ),
-                                        ),
+                                        ],
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Row(
-                                children: [
-                                  Obx(
-                                    () => InkWell(
-                                      onTap: () {
-                                        if (ontapColorController.one.isTrue ||
-                                            ontapColorController.two.isTrue ||
-                                            ontapColorController.three.isTrue ||
-                                            ontapColorController.four.isTrue ||
-                                            ontapColorController.five.isTrue) {
-                                          ontapColorController.one(false);
-                                          ontapColorController.two(false);
-                                          ontapColorController.three(false);
-                                          ontapColorController.four(false);
-                                          ontapColorController.five(false);
-                                        }
-                                        ontapColorController.four(true);
-                                      },
-                                      child: Container(
-                                        height: 35,
-                                        width: 35,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          color: themeController
-                                                  .isLightTheme.value
-                                              ? ontapColorController.four.isTrue
-                                                  ? ColorResources.white9
-                                                  : ColorResources.white
-                                              : ontapColorController.four.isTrue
-                                                  ? ColorResources.white9
-                                                  : ColorResources.black1,
-                                        ),
-                                        child: Center(
-                                          child: CircleAvatar(
-                                            radius:
-                                                ontapColorController.four.isTrue
-                                                    ? 9
-                                                    : 6,
-                                            backgroundColor: ColorResources.red,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Obx(
-                                    () => InkWell(
-                                      onTap: () {
-                                        if (ontapColorController.one.isTrue ||
-                                            ontapColorController.two.isTrue ||
-                                            ontapColorController.three.isTrue ||
-                                            ontapColorController.four.isTrue ||
-                                            ontapColorController.five.isTrue) {
-                                          ontapColorController.one(false);
-                                          ontapColorController.two(false);
-                                          ontapColorController.three(false);
-                                          ontapColorController.four(false);
-                                          ontapColorController.five(false);
-                                        }
-                                        ontapColorController.five(true);
-                                      },
-                                      child: Container(
-                                        height: 35,
-                                        width: 35,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          color: themeController
-                                                  .isLightTheme.value
-                                              ? ontapColorController.five.isTrue
-                                                  ? ColorResources.white9
-                                                  : ColorResources.white
-                                              : ontapColorController.five.isTrue
-                                                  ? ColorResources.white9
-                                                  : ColorResources.black1,
-                                        ),
-                                        child: Center(
-                                          child: CircleAvatar(
-                                            radius:
-                                                ontapColorController.five.isTrue
-                                                    ? 9
-                                                    : 6,
-                                            backgroundColor:
-                                                ColorResources.yellow2,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                                  ],
+                                )
+                              : const SizedBox(),
                           SizedBox(height: 20),
                           Container(
                             height: 175,
@@ -815,13 +612,13 @@ class ProductDetailScreen extends StatelessWidget {
                                   ),
                                 ),
                                 SizedBox(height: 10),
+
+                                ///Description.............///
                                 Text(
-                                  "Lorem Ipsum is simply dummy text of the printing"
-                                  "and typesetting industry. Lorem Ipsum has been the"
-                                  "indu stry's standard dummy text ever since the"
-                                  "1500s, whe an unknown printer took a galley of type"
-                                  "and sc rambled it to make a type printer took a...",
+                                  currentProduct.description,
+                                  maxLines: 5,
                                   style: TextStyle(
+                                    overflow: TextOverflow.ellipsis,
                                     height: 1.3,
                                     fontFamily: TextFontFamily.SEN_REGULAR,
                                     fontSize: 13,
@@ -856,45 +653,7 @@ class ProductDetailScreen extends StatelessWidget {
                                                 ),
                                                 SizedBox(height: 15),
                                                 Text(
-                                                  "Lorem Ipsum is simply dummy text of the printing"
-                                                  "and typesetting industry. Lorem Ipsum has been the"
-                                                  "indu stry's standard dummy text ever since the"
-                                                  "1500s, whe an unknown printer took a galley of type"
-                                                  "and sc rambled it to make a type printer took a...",
-                                                  style: TextStyle(
-                                                    height: 1.3,
-                                                    fontFamily: TextFontFamily
-                                                        .SEN_REGULAR,
-                                                    fontSize: 13,
-                                                    color: themeController
-                                                            .isLightTheme.value
-                                                        ? ColorResources.grey5
-                                                        : ColorResources.white
-                                                            .withOpacity(0.6),
-                                                  ),
-                                                ),
-                                                SizedBox(height: 15),
-                                                Text(
-                                                  "Lorem Ipsum is simply dummy text of the printing"
-                                                  "and typesetting industry.",
-                                                  style: TextStyle(
-                                                    height: 1.3,
-                                                    fontFamily: TextFontFamily
-                                                        .SEN_REGULAR,
-                                                    fontSize: 13,
-                                                    color: themeController
-                                                            .isLightTheme.value
-                                                        ? ColorResources.grey5
-                                                        : ColorResources.white
-                                                            .withOpacity(0.6),
-                                                  ),
-                                                ),
-                                                SizedBox(height: 15),
-                                                Text(
-                                                  "Lorem Ipsum is simply dummy text of the printing"
-                                                  "and typesetting industry. Lorem Ipsum has been the"
-                                                  "indu stry's standard dummy text ever since the"
-                                                  "1500s, whe an unknown.",
+                                                  currentProduct.description,
                                                   style: TextStyle(
                                                     height: 1.3,
                                                     fontFamily: TextFontFamily
@@ -916,7 +675,7 @@ class ProductDetailScreen extends StatelessWidget {
                                           themeController.isLightTheme.value
                                               ? ColorResources.white
                                               : ColorResources.black1,
-                                      shape: RoundedRectangleBorder(
+                                      shape: const RoundedRectangleBorder(
                                         borderRadius: BorderRadius.only(
                                             topLeft: Radius.circular(25),
                                             topRight: Radius.circular(25)),
@@ -925,7 +684,7 @@ class ProductDetailScreen extends StatelessWidget {
                                   },
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
+                                    children: const [
                                       Text(
                                         "View More",
                                         style: TextStyle(
@@ -944,7 +703,7 @@ class ProductDetailScreen extends StatelessWidget {
                               ],
                             ),
                           ),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -960,64 +719,51 @@ class ProductDetailScreen extends StatelessWidget {
                               ),
                               InkWell(
                                 onTap: () {
-                                  // selectedIndex = 0;
-                                  // Navigator.of(context, rootNavigator: true)
-                                  //     .pushReplacement(MaterialPageRoute(
-                                  //   builder: (context) => NavigationBarBottom(),
-                                  // ));
-                                  // Navigator.pushReplacement(
-                                  //     context,
-                                  //     MaterialPageRoute(
-                                  //       builder: (context) => MenuViewAllScreen(),
-                                  //     ));
+                                  if (detailController.reviewList.isNotEmpty) {
+                                    Get.to(() => ViewAllReviewScreen());
+                                  }
                                 },
-                                child: InkWell(
-                                  onTap: () {
-                                    Get.off(ViewAllReviewScreen());
-                                  },
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        "View all  ",
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontFamily:
-                                              TextFontFamily.SEN_REGULAR,
-                                          color: ColorResources.blue1,
-                                        ),
+                                child: Row(
+                                  children: [
+                                    const Text(
+                                      "View all  ",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontFamily: TextFontFamily.SEN_REGULAR,
+                                        color: ColorResources.blue1,
                                       ),
-                                      SvgPicture.asset(Images.viewallarrow),
-                                    ],
-                                  ),
+                                    ),
+                                    SvgPicture.asset(Images.viewallarrow),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
-                          SizedBox(height: 4),
+                          const SizedBox(height: 4),
                           Row(
                             children: [
                               RatingBar(
                                 itemSize: 20,
                                 maxRating: 5,
-                                initialRating: 4,
+                                initialRating: currentProduct.reviewCount + 0.0,
                                 itemCount: 5,
                                 direction: Axis.horizontal,
                                 ratingWidget: RatingWidget(
-                                  full: Icon(
+                                  full: const Icon(
                                     Icons.star,
                                     color: ColorResources.yellow,
                                   ),
-                                  empty: Icon(
+                                  empty: const Icon(
                                     Icons.star,
                                     color: ColorResources.white2,
                                   ),
-                                  half: Icon(Icons.star),
+                                  half: const Icon(Icons.star),
                                 ),
                                 onRatingUpdate: (rating) {},
                               ),
                               SizedBox(width: 8),
                               Text(
-                                "4.5",
+                                "${currentProduct.reviewCount + 0.0}",
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontFamily: TextFontFamily.SEN_REGULAR,
@@ -1039,113 +785,142 @@ class ProductDetailScreen extends StatelessWidget {
                               ),
                             ],
                           ),
-                          Container(
-                            height: 280,
-                            width: Get.width,
-                            decoration: BoxDecoration(
-                              color: themeController.isLightTheme.value
-                                  ? ColorResources.white
-                                  : ColorResources.black1,
-                              borderRadius: BorderRadius.only(
-                                bottomRight: Radius.circular(8),
-                                bottomLeft: Radius.circular(8),
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  blurRadius: 4,
-                                  color:
-                                      ColorResources.black.withOpacity(0.020),
-                                  spreadRadius: 0,
-                                  offset: Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: ListView.builder(
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount: 2,
-                              shrinkWrap: true,
-                              itemBuilder: (context, index) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(top: 10),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      ListTile(
-                                        contentPadding: EdgeInsets.zero,
-                                        leading: CircleAvatar(
-                                          radius: 30,
-                                          backgroundImage:
-                                              AssetImage(Images.reviewprofile),
-                                        ),
-                                        title: Text(
-                                          "John Doe",
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontFamily: TextFontFamily.SEN_BOLD,
-                                            color: themeController
-                                                    .isLightTheme.value
-                                                ? ColorResources.black1
-                                                : ColorResources.white,
-                                          ),
-                                        ),
-                                        subtitle: RatingBar(
-                                          itemSize: 20,
-                                          maxRating: 5,
-                                          initialRating: 4,
-                                          itemCount: 5,
-                                          direction: Axis.horizontal,
-                                          ratingWidget: RatingWidget(
-                                            full: Icon(
-                                              Icons.star,
-                                              color: ColorResources.yellow,
-                                            ),
-                                            empty: Icon(
-                                              Icons.star,
-                                              color: ColorResources.white2,
-                                            ),
-                                            half: Icon(Icons.star),
-                                          ),
-                                          onRatingUpdate: (rating) {},
-                                        ),
-                                        trailing: Text(
-                                          "December 10, 2022",
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            fontFamily:
-                                                TextFontFamily.SEN_REGULAR,
-                                            color: themeController
-                                                    .isLightTheme.value
-                                                ? ColorResources.grey4
-                                                : ColorResources.white
-                                                    .withOpacity(0.6),
-                                          ),
-                                        ),
-                                      ),
-                                      Text(
-                                        "air max are always very comfortable fit, clean and"
-                                        "just perfect in every way. just the box was too small"
-                                        "and scrunched the sneakers up a little bit,",
-                                        style: TextStyle(
-                                          height: 1.3,
-                                          fontSize: 12,
-                                          fontFamily:
-                                              TextFontFamily.SEN_REGULAR,
-                                          color:
-                                              themeController.isLightTheme.value
-                                                  ? ColorResources.grey4
-                                                  : ColorResources.white
-                                                      .withOpacity(0.6),
-                                        ),
+                          detailController.reviewList.isNotEmpty
+                              ? Container(
+                                  height: 280,
+                                  width: Get.width,
+                                  decoration: BoxDecoration(
+                                    color: themeController.isLightTheme.value
+                                        ? ColorResources.white
+                                        : ColorResources.black1,
+                                    borderRadius: const BorderRadius.only(
+                                      bottomRight: Radius.circular(8),
+                                      bottomLeft: Radius.circular(8),
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        blurRadius: 4,
+                                        color: ColorResources.black
+                                            .withOpacity(0.020),
+                                        spreadRadius: 0,
+                                        offset: const Offset(0, 4),
                                       ),
                                     ],
                                   ),
-                                );
-                              },
-                            ),
-                          ),
+                                  child: ListView.builder(
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemCount: 2,
+                                    shrinkWrap: true,
+                                    itemBuilder: (context, index) {
+                                      final review =
+                                          detailController.reviewList[index];
+                                      return Padding(
+                                        padding: const EdgeInsets.only(top: 10),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            ListTile(
+                                              contentPadding: EdgeInsets.zero,
+                                              leading: CachedNetworkImage(
+                                                imageBuilder:
+                                                    (conext, imageUrl) {
+                                                  return CircleAvatar(
+                                                    radius: 30,
+                                                    backgroundImage: imageUrl,
+                                                  );
+                                                },
+                                                progressIndicatorBuilder:
+                                                    (context, url, status) {
+                                                  return Shimmer.fromColors(
+                                                    baseColor: Colors.grey,
+                                                    highlightColor:
+                                                        Colors.white,
+                                                    child: Container(
+                                                      color: Colors.white,
+                                                    ),
+                                                  );
+                                                },
+                                                errorWidget:
+                                                    (context, url, whatever) {
+                                                  return const Text(
+                                                      "Image not available");
+                                                },
+                                                imageUrl: review.user.image,
+                                                fit: BoxFit.contain,
+                                              ),
+                                              title: Text(
+                                                review.user.userName,
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontFamily:
+                                                      TextFontFamily.SEN_BOLD,
+                                                  color: themeController
+                                                          .isLightTheme.value
+                                                      ? ColorResources.black1
+                                                      : ColorResources.white,
+                                                ),
+                                              ),
+                                              subtitle: RatingBar(
+                                                itemSize: 20,
+                                                maxRating: 5,
+                                                initialRating: review.rating,
+                                                itemCount: 5,
+                                                direction: Axis.horizontal,
+                                                ratingWidget: RatingWidget(
+                                                  full: Icon(
+                                                    Icons.star,
+                                                    color:
+                                                        ColorResources.yellow,
+                                                  ),
+                                                  empty: Icon(
+                                                    Icons.star,
+                                                    color:
+                                                        ColorResources.white2,
+                                                  ),
+                                                  half: Icon(Icons.star),
+                                                ),
+                                                onRatingUpdate: (rating) {},
+                                              ),
+                                              trailing: Text(
+                                                DateFormat.yMMMMd()
+                                                    .format(review.dateTime),
+                                                style: TextStyle(
+                                                  fontSize: 10,
+                                                  fontFamily: TextFontFamily
+                                                      .SEN_REGULAR,
+                                                  color: themeController
+                                                          .isLightTheme.value
+                                                      ? ColorResources.grey4
+                                                      : ColorResources.white
+                                                          .withOpacity(0.6),
+                                                ),
+                                              ),
+                                            ),
+                                            Text(
+                                              review.reviewMessage,
+                                              style: TextStyle(
+                                                height: 1.3,
+                                                fontSize: 12,
+                                                fontFamily:
+                                                    TextFontFamily.SEN_REGULAR,
+                                                color: themeController
+                                                        .isLightTheme.value
+                                                    ? ColorResources.grey4
+                                                    : ColorResources.white
+                                                        .withOpacity(0.6),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                )
+                              : const SizedBox(),
                           SizedBox(height: 20),
-                          Row(
+                          /* Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
@@ -1187,8 +962,8 @@ class ProductDetailScreen extends StatelessWidget {
                               ),
                             ],
                           ),
-                          SizedBox(height: 15),
-                          GridView.builder(
+                          SizedBox(height: 15), */
+                          /* GridView.builder(
                             itemCount: topRatedProductList.length,
                             shrinkWrap: true,
                             physics: NeverScrollableScrollPhysics(),
@@ -1327,7 +1102,7 @@ class ProductDetailScreen extends StatelessWidget {
                                 ),
                               );
                             },
-                          ),
+                          ), */
                           SizedBox(height: 50),
                         ],
                       ),

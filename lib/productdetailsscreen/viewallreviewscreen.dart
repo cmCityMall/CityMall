@@ -1,11 +1,16 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:citymall/colors/colors.dart';
+import 'package:citymall/controller/db_data_controller.dart';
 import 'package:citymall/controller/theme_controller.dart';
 import 'package:citymall/images/images.dart';
+import 'package:citymall/productdetailsscreen/product_detail_controller.dart';
 import 'package:citymall/productdetailsscreen/productdetailscreen.dart';
 import 'package:citymall/textstylefontfamily/textfontfamily.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ViewAllReviewScreen extends StatelessWidget {
   ViewAllReviewScreen({Key? key}) : super(key: key);
@@ -13,6 +18,8 @@ class ViewAllReviewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final DBDataController dataController = Get.find();
+    final ProductDetailController detailController = Get.find();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: themeController.isLightTheme.value
@@ -29,7 +36,7 @@ class ViewAllReviewScreen extends StatelessWidget {
           padding: const EdgeInsets.only(left: 25),
           child: InkWell(
             onTap: () {
-              Get.off(ProductDetailScreen());
+              Get.back();
             },
             child: Container(
               decoration: BoxDecoration(
@@ -100,7 +107,9 @@ class ViewAllReviewScreen extends StatelessWidget {
                     RatingBar(
                       itemSize: 20,
                       maxRating: 5,
-                      initialRating: 4,
+                      initialRating:
+                          dataController.selectedProduct.value!.reviewCount +
+                              0.0,
                       itemCount: 5,
                       direction: Axis.horizontal,
                       ratingWidget: RatingWidget(
@@ -118,7 +127,7 @@ class ViewAllReviewScreen extends StatelessWidget {
                     ),
                     SizedBox(width: 8),
                     Text(
-                      "4.5",
+                      "${dataController.selectedProduct.value!.reviewCount + 0.0}",
                       style: TextStyle(
                         fontSize: 12,
                         fontFamily: TextFontFamily.SEN_REGULAR,
@@ -142,9 +151,10 @@ class ViewAllReviewScreen extends StatelessWidget {
                 ),
                 Expanded(
                   child: ListView.builder(
-                    itemCount: 4,
+                    itemCount: detailController.reviewList.length,
                     shrinkWrap: true,
                     itemBuilder: (context, index) {
+                      final review = detailController.reviewList[index];
                       return Padding(
                         padding: const EdgeInsets.only(top: 10),
                         child: Column(
@@ -152,13 +162,31 @@ class ViewAllReviewScreen extends StatelessWidget {
                           children: [
                             ListTile(
                               contentPadding: EdgeInsets.zero,
-                              leading: CircleAvatar(
-                                radius: 30,
-                                backgroundImage:
-                                    AssetImage(Images.reviewprofile),
+                              leading: CachedNetworkImage(
+                                imageBuilder: (conext, imageUrl) {
+                                  return CircleAvatar(
+                                    radius: 30,
+                                    backgroundImage: imageUrl,
+                                  );
+                                },
+                                progressIndicatorBuilder:
+                                    (context, url, status) {
+                                  return Shimmer.fromColors(
+                                    baseColor: Colors.grey,
+                                    highlightColor: Colors.white,
+                                    child: Container(
+                                      color: Colors.white,
+                                    ),
+                                  );
+                                },
+                                errorWidget: (context, url, whatever) {
+                                  return const Text("Image not available");
+                                },
+                                imageUrl: review.user.image,
+                                fit: BoxFit.contain,
                               ),
                               title: Text(
-                                "John Doe",
+                                review.user.userName,
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontFamily: TextFontFamily.SEN_BOLD,
@@ -170,7 +198,7 @@ class ViewAllReviewScreen extends StatelessWidget {
                               subtitle: RatingBar(
                                 itemSize: 20,
                                 maxRating: 5,
-                                initialRating: 4,
+                                initialRating: review.rating,
                                 itemCount: 5,
                                 direction: Axis.horizontal,
                                 ratingWidget: RatingWidget(
@@ -187,7 +215,7 @@ class ViewAllReviewScreen extends StatelessWidget {
                                 onRatingUpdate: (rating) {},
                               ),
                               trailing: Text(
-                                "December 10, 2022",
+                                DateFormat.yMMMMd().format(review.dateTime),
                                 style: TextStyle(
                                   fontSize: 10,
                                   fontFamily: TextFontFamily.SEN_REGULAR,
@@ -198,9 +226,7 @@ class ViewAllReviewScreen extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              "air max are always very comfortable fit, clean and"
-                              "just perfect in every way. just the box was too small"
-                              "and scrunched the sneakers up a little bit,",
+                              review.reviewMessage,
                               style: TextStyle(
                                 height: 1.4,
                                 fontSize: 12,
@@ -215,6 +241,18 @@ class ViewAllReviewScreen extends StatelessWidget {
                       );
                     },
                   ),
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Obx(() => detailController.isFetchMoreLoading.value
+                      ? AnimatedContainer(
+                          duration: const Duration(milliseconds: 500),
+                          curve: Curves.easeIn,
+                          height: 35,
+                          width: 35,
+                          child: const CircularProgressIndicator(),
+                        )
+                      : const SizedBox()),
                 ),
               ],
             ),

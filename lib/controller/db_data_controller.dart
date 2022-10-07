@@ -16,7 +16,9 @@ import '../model/sub_category.dart';
 
 class DBDataController extends GetxController {
   final _database = Database();
-
+  Rxn<Product> selectedProduct = Rxn<Product>();
+  Rxn<TimeSale> selectedTimeSale = Rxn<TimeSale>();
+  Rxn<WeekPromotion> selectedWeekPromotion = Rxn<WeekPromotion>();
   RxMap<String, List<SubCategory>> subCategories =
       <String, List<SubCategory>>{}.obs;
   RxMap<String, bool> subCategoriesLoading = <String, bool>{}.obs;
@@ -27,7 +29,6 @@ class DBDataController extends GetxController {
   RxList<Product> homePopularProducts = <Product>[].obs;
 
   RxList<MainCategory> menuMainCategories = <MainCategory>[].obs;
-  RxList<MainCategory> mainCategories = <MainCategory>[].obs;
   RxList<TimeSale> timeSales = <TimeSale>[].obs;
   RxList<WeekPromotion> weekPromotions = <WeekPromotion>[].obs;
   RxList<Advertisement> advertisements = <Advertisement>[].obs;
@@ -36,6 +37,11 @@ class DBDataController extends GetxController {
   RxMap<String, List<Product>> popularProducts = <String, List<Product>>{}.obs;
   RxMap<String, List<Product>> newProducts = <String, List<Product>>{}.obs;
   RxMap<String, List<Product>> sliderProducts = <String, List<Product>>{}.obs;
+  RxMap<String, List<Product>> brandProducts = <String, List<Product>>{}.obs;
+  RxMap<String, List<Product>> shopProducts = <String, List<Product>>{}.obs;
+
+  RxList<Brand> brandRxList = <Brand>[].obs;
+  RxList<Shop> shopRxList = <Shop>[].obs;
 
   /// For Loading */
   RxMap<String, bool> productsLoading = <String, bool>{}.obs;
@@ -43,14 +49,21 @@ class DBDataController extends GetxController {
   RxMap<String, bool> popularProductsLoading = <String, bool>{}.obs;
   RxMap<String, bool> newProductsLoading = <String, bool>{}.obs;
   RxMap<String, bool> sliderProductsLoading = <String, bool>{}.obs;
+  RxMap<String, bool> brandProductLoading = <String, bool>{}.obs;
+  RxMap<String, bool> shopProductLoading = <String, bool>{}.obs;
+
   var advertisementLoading = true.obs;
   var promotionsLoading = true.obs;
   var timeSaleLoading = true.obs;
   var mainCategoryLoading = false.obs;
   var menuMainCategoryLoading = true.obs;
+  var brandLoading = true.obs;
+  var shopLoading = true.obs;
 
   ///For temporary Data */
   List<AuthUser> authUsers = [];
+  Rxn<Brand> selectedBrand = Rxn<Brand>();
+  Rxn<Shop> selectedShop = Rxn<Shop>();
   String mainId = "";
   String subId = "";
   String mainName = "";
@@ -58,6 +71,12 @@ class DBDataController extends GetxController {
   Product? editProduct;
 
   ///For temporary Function */
+  void setSelectedTimeSale(TimeSale t) => selectedTimeSale.value = t;
+  void setSelectedWeekPromotion(WeekPromotion w) =>
+      selectedWeekPromotion.value = w;
+  void setSelectedProduct(Product p) => selectedProduct.value = p;
+  void setSelectedBrand(Brand brand) => selectedBrand.value = brand;
+  void setSelectedShop(Shop shop) => selectedShop.value = shop;
   void setEditProduct(Product? value) => editProduct = value;
   void setSelectedMain(String id, String name) {
     mainId = id;
@@ -69,24 +88,10 @@ class DBDataController extends GetxController {
     subName = name;
   }
 
-  /// Main Category Fetch */
-  Future<void> getInitialMainCategories() async {
-    mainCategoryLoading.value = true;
-    try {
-      final result = await _database.getInitialWhere(
-          mainCategoryCollection, "isMenu", false, 20);
-      mainCategories.value =
-          result.docs.map((e) => MainCategory.fromJson(e.data())).toList();
-    } catch (e) {
-      debugPrint("******Something was wrong with $e");
-    }
-    mainCategoryLoading.value = false;
-  }
-
   Future<void> getMoreMenuMainCategories() async {
     try {
-      final result = await _database.fetchMoreWhere(
-          mainCategoryCollection, [mainCategories.last.id], "isMenu", true);
+      final result = await _database.fetchMore(
+          mainCategoryCollection, menuMainCategories.last.toJson()["dateTime"]);
       List<MainCategory> list =
           result.docs.map((e) => MainCategory.fromJson(e.data())).toList();
       for (var element in list) {
@@ -99,8 +104,7 @@ class DBDataController extends GetxController {
 
   Future<void> getInitialMenuMainCategories() async {
     try {
-      final result = await _database.getInitialWhere(
-          mainCategoryCollection, "isMenu", true, 20);
+      final result = await _database.getInitial(mainCategoryCollection, 20);
       menuMainCategories.value =
           result.docs.map((e) => MainCategory.fromJson(e.data())).toList();
     } catch (e) {
@@ -339,13 +343,134 @@ class DBDataController extends GetxController {
       debugPrint("Something went wrong with $e");
     }
   }
+
+  //**End */
+  //**Get and Get More For Brands */
+  Future<void> getInitialBrands() async {
+    brandLoading.value = true;
+    try {
+      final result = await _database.getInitial(brandCollection, 15);
+      brandRxList.value =
+          result.docs.map((e) => Brand.fromJson(e.data())).toList();
+    } catch (e) {
+      debugPrint("*****Get Initial Brand Error: $e");
+    }
+    brandLoading.value = false;
+  }
+
+  Future<void> getMoreBrands(String dateTimeJson) async {
+    try {
+      final result = await _database.fetchMore(brandCollection, dateTimeJson);
+      if (result.docs.isNotEmpty) {
+        for (var element in result.docs) {
+          brandRxList.add(Brand.fromJson(element.data()));
+        }
+      }
+    } catch (e) {
+      debugPrint("*****Get Initial Brand Error: $e");
+    }
+  }
+
+  //**End */
+  //**Get and Get More For Shops */
+  Future<void> getInitialShops() async {
+    shopLoading.value = true;
+    try {
+      final result = await _database.getInitial(shopCollection, 15);
+      shopRxList.value =
+          result.docs.map((e) => Shop.fromJson(e.data())).toList();
+    } catch (e) {
+      debugPrint("*****Get Initial Shop Error: $e");
+    }
+    shopLoading.value = false;
+  }
+
+  Future<void> getMoreShops(String dateTimeJson) async {
+    try {
+      final result = await _database.fetchMore(shopCollection, dateTimeJson);
+      if (result.docs.isNotEmpty) {
+        for (var element in result.docs) {
+          shopRxList.add(Shop.fromJson(element.data()));
+        }
+      }
+    } catch (e) {
+      debugPrint("*****Get Initial Shop Error: $e");
+    }
+  }
+
+  //**End */
+  //**Get and Get More For BrandDetail and ShopDetail */
+  Future<void> getInitialBrandProducts(String brandId, [int limit = 10]) async {
+    if (!(brandProducts[brandId] == null) ||
+        brandProducts[brandId]?.isNotEmpty == true) {
+      return;
+    }
+    brandProductLoading.putIfAbsent(brandId, () => true);
+    try {
+      final result = await _database.getInitialWhere(
+          productCollection, "brandId", brandId);
+      brandProducts.putIfAbsent(brandId,
+          () => result.docs.map((e) => Product.fromJson(e.data())).toList());
+    } catch (e) {
+      debugPrint("Something went wrong with $e");
+    }
+    brandProductLoading[brandId] = false;
+  }
+
+  Future<void> getMoreBrandProducts(String brandId, List<String> startAfterId,
+      [int limit = 10]) async {
+    try {
+      final result = await _database.fetchMoreWhere(
+          productCollection, startAfterId, "brandId", brandId);
+      final previousList = brandProducts[brandId];
+      for (var element in result.docs) {
+        previousList?.add(Product.fromJson(element.data()));
+      }
+      brandProducts[brandId] = previousList ?? [];
+    } catch (e) {
+      debugPrint("Something went wrong with $e");
+    }
+  }
+
+  Future<void> getInitialShopProducts(String shopId, [int limit = 10]) async {
+    if (!(shopProducts[shopId] == null) ||
+        shopProducts[shopId]?.isNotEmpty == true) {
+      return;
+    }
+    shopProductLoading.putIfAbsent(shopId, () => true);
+    try {
+      final result =
+          await _database.getInitialWhere(productCollection, "shopId", shopId);
+      shopProducts.putIfAbsent(shopId,
+          () => result.docs.map((e) => Product.fromJson(e.data())).toList());
+    } catch (e) {
+      debugPrint("Something went wrong with $e");
+    }
+    shopProductLoading[shopId] = false;
+  }
+
+  Future<void> getMoreShopProducts(String shopId, List<String> startAfterId,
+      [int limit = 10]) async {
+    try {
+      final result = await _database.fetchMoreWhere(
+          productCollection, startAfterId, "shopId", shopId);
+      final previousList = shopProducts[shopId];
+      for (var element in result.docs) {
+        previousList?.add(Product.fromJson(element.data()));
+      }
+      shopProducts[shopId] = previousList ?? [];
+    } catch (e) {
+      debugPrint("Something went wrong with $e");
+    }
+  }
   //**End */
 
   @override
   void onInit() {
     getInitialMenuMainCategories();
-    getInitialMainCategories();
     getInitialHomeProducts();
+    getInitialShops();
+    getInitialBrands();
     watchStream();
     super.onInit();
   }

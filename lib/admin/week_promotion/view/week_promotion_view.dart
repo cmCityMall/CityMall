@@ -13,6 +13,7 @@ import '../../../model/product.dart';
 import '../../../widgets/form/custon_swich.dart';
 import '../../../widgets/form/image_pick_form.dart';
 import '../../../widgets/form/text_form.dart';
+import '../../selectable_bottom_sheet.dart';
 
 class WeekPromotionView extends StatelessWidget {
   const WeekPromotionView({Key? key}) : super(key: key);
@@ -366,82 +367,6 @@ class WeekPromotionView extends StatelessWidget {
           ),
         );
       }),
-    );
-  }
-}
-
-class SelectableBottomSheet extends StatelessWidget {
-  const SelectableBottomSheet({
-    Key? key,
-    required this.list,
-    required this.selectedObxMap,
-    required this.pressedCancelButton,
-    required this.pressedSaveButton,
-    required this.selectedProduct,
-  }) : super(key: key);
-
-  final List<Product> list;
-  final RxMap<String, Product> selectedObxMap;
-  final void Function(Product product) selectedProduct;
-  final void Function() pressedCancelButton;
-  final void Function() pressedSaveButton;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white,
-      child: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: list.length,
-              itemBuilder: (context, index) {
-                final product = list[index];
-
-                return Obx(() {
-                  final map = selectedObxMap;
-                  final isSelected = map.containsKey(product.id);
-                  return InkWell(
-                    onTap: () => selectedProduct(product),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        color: isSelected ? Colors.green : Colors.white,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(product.name,
-                              style: TextStyle(
-                                color: isSelected ? Colors.white : Colors.black,
-                              )),
-                        ),
-                      ),
-                    ),
-                  );
-                });
-              },
-            ),
-          ),
-          SizedBox(
-              height: 50,
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Get.back();
-                        pressedCancelButton();
-                      },
-                      child: const Text("Cancel"),
-                    ),
-                    const SizedBox(width: 15),
-                    ElevatedButton(
-                      onPressed: () => pressedSaveButton(),
-                      child: const Text("Save"),
-                    ),
-                  ])),
-        ],
-      ),
     );
   }
 }

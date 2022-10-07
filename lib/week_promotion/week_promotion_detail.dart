@@ -12,32 +12,14 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 // ignore: must_be_immutable
-class MenuViewAllScreen extends StatefulWidget {
-  MenuViewAllScreen({Key? key}) : super(key: key);
+class WeekPromotionViewAll extends StatelessWidget {
+  WeekPromotionViewAll({Key? key}) : super(key: key);
 
-  @override
-  State<MenuViewAllScreen> createState() => _MenuViewAllScreenState();
-}
-
-class _MenuViewAllScreenState extends State<MenuViewAllScreen> {
   final ThemeController themeController = Get.put(ThemeController());
-
-  @override
-  void initState() {
-    Get.put(MenuViewAllScreenController());
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    Get.delete<MenuViewAllScreenController>();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     final DBDataController dataController = Get.find();
-    final MenuViewAllScreenController menuController = Get.find();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: themeController.isLightTheme.value
@@ -85,7 +67,7 @@ class _MenuViewAllScreenState extends State<MenuViewAllScreen> {
           ),
         ),
         title: Text(
-          "Categories",
+          "Week Promotions",
           style: TextStyle(
             fontFamily: TextFontFamily.SEN_BOLD,
             fontSize: 22,
@@ -117,14 +99,13 @@ class _MenuViewAllScreenState extends State<MenuViewAllScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Obx(() {
-              final list = dataController.menuMainCategories;
+              final list = dataController.weekPromotions;
               return Expanded(
                 child: GridView.builder(
-                    controller: menuController.scrollController,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 4,
-                      childAspectRatio: 0.6,
+                      crossAxisCount: 3,
+                      childAspectRatio: 0.7,
                       crossAxisSpacing: 1,
                       mainAxisSpacing: 1,
                     ),
@@ -150,7 +131,7 @@ class _MenuViewAllScreenState extends State<MenuViewAllScreen> {
                                 Expanded(child: Image.network(cat.image)),
                                 const SizedBox(height: 8),
                                 Text(
-                                  cat.name,
+                                  cat.desc,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 10,
@@ -169,15 +150,6 @@ class _MenuViewAllScreenState extends State<MenuViewAllScreen> {
               );
             }),
             //Loading
-            Obx(() => menuController.isLoading.value
-                ? AnimatedContainer(
-                    duration: const Duration(milliseconds: 500),
-                    curve: Curves.easeIn,
-                    height: 35,
-                    width: 35,
-                    child: const CircularProgressIndicator(),
-                  )
-                : const SizedBox()),
           ],
         ),
       ),

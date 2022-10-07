@@ -123,11 +123,7 @@ class ShopController extends GetxController {
   Future<void> getProductsExceptCurrentShop(String shopId) async {
     addProductLoading.value = true;
     try {
-      _database.firestore
-          .collection(productCollection)
-          .where("shopId", isNotEqualTo: shopId)
-          .get()
-          .then((value) {
+      _database.firestore.collection(productCollection).get().then((value) {
         productList.value =
             value.docs.map((e) => Product.fromJson(e.data())).toList();
         addProductLoading.value = false;
