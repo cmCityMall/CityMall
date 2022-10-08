@@ -13,15 +13,17 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
+import '../controller/wppd_controller.dart';
+
 // ignore: must_be_immutable
-class FlashSaleDetailView extends StatelessWidget {
-  FlashSaleDetailView({Key? key}) : super(key: key);
+class WPPDView extends StatelessWidget {
+  WPPDView({Key? key}) : super(key: key);
   final ThemeController themeController = Get.put(ThemeController());
 
   @override
   Widget build(BuildContext context) {
     final DBDataController dataController = Get.find();
-    final FSPDController fspdController = Get.find();
+    final WPPDController wppdController = Get.find();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: themeController.isLightTheme.value
@@ -264,7 +266,7 @@ class FlashSaleDetailView extends StatelessWidget {
                                 Row(
                                   children: [
                                     Text(
-                                      "${fspdController.discountPrice.value}",
+                                      "${wppdController.discountPrice.value}",
                                       style: TextStyle(
                                         fontFamily:
                                             TextFontFamily.SEN_EXTRA_BOLD,

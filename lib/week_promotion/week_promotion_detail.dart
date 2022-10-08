@@ -7,6 +7,8 @@ import 'package:citymall/images/images.dart';
 import 'package:citymall/notificationscreen/notificationscreen.dart';
 import 'package:citymall/rout_screens/rout_1.dart';
 import 'package:citymall/textstylefontfamily/textfontfamily.dart';
+import 'package:citymall/wppd/bin/wppd_binding.dart';
+import 'package:citymall/wppd/view/wppd_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -36,12 +38,7 @@ class WeekPromotionViewAll extends StatelessWidget {
           padding: const EdgeInsets.only(left: 25),
           child: InkWell(
             onTap: () {
-              selectedIndex = 0;
-              Navigator.of(context, rootNavigator: true).pushReplacement(
-                MaterialPageRoute(
-                  builder: (context) => NavigationBarBottom(),
-                ),
-              );
+              Get.back();
             },
             child: Container(
               decoration: BoxDecoration(
@@ -115,7 +112,10 @@ class WeekPromotionViewAll extends StatelessWidget {
                       final cat = list[index];
                       return InkWell(
                         onTap: () {
-                          Get.off(CameraDeshBoard());
+                          Get.to(
+                            () => WPPDView(),
+                            binding: WPPDBinding(),
+                          );
                         },
                         child: Card(
                           elevation: 5,

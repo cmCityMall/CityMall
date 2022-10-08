@@ -67,75 +67,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  /*  List<Map>  = [
-    {
-      "image": Images.slider1,
-    },
-    {
-      "image": Images.slider2,
-    },
-    {
-      "image": Images.slider3,
-    },
-  ]; */
-
-  /* List<Map> menuList = [
-    {
-      "image": Images.camera,
-      "text": "Camera",
-    },
-    {
-      "image": Images.food,
-      "text": "Food ",
-    },
-    {
-      "image": Images.handphone,
-      "text": "Hand\nphone",
-    },
-    {
-      "image": Images.gamming,
-      "text": "Gamming",
-    },
-    {
-      "image": Images.food,
-      "text": "Food ",
-    },
-  ]; */
-
-  List<Map> weekPromotionList = [
-    {
-      "image": Images.phoneimage,
-      "text": "Discount 10%",
-    },
-    {
-      "image": Images.clothesimage,
-      "text": "Start From 50\$",
-    },
-    {
-      "image": Images.cosmaticsimage,
-      "text": "Start From 50\$",
-    },
-  ];
-
-  List<Map> categoryList = [
-    {
-      "image": Images.fashionman,
-      "text": "Fashion Man",
-    },
-    {
-      "image": Images.smartphone,
-      "text": "Smart Phone",
-    },
-    {
-      "image": Images.fashiongirl,
-      "text": "Fashion Girl",
-    },
-    {
-      "image": Images.smartphone,
-      "text": "Smart Phone",
-    },
-  ];
-
   Text text(String text) {
     return Text(
       text,
@@ -326,7 +257,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         dbDataController
                             .getInitialPopularProducts(mainCategory.id);
                         dbDataController.getInitialNewProducts(mainCategory.id);
-                        Get.off(CameraDeshBoard());
+                        Get.off(() => CameraDeshBoard());
                       },
                       child: Card(
                         elevation: 5,
@@ -486,7 +417,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onTap: () {
                     flashController.setSelectedFlash(timeSale);
                     flashController.getInitialProducts(timeSale.id);
-                    Get.off(() => FlashSaleScreen());
+                    Get.to(() => FlashSaleScreen());
                   },
                   child: Container(
                     height: 130,
@@ -751,7 +682,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   InkWell(
                     onTap: () {
-                      Get.off(RecomendedScreen());
+                      Get.to(() => RecomendedScreen());
                     },
                     child: Row(
                       children: [

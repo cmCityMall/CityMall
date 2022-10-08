@@ -4,6 +4,7 @@ import 'package:citymall/controller/db_data_controller.dart';
 import 'package:citymall/controller/flash_sale_controller.dart';
 import 'package:citymall/controller/theme_controller.dart';
 import 'package:citymall/controller/weekpromotionfavoritecontroller.dart';
+import 'package:citymall/flashsale_product_detail/view/flashsale_product_detail_view.dart';
 import 'package:citymall/homescreen/cameradashboardscreen/cameradetailscreen.dart';
 import 'package:citymall/images/images.dart';
 import 'package:citymall/rout_screens/rout_1.dart';
@@ -14,6 +15,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+
+import '../../flashsale_product_detail/bin/fspd_binding.dart';
 
 // ignore: must_be_immutable
 class FlashSaleScreen extends StatelessWidget {
@@ -224,7 +227,10 @@ class FlashSaleScreen extends StatelessWidget {
                                 flashController.selectedFlash.value!);
                             dataController.setSelectedProduct(product);
 
-                            Get.to(() => CameraDetailScreen());
+                            Get.to(
+                              () => FlashSaleDetailView(),
+                              binding: FSPDBinding(),
+                            );
                           },
                           child: Container(
                             decoration: BoxDecoration(

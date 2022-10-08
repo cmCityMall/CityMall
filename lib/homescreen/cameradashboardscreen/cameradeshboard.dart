@@ -3,8 +3,11 @@ import 'package:citymall/colors/colors.dart';
 import 'package:citymall/controller/camerahomefavoritecontroller.dart';
 import 'package:citymall/controller/db_data_controller.dart';
 import 'package:citymall/controller/theme_controller.dart';
+import 'package:citymall/discount_product_viewall/bin/dpva_binding.dart';
+import 'package:citymall/discount_product_viewall/view/dpva_view.dart';
 import 'package:citymall/homescreen/cameradashboardscreen/actionscreen.dart';
-import 'package:citymall/homescreen/cameradashboardscreen/camerasubcategoryviewallscreen.dart';
+import 'package:citymall/homescreen/subcategoryview_all/bin/scva_binding.dart';
+import 'package:citymall/homescreen/subcategoryview_all/view/subcategory_view_all.dart';
 import 'package:citymall/images/images.dart';
 import 'package:citymall/rout_screens/rout_1.dart';
 import 'package:citymall/searchscreen/subsearchscreen.dart';
@@ -14,6 +17,12 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
+import '../../new_products_viewall/bin/npva_binding.dart';
+import '../../new_products_viewall/view/npva_view.dart';
+import '../../popular_produts_viewall/bin/ppva_binding.dart';
+import '../../popular_produts_viewall/view/ppva_view.dart';
+import '../../productdetailsscreen/product_detail_binding.dart';
+import '../../productdetailsscreen/productdetailscreen.dart';
 import '../../utils/widgets/empty_widgt.dart';
 import '../../utils/widgets/loading_widget.dart';
 
@@ -23,89 +32,6 @@ class CameraDeshBoard extends StatelessWidget {
   final ThemeController themeController = Get.put(ThemeController());
   final CameraHomeFavouriteController favorite =
       Get.put(CameraHomeFavouriteController());
-  /* List<Map> cameraSliderlist = [
-    {
-      "image": Images.cameraslider1,
-    },
-    {
-      "image": Images.cameraslider2,
-    },
-    {
-      "image": Images.cameraslider3,
-    },
-  ];
-
-  List<Map> cameraHomeGridList = [
-    {
-      "image": Images.action,
-      "text": "Action",
-    },
-    {
-      "image": Images.digital,
-      "text": "Digital",
-    },
-    {
-      "image": Images.analog,
-      "text": "Analog",
-    },
-    {
-      "image": Images.drone,
-      "text": "Drone",
-    },
-    {
-      "image": Images.handycam,
-      "text": "Handycam",
-    },
-    {
-      "image": Images.cctv,
-      "text": "CCTV",
-    },
-  ];
-
-  List<Map> itemDiscountList = [
-    {
-      "image": Images.weekc3,
-      "text": "Action Camera\nHDR",
-      "text1": "10%",
-      "price": "\$200,00",
-    },
-    {
-      "image": Images.weekc4,
-      "text": "Compact Camera\nHigh...",
-      "text1": "30%",
-      "price": "\$299,43",
-    },
-  ];
-
-  List<Map> itemPopularList = [
-    {
-      "image": Images.weekc1,
-      "text": "Action Camera\nHDR",
-      "text1": "10%",
-      "price": "\$200,43",
-    },
-    {
-      "image": Images.weekc2,
-      "text": "Compact Camera\nHigh...",
-      "text1": "30%",
-      "price": "\$299,43",
-    },
-  ];
-
-  List<Map> newItemList = [
-    {
-      "image": Images.weekc3,
-      "text": "Action Camera\nHDR",
-      "text1": "10%",
-      "price": "\$200,00",
-    },
-    {
-      "image": Images.weekc4,
-      "text": "Compact Camera\nHigh...",
-      "text1": "30%",
-      "price": "\$299,43",
-    },
-  ]; */
 
   @override
   Widget build(BuildContext context) {
@@ -126,11 +52,7 @@ class CameraDeshBoard extends StatelessWidget {
           padding: const EdgeInsets.only(left: 25),
           child: InkWell(
             onTap: () {
-              selectedIndex = 0;
-              Navigator.of(context, rootNavigator: true)
-                  .pushReplacement(MaterialPageRoute(
-                builder: (context) => NavigationBarBottom(),
-              ));
+              Get.back();
             },
             child: Container(
               decoration: BoxDecoration(
@@ -156,7 +78,7 @@ class CameraDeshBoard extends StatelessWidget {
           ),
         ),
         title: Text(
-          "Camera",
+          dbDataController.mainName,
           style: TextStyle(
             fontFamily: TextFontFamily.SEN_BOLD,
             fontSize: 22,
@@ -170,7 +92,7 @@ class CameraDeshBoard extends StatelessWidget {
             padding: const EdgeInsets.only(right: 25),
             child: InkWell(
               onTap: () {
-                Get.off(SubSearchScreen());
+                Get.to(() => SubSearchScreen());
               },
               child: SvgPicture.asset(
                 Images.search,
@@ -288,12 +210,20 @@ class CameraDeshBoard extends StatelessWidget {
                             ),
                             InkWell(
                               onTap: () {
-                                Navigator.pushReplacement(
+                                dbDataController.getMoreSubCategories(
+                                  dbDataController.mainId,
+                                  20,
+                                );
+                                Get.to(
+                                  () => SubCategoryViewAll(),
+                                  binding: SCVABinding(),
+                                );
+                                /* Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
                                           CameraSubCategoryViewAllScreen(),
-                                    ));
+                                    )); */
                               },
                               child: Row(
                                 children: [
@@ -380,7 +310,7 @@ class CameraDeshBoard extends StatelessWidget {
                           }),
                         ),
                         SizedBox(height: 20),
-                        Row(
+                        /* Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
@@ -395,11 +325,8 @@ class CameraDeshBoard extends StatelessWidget {
                             ),
                             InkWell(
                               onTap: () {
-                                // Navigator.pushReplacement(
-                                //     context,
-                                //     MaterialPageRoute(
-                                //       builder: (context) => MenuScreen(),
-                                //     ));
+                                Get.to(() => DPVAView(),
+                                    binding: DPVABinding());
                               },
                               child: Row(
                                 children: [
@@ -485,7 +412,7 @@ class CameraDeshBoard extends StatelessWidget {
                                                     BorderRadius.circular(15),
                                                 //color: ColorResources.white6,
                                                 image: DecorationImage(
-                                                    image: AssetImage(
+                                                    image: NetworkImage(
                                                       dataList[index]
                                                           .images
                                                           .first,
@@ -610,7 +537,7 @@ class CameraDeshBoard extends StatelessWidget {
                             },
                           );
                         }),
-                        SizedBox(height: 20),
+                        SizedBox(height: 20), */
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -626,11 +553,8 @@ class CameraDeshBoard extends StatelessWidget {
                             ),
                             InkWell(
                               onTap: () {
-                                // Navigator.pushReplacement(
-                                //     context,
-                                //     MaterialPageRoute(
-                                //       builder: (context) => MenuScreen(),
-                                //     ));
+                                Get.to(() => PPVAView(),
+                                    binding: PPVABinding());
                               },
                               child: Row(
                                 children: [
@@ -678,7 +602,14 @@ class CameraDeshBoard extends StatelessWidget {
                             ),
                             itemBuilder: (context, index) {
                               return InkWell(
-                                onTap: () {},
+                                onTap: () {
+                                  dbDataController
+                                      .setSelectedProduct(dataList[index]);
+                                  Get.to(
+                                    () => ProductDetailScreen(),
+                                    binding: ProductDetailBinding(),
+                                  );
+                                },
                                 child: Container(
                                   decoration: BoxDecoration(
                                     color: themeController.isLightTheme.value
@@ -717,7 +648,7 @@ class CameraDeshBoard extends StatelessWidget {
                                                     BorderRadius.circular(15),
                                                 //color: ColorResources.white6,
                                                 image: DecorationImage(
-                                                    image: AssetImage(
+                                                    image: NetworkImage(
                                                       dataList[index]
                                                           .images
                                                           .first,
@@ -858,11 +789,10 @@ class CameraDeshBoard extends StatelessWidget {
                             ),
                             InkWell(
                               onTap: () {
-                                // Navigator.pushReplacement(
-                                //     context,
-                                //     MaterialPageRoute(
-                                //       builder: (context) => MenuScreen(),
-                                //     ));
+                                Get.to(
+                                  () => NPVAView(),
+                                  binding: NPVABinding(),
+                                );
                               },
                               child: Row(
                                 children: [
@@ -909,7 +839,14 @@ class CameraDeshBoard extends StatelessWidget {
                             ),
                             itemBuilder: (context, index) {
                               return InkWell(
-                                onTap: () {},
+                                onTap: () {
+                                  dbDataController
+                                      .setSelectedProduct(dataList[index]);
+                                  Get.to(
+                                    () => ProductDetailScreen(),
+                                    binding: ProductDetailBinding(),
+                                  );
+                                },
                                 child: Container(
                                   decoration: BoxDecoration(
                                     color: themeController.isLightTheme.value

@@ -54,12 +54,7 @@ class _MenuViewAllScreenState extends State<MenuViewAllScreen> {
           padding: const EdgeInsets.only(left: 25),
           child: InkWell(
             onTap: () {
-              selectedIndex = 0;
-              Navigator.of(context, rootNavigator: true).pushReplacement(
-                MaterialPageRoute(
-                  builder: (context) => NavigationBarBottom(),
-                ),
-              );
+              Get.back();
             },
             child: Container(
               decoration: BoxDecoration(
@@ -134,7 +129,17 @@ class _MenuViewAllScreenState extends State<MenuViewAllScreen> {
                       final cat = list[index];
                       return InkWell(
                         onTap: () {
-                          Get.off(CameraDeshBoard());
+                          ///Make Sure To Do Require Function*/
+                          dataController.setSelectedMain(
+                            cat.id,
+                            cat.name,
+                          );
+                          dataController.getInitialSubCategories(cat.id);
+                          dataController.getSliderProducts(cat.id);
+                          dataController.getInitialDiscountProducts(cat.id);
+                          dataController.getInitialPopularProducts(cat.id);
+                          dataController.getInitialNewProducts(cat.id);
+                          Get.off(() => CameraDeshBoard());
                         },
                         child: Card(
                           elevation: 5,

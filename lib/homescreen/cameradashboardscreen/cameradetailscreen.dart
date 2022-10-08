@@ -47,7 +47,7 @@ class CameraDetailScreen extends StatelessWidget {
               padding: const EdgeInsets.only(left: 25),
               child: InkWell(
                 onTap: () {
-                  Get.off(FlashSaleScreen());
+                  Get.back();
                 },
                 child: Container(
                   decoration: BoxDecoration(

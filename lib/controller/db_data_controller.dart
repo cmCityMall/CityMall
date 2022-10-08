@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:citymall/constant/collection_path.dart';
 import 'package:citymall/model/advertisement.dart';
 import 'package:citymall/model/auth_user.dart';
@@ -137,16 +139,18 @@ class DBDataController extends GetxController {
   /// Product Fetch */
   Future<void> getInitialDiscountProducts(String mainId,
       [int limit = 10]) async {
-    if (!(discountProducts[mainId] == null) ||
+    if (!(discountProducts[mainId] == null) &&
         discountProducts[mainId]?.isNotEmpty == true) {
       return;
     }
     discountProductsLoading.putIfAbsent(mainId, () => true);
     try {
+      log("*****Getting initial dicount product...***");
       final result = await _database.getInitialWhereTwo(productCollection,
           "mainCategoryId", mainId, "promotion", 0, "promotion");
       discountProducts.putIfAbsent(mainId,
           () => result.docs.map((e) => Product.fromJson(e.data())).toList());
+      log("****Discount Product: ${discountProducts[mainId]?.length}");
     } catch (e) {
       debugPrint("Something went wrong with $e");
     }
@@ -228,6 +232,26 @@ class DBDataController extends GetxController {
       debugPrint("Something went wrong with $e");
     }
     productsLoading[subCategoryId] = false;
+  }
+
+  Future<void> getMoreSubCategories(String parentId, int limit) async {
+    try {
+      final result = await _database.fetchMoreWhere(
+          subCategoryCollection,
+          [subCategories[parentId]!.last.toJson()["dateTime"]],
+          "parentId",
+          parentId,
+          limit);
+      if (result.docs.isNotEmpty) {
+        for (var e in result.docs) {
+          subCategories[parentId]!.add(
+            SubCategory.fromJson(e.data()),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint("****Something is wrong with $e");
+    }
   }
 
   Future<void> getMoreProducts(String subCategoryId, List<String> startAfterId,

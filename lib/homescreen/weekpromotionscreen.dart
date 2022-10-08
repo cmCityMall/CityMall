@@ -1,3 +1,4 @@
+import 'package:citymall/controller/db_data_controller.dart';
 import 'package:citymall/controller/week_promotion_controller.dart';
 import 'package:citymall/colors/colors.dart';
 import 'package:citymall/controller/theme_controller.dart';
@@ -10,6 +11,9 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
+import '../wppd/bin/wppd_binding.dart';
+import '../wppd/view/wppd_view.dart';
+
 // ignore: must_be_immutable
 class WeekPromotionScreen extends StatelessWidget {
   WeekPromotionScreen({Key? key}) : super(key: key);
@@ -21,6 +25,7 @@ class WeekPromotionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final DBDataController dataController = Get.find();
     final WeekPromotionControllerUser weekPromotionController = Get.find();
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -38,11 +43,7 @@ class WeekPromotionScreen extends StatelessWidget {
           padding: const EdgeInsets.only(left: 25),
           child: InkWell(
             onTap: () {
-              selectedIndex = 0;
-              Navigator.of(context, rootNavigator: true)
-                  .pushReplacement(MaterialPageRoute(
-                builder: (context) => NavigationBarBottom(),
-              ));
+              Get.back();
             },
             child: Container(
               decoration: BoxDecoration(
@@ -222,7 +223,16 @@ class WeekPromotionScreen extends StatelessWidget {
                                     .value!.descountPrice!,
                           );
                           return InkWell(
-                            onTap: () {},
+                            onTap: () {
+                              dataController.setSelectedWeekPromotion(
+                                  weekPromotionController
+                                      .selectedWeekPromotion.value!);
+                              dataController.setSelectedProduct(p);
+                              Get.to(
+                                () => WPPDView(),
+                                binding: WPPDBinding(),
+                              );
+                            },
                             child: Container(
                               decoration: BoxDecoration(
                                 color: themeController.isLightTheme.value

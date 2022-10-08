@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_swipe_action_cell/core/cell.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../../utils/widgets/empty_widgt.dart';
+import '../../../utils/widgets/loading_widget.dart';
 import '../../../widgets/form/custon_swich.dart';
 import '../../../widgets/form/image_pick_form.dart';
 import '../../../widgets/form/text_form.dart';
+import '../../selectable_bottom_sheet.dart';
 import '../controller/mc_controller.dart';
 
 class MCView extends StatelessWidget {
@@ -143,6 +146,130 @@ class MCView extends StatelessWidget {
                                           padding: EdgeInsets.all(8.0),
                                           child: Text(
                                             "DELETE",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      color: Colors.white,
+                                    ),
+                                    //Add Product
+                                    SwipeAction(
+                                      onTap: (CompletionHandler _) async {
+                                        await _(false);
+                                        await mcController.getSubCategoryAll(
+                                            advertisement.id);
+                                        Get.bottomSheet(
+                                          Obx(() {
+                                            if (mcController
+                                                .addSubCategoryLoading.value) {
+                                              return const Card(
+                                                  child: LoadingWidget());
+                                            }
+                                            if (mcController
+                                                .subCategoryList.isEmpty) {
+                                              return const Card(
+                                                child: EmptyWidget(
+                                                    "No sub category found."),
+                                              );
+                                            }
+                                            return SelectableSubCategoriesBottomSheet(
+                                              list:
+                                                  mcController.subCategoryList,
+                                              selectedObxMap: mcController
+                                                  .selectedSubCategorysMap,
+                                              pressedCancelButton: () {
+                                                mcController
+                                                    .selectedSubCategorysMap
+                                                    .clear();
+                                                mcController
+                                                    .removedSubCategorysMap
+                                                    .clear();
+                                              },
+                                              pressedSaveButton: () =>
+                                                  mcController
+                                                      .addSubCategoryToMain(
+                                                          advertisement.id),
+                                              selectedSubCategory: (s) =>
+                                                  mcController
+                                                      .selectSubOrNot(s),
+                                            );
+                                          }),
+                                          isDismissible: false,
+                                        );
+                                      },
+                                      content: Container(
+                                        color: Colors.green,
+                                        height: 50,
+                                        child: const Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                            "  Add\nub categories",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      color: Colors.white,
+                                    ),
+                                    //Remove Product
+                                    SwipeAction(
+                                      onTap: (CompletionHandler _) async {
+                                        await _(false);
+                                        await mcController
+                                            .getSubCategoryFromMain(
+                                                advertisement.id);
+                                        Get.bottomSheet(
+                                          Obx(() {
+                                            final isLoading = mcController
+                                                .removeSubCategoryLoading.value;
+                                            final selectedMap = mcController
+                                                .removedSubCategorysMap;
+                                            if (isLoading) {
+                                              return const Card(
+                                                  child: LoadingWidget());
+                                            }
+                                            if (selectedMap.isEmpty) {
+                                              return const Card(
+                                                child: EmptyWidget(
+                                                    "No sub categories found."),
+                                              );
+                                            }
+                                            return SelectableSubCategoriesBottomSheet(
+                                              list: mcController
+                                                  .removedSubCategorysMap
+                                                  .entries
+                                                  .map((e) => e.value)
+                                                  .toList(),
+                                              selectedObxMap: mcController
+                                                  .selectedSubCategorysMap,
+                                              pressedCancelButton: () {
+                                                mcController
+                                                    .selectedSubCategorysMap
+                                                    .clear();
+                                                mcController
+                                                    .removedSubCategorysMap
+                                                    .clear();
+                                              },
+                                              pressedSaveButton: () => mcController
+                                                  .removeSubCategoriesFromMain(),
+                                              selectedSubCategory: (s) =>
+                                                  mcController
+                                                      .selectSubOrNot(s),
+                                            );
+                                          }),
+                                          isDismissible: false,
+                                        );
+                                      },
+                                      content: Container(
+                                        color: Colors.amber,
+                                        height: 50,
+                                        child: const Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                            "  Remove\nsub categories",
                                             style: TextStyle(
                                               color: Colors.white,
                                             ),
