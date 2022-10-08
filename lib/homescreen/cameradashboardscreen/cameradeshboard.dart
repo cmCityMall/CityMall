@@ -15,8 +15,12 @@ import 'package:citymall/textstylefontfamily/textfontfamily.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
+import '../../constant/constant.dart';
+import '../../model/favourite_item.dart';
 import '../../new_products_viewall/bin/npva_binding.dart';
 import '../../new_products_viewall/view/npva_view.dart';
 import '../../popular_produts_viewall/bin/ppva_binding.dart';
@@ -282,7 +286,7 @@ class CameraDeshBoard extends StatelessWidget {
                                       );
                                       dbDataController
                                           .getInitialProducts(subCategory.id);
-                                      Get.off(ActionScreen());
+                                      Get.to(() => const ActionScreen());
                                     },
                                     child: Container(
                                       decoration: BoxDecoration(
@@ -594,11 +598,7 @@ class CameraDeshBoard extends StatelessWidget {
                               crossAxisCount: 2,
                               crossAxisSpacing: 8,
                               mainAxisSpacing: 8,
-                              childAspectRatio: Get.width > 450
-                                  ? 1.58 / 2.1
-                                  : Get.width < 370
-                                      ? 1.62 / 2.68
-                                      : 1.8 / 2.5,
+                              childAspectRatio: 0.58,
                             ),
                             itemBuilder: (context, index) {
                               return InkWell(
@@ -713,22 +713,55 @@ class CameraDeshBoard extends StatelessWidget {
                                                 color: ColorResources.blue1,
                                               ),
                                             ),
-                                            /* Obx(
-                                              () => InkWell(
-                                                onTap: () {
-                                                  favorite.favourite2[index] =
-                                                      !favorite
-                                                          .favourite2[index];
-                                                },
-                                                child: favorite.favourite2[
-                                                            index] ==
-                                                        false
-                                                    ? SvgPicture.asset(Images
-                                                        .blankfavoriteicon)
-                                                    : SvgPicture.asset(Images
-                                                        .fillfavoriteicon),
-                                              ),
-                                            ), */
+                                            //Favourite Icon
+                                            ValueListenableBuilder(
+                                              valueListenable:
+                                                  Hive.box<FavouriteItem>(
+                                                          favouriteBox)
+                                                      .listenable(),
+                                              builder: (context,
+                                                  Box<FavouriteItem> box,
+                                                  widget) {
+                                                final currentObj =
+                                                    box.get(dataList[index].id);
+
+                                                if (!(currentObj == null)) {
+                                                  return IconButton(
+                                                      onPressed: () {
+                                                        box.delete(
+                                                            currentObj.id);
+                                                      },
+                                                      icon: const Icon(
+                                                        FontAwesomeIcons
+                                                            .solidHeart,
+                                                        color: Colors.red,
+                                                        size: 25,
+                                                      ));
+                                                }
+                                                return IconButton(
+                                                    onPressed: () {
+                                                      box.put(
+                                                        dataList[index].id,
+                                                        FavouriteItem(
+                                                          id: dataList[index]
+                                                              .id,
+                                                          name: dataList[index]
+                                                              .name,
+                                                          image: dataList[index]
+                                                              .images
+                                                              .first,
+                                                          price: dataList[index]
+                                                              .price,
+                                                        ),
+                                                      );
+                                                    },
+                                                    icon: const Icon(
+                                                      Icons.favorite_outline,
+                                                      color: Colors.red,
+                                                      size: 25,
+                                                    ));
+                                              },
+                                            ),
                                           ],
                                         ),
                                         Row(
@@ -831,11 +864,13 @@ class CameraDeshBoard extends StatelessWidget {
                               crossAxisCount: 2,
                               crossAxisSpacing: 8,
                               mainAxisSpacing: 8,
-                              childAspectRatio: Get.width > 450
+                              childAspectRatio:
+                                  0.58 /* Get.width > 450
                                   ? 1.58 / 2.1
                                   : Get.width < 370
                                       ? 1.62 / 2.68
-                                      : 1.8 / 2.5,
+                                      : 1.8 / 2.5 */
+                              ,
                             ),
                             itemBuilder: (context, index) {
                               return InkWell(
@@ -953,22 +988,55 @@ class CameraDeshBoard extends StatelessWidget {
                                                 color: ColorResources.blue1,
                                               ),
                                             ),
-                                            /*  Obx(
-                                              () => InkWell(
-                                                onTap: () {
-                                                  favorite.favourite3[index] =
-                                                      !favorite
-                                                          .favourite3[index];
-                                                },
-                                                child: favorite.favourite3[
-                                                            index] ==
-                                                        false
-                                                    ? SvgPicture.asset(Images
-                                                        .blankfavoriteicon)
-                                                    : SvgPicture.asset(Images
-                                                        .fillfavoriteicon),
-                                              ),
-                                            ), */
+                                            //Favourite Icon
+                                            ValueListenableBuilder(
+                                              valueListenable:
+                                                  Hive.box<FavouriteItem>(
+                                                          favouriteBox)
+                                                      .listenable(),
+                                              builder: (context,
+                                                  Box<FavouriteItem> box,
+                                                  widget) {
+                                                final currentObj =
+                                                    box.get(dataList[index].id);
+
+                                                if (!(currentObj == null)) {
+                                                  return IconButton(
+                                                      onPressed: () {
+                                                        box.delete(
+                                                            currentObj.id);
+                                                      },
+                                                      icon: const Icon(
+                                                        FontAwesomeIcons
+                                                            .solidHeart,
+                                                        color: Colors.red,
+                                                        size: 25,
+                                                      ));
+                                                }
+                                                return IconButton(
+                                                    onPressed: () {
+                                                      box.put(
+                                                        dataList[index].id,
+                                                        FavouriteItem(
+                                                          id: dataList[index]
+                                                              .id,
+                                                          name: dataList[index]
+                                                              .name,
+                                                          image: dataList[index]
+                                                              .images
+                                                              .first,
+                                                          price: dataList[index]
+                                                              .price,
+                                                        ),
+                                                      );
+                                                    },
+                                                    icon: const Icon(
+                                                      Icons.favorite_outline,
+                                                      color: Colors.red,
+                                                      size: 25,
+                                                    ));
+                                              },
+                                            ),
                                           ],
                                         ),
                                         Row(

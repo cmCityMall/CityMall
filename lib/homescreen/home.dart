@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:citymall/admin/week_promotion/view/week_promotion_view.dart';
 import 'package:citymall/categorybrandscreen/brand_view_all.dart';
 import 'package:citymall/colors/colors.dart';
+import 'package:citymall/constant/constant.dart';
 import 'package:citymall/controller/db_data_controller.dart';
 import 'package:citymall/controller/flash_sale_controller.dart';
 import 'package:citymall/controller/homegridfavouritecontroller.dart';
@@ -14,6 +15,7 @@ import 'package:citymall/homescreen/menuviewallscreen.dart';
 import 'package:citymall/homescreen/recomendedscreen.dart';
 import 'package:citymall/homescreen/weekpromotionscreen.dart';
 import 'package:citymall/images/images.dart';
+import 'package:citymall/model/favourite_item.dart';
 import 'package:citymall/productdetailsscreen/productdetailscreen.dart';
 import 'package:citymall/shop/shop_detail_view.dart';
 import 'package:citymall/shop/shop_view_all.dart';
@@ -22,7 +24,9 @@ import 'package:citymall/week_promotion/week_promotion_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
 
 import '../categorybrandscreen/brand_view_all_binding.dart';
@@ -257,7 +261,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         dbDataController
                             .getInitialPopularProducts(mainCategory.id);
                         dbDataController.getInitialNewProducts(mainCategory.id);
-                        Get.off(() => CameraDeshBoard());
+                        Get.to(() => CameraDeshBoard());
                       },
                       child: Card(
                         elevation: 5,
@@ -709,11 +713,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisCount: 2,
                   crossAxisSpacing: 8,
                   mainAxisSpacing: 8,
-                  childAspectRatio: Get.width > 450
-                      ? 1.58 / 2.1
-                      : Get.width < 370
-                          ? 1.62 / 2.68
-                          : 1.8 / 2.5,
+                  childAspectRatio: 0.55,
                 ),
                 itemBuilder: (context, index) {
                   final product = dbDataController.homePopularProducts[index];
@@ -764,7 +764,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 );
                               },
                               child: Container(
-                                height: 150,
+                                height: 160,
                                 width: Get.width,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(15),
@@ -799,19 +799,45 @@ class _HomeScreenState extends State<HomeScreen> {
                                     color: ColorResources.blue1,
                                   ),
                                 ),
-                                /* Obx(
-                                  () => InkWell(
-                                    onTap: () {
-                                      controller.favourite[index] =
-                                          !controller.favourite[index];
-                                    },
-                                    child: controller.favourite[index] == false
-                                        ? SvgPicture.asset(
-                                            Images.blankfavoriteicon)
-                                        : SvgPicture.asset(
-                                            Images.fillfavoriteicon),
-                                  ),
-                                ), */
+                                //Favourite Icon
+                                ValueListenableBuilder(
+                                  valueListenable:
+                                      Hive.box<FavouriteItem>(favouriteBox)
+                                          .listenable(),
+                                  builder: (context, Box<FavouriteItem> box,
+                                      widget) {
+                                    final currentObj = box.get(product.id);
+
+                                    if (!(currentObj == null)) {
+                                      return IconButton(
+                                          onPressed: () {
+                                            box.delete(currentObj.id);
+                                          },
+                                          icon: const Icon(
+                                            FontAwesomeIcons.solidHeart,
+                                            color: Colors.red,
+                                            size: 25,
+                                          ));
+                                    }
+                                    return IconButton(
+                                        onPressed: () {
+                                          box.put(
+                                            product.id,
+                                            FavouriteItem(
+                                              id: product.id,
+                                              name: product.name,
+                                              image: product.images.first,
+                                              price: product.price,
+                                            ),
+                                          );
+                                        },
+                                        icon: const Icon(
+                                          Icons.favorite_outline,
+                                          color: Colors.red,
+                                          size: 25,
+                                        ));
+                                  },
+                                ),
                               ],
                             ),
                             Row(

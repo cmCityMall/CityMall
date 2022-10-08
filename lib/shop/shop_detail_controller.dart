@@ -19,12 +19,10 @@ class ShopDetailController extends GetxController {
           isLoading.value = true;
           final lastD = dataController
               .shopProducts[dataController.selectedShop.value!.id]!.last;
-          dataController
-              .getMoreShopProducts(
-                dataController.selectedShop.value!.id,
-                lastD.toJson()["dateTime"],
-              )
-              .then((value) => isLoading.value = false);
+          dataController.getMoreShopProducts(
+            dataController.selectedShop.value!.id,
+            [lastD.toJson()["dateTime"]],
+          ).then((value) => isLoading.value = false);
         }
       }
     });

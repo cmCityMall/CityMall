@@ -9,8 +9,12 @@ import 'package:citymall/textstylefontfamily/textfontfamily.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
+import '../constant/constant.dart';
+import '../model/favourite_item.dart';
 import '../wppd/bin/wppd_binding.dart';
 import '../wppd/view/wppd_view.dart';
 
@@ -198,11 +202,12 @@ class WeekPromotionScreen extends StatelessWidget {
                           crossAxisCount: 2,
                           crossAxisSpacing: 8,
                           mainAxisSpacing: 8,
-                          childAspectRatio: Get.width > 450
+                          childAspectRatio:
+                              0.58, /* Get.width > 450
                               ? 1.58 / 2.1
                               : Get.width < 370
                                   ? 1.62 / 2.68
-                                  : 1.8 / 2.5,
+                                  : 1.8 / 2.5, */
                         ),
                         itemBuilder: (context, index) {
                           final p = dataList[index];
@@ -330,20 +335,48 @@ class WeekPromotionScreen extends StatelessWidget {
                                           ),
                                         ),
 
-                                        /* Obx(
-                                      () => InkWell(
-                                        onTap: () {
-                                          controller.favourite[index] =
-                                              !controller.favourite[index];
-                                        },
-                                        child:
-                                            controller.favourite[index] == false
-                                                ? SvgPicture.asset(
-                                                    Images.blankfavoriteicon)
-                                                : SvgPicture.asset(
-                                                    Images.fillfavoriteicon),
-                                      ),
-                                    ), */
+                                        //Favourite Icon
+                                        ValueListenableBuilder(
+                                          valueListenable:
+                                              Hive.box<FavouriteItem>(
+                                                      favouriteBox)
+                                                  .listenable(),
+                                          builder: (context,
+                                              Box<FavouriteItem> box, widget) {
+                                            final currentObj =
+                                                box.get(product.id);
+
+                                            if (!(currentObj == null)) {
+                                              return IconButton(
+                                                  onPressed: () {
+                                                    box.delete(currentObj.id);
+                                                  },
+                                                  icon: const Icon(
+                                                    FontAwesomeIcons.solidHeart,
+                                                    color: Colors.red,
+                                                    size: 25,
+                                                  ));
+                                            }
+                                            return IconButton(
+                                                onPressed: () {
+                                                  box.put(
+                                                    product.id,
+                                                    FavouriteItem(
+                                                      id: product.id,
+                                                      name: product.name,
+                                                      image:
+                                                          product.images.first,
+                                                      price: product.price,
+                                                    ),
+                                                  );
+                                                },
+                                                icon: const Icon(
+                                                  Icons.favorite_outline,
+                                                  color: Colors.red,
+                                                  size: 25,
+                                                ));
+                                          },
+                                        ),
                                       ],
                                     ),
                                     weekPromotionController

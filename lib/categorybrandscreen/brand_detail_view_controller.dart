@@ -19,12 +19,10 @@ class BrandDetailViewController extends GetxController {
           isLoading.value = true;
           final lastD = dataController
               .brandProducts[dataController.selectedBrand.value!.id]!.last;
-          dataController
-              .getMoreBrandProducts(
-                dataController.selectedBrand.value!.id,
-                lastD.toJson()["dateTime"],
-              )
-              .then((value) => isLoading.value = false);
+          dataController.getMoreBrandProducts(
+            dataController.selectedBrand.value!.id,
+            [lastD.toJson()["dateTime"]],
+          ).then((value) => isLoading.value = false);
         }
       }
     });

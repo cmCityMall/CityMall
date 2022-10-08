@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
+import 'shop_detail_view.dart';
 import 'shop_view_all_controller.dart';
 
 // ignore: must_be_immutable
@@ -39,12 +40,13 @@ class ShopViewAll extends StatelessWidget {
           padding: const EdgeInsets.only(left: 25),
           child: InkWell(
             onTap: () {
-              selectedIndex = 0;
+              Get.back();
+              /* selectedIndex = 0;
               Navigator.of(context, rootNavigator: true).pushReplacement(
                 MaterialPageRoute(
                   builder: (context) => NavigationBarBottom(),
                 ),
-              );
+              ); */
             },
             child: Container(
               decoration: BoxDecoration(
@@ -119,7 +121,9 @@ class ShopViewAll extends StatelessWidget {
                       final cat = list[index];
                       return InkWell(
                         onTap: () {
-                          Get.off(CameraDeshBoard());
+                          dataController.setSelectedShop(cat);
+                          dataController.getInitialShopProducts(cat.id);
+                          Get.to(() => const ShopDetailView());
                         },
                         child: Card(
                           elevation: 5,

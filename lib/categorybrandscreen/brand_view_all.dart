@@ -12,6 +12,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 import 'brand_view_all_controller.dart';
+import 'subcategory1.dart';
 
 // ignore: must_be_immutable
 class BrandViewAll extends StatelessWidget {
@@ -39,12 +40,13 @@ class BrandViewAll extends StatelessWidget {
           padding: const EdgeInsets.only(left: 25),
           child: InkWell(
             onTap: () {
-              selectedIndex = 0;
+              Get.back();
+              /* selectedIndex = 0;
               Navigator.of(context, rootNavigator: true).pushReplacement(
                 MaterialPageRoute(
                   builder: (context) => NavigationBarBottom(),
                 ),
-              );
+              ); */
             },
             child: Container(
               decoration: BoxDecoration(
@@ -119,7 +121,9 @@ class BrandViewAll extends StatelessWidget {
                       final cat = list[index];
                       return InkWell(
                         onTap: () {
-                          Get.off(CameraDeshBoard());
+                          dataController.setSelectedBrand(cat);
+                          dataController.getInitialBrandProducts(cat.id);
+                          Get.to(() => const BrandsDetailView());
                         },
                         child: Card(
                           elevation: 5,

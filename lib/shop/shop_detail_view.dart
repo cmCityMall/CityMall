@@ -3,11 +3,20 @@ import 'package:citymall/colors/colors.dart';
 import 'package:citymall/controller/db_data_controller.dart';
 import 'package:citymall/controller/recomendedfavoritecontroller.dart';
 import 'package:citymall/controller/theme_controller.dart';
+import 'package:citymall/productdetailsscreen/productdetailscreen.dart';
 import 'package:citymall/shop/shop_detail_controller.dart';
 import 'package:citymall/textstylefontfamily/textfontfamily.dart';
+import 'package:citymall/utils/widgets/empty_widgt.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
+import '../constant/constant.dart';
+import '../model/favourite_item.dart';
+import '../productdetailsscreen/product_detail_binding.dart';
+import '../utils/widgets/loading_widget.dart';
 
 // ignore: must_be_immutable
 class ShopDetailView extends StatefulWidget {
@@ -45,6 +54,7 @@ class _ShopDetailViewState extends State<ShopDetailView> {
           ? ColorResources.white
           : ColorResources.black4,
       body: CustomScrollView(
+        controller: shopController.scrollController,
         slivers: [
           SliverAppBar(
             backgroundColor: themeController.isLightTheme.value
@@ -126,65 +136,106 @@ class _ShopDetailViewState extends State<ShopDetailView> {
                   child: Padding(
                     padding:
                         const EdgeInsets.only(left: 15, right: 15, bottom: 20),
-                    child: GridView.builder(
-                      itemCount: dataController.shopProducts[
-                                  dataController.selectedShop.value!.id] ==
-                              null
-                          ? 0
-                          : dataController
-                              .shopProducts[
-                                  dataController.selectedShop.value!.id]!
-                              .length,
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 8,
-                        mainAxisSpacing: 8,
-                        childAspectRatio: Get.width > 450
-                            ? 1.58 / 2.1
-                            : Get.width < 370
-                                ? 1.62 / 2.68
-                                : 1.8 / 2.5,
-                      ),
-                      itemBuilder: (context, index) {
-                        return InkWell(
-                          onTap: () {
-                            Get.off(SubCategoryScreen2());
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: themeController.isLightTheme.value
-                                  ? ColorResources.white
-                                  : ColorResources.black5,
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: [
-                                BoxShadow(
-                                  blurRadius: 20,
-                                  color: themeController.isLightTheme.value
-                                      ? ColorResources.blue1.withOpacity(0.05)
-                                      : ColorResources.black1,
-                                  spreadRadius: 0,
-                                  offset: Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 10),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  InkWell(
-                                    onTap: () {
-                                      Get.defaultDialog(
-                                        backgroundColor: ColorResources.white6,
-                                        contentPadding: EdgeInsets.zero,
-                                        title: "",
-                                        titlePadding: EdgeInsets.zero,
-                                        content: Center(
+                    child: Obx(() {
+                      final dataList = dataController
+                          .shopProducts[dataController.selectedShop.value!.id];
+                      final isLoading = dataController.shopProductLoading[
+                          dataController.selectedShop.value!.id];
+                      if (isLoading!) {
+                        return const LoadingWidget();
+                      }
+                      if ((dataList == null) || dataList.isEmpty) {
+                        return const EmptyWidget(
+                          "No products found.",
+                          topPadding: 25,
+                        );
+                      }
+                      return GridView.builder(
+                        itemCount: dataController.shopProducts[
+                                    dataController.selectedShop.value!.id] ==
+                                null
+                            ? 0
+                            : dataController
+                                .shopProducts[
+                                    dataController.selectedShop.value!.id]!
+                                .length,
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 8,
+                          mainAxisSpacing: 8,
+                          childAspectRatio:
+                              0.58, /* Get.width > 450
+                                ? 1.58 / 2.1
+                                : Get.width < 370
+                                    ? 1.62 / 2.68
+                                    : 1.8 / 2.5, */
+                        ),
+                        itemBuilder: (context, index) {
+                          return InkWell(
+                            onTap: () {
+                              Get.to(
+                                () => ProductDetailScreen(),
+                                binding: ProductDetailBinding(),
+                              );
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: themeController.isLightTheme.value
+                                    ? ColorResources.white
+                                    : ColorResources.black5,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    blurRadius: 20,
+                                    color: themeController.isLightTheme.value
+                                        ? ColorResources.blue1.withOpacity(0.05)
+                                        : ColorResources.black1,
+                                    spreadRadius: 0,
+                                    offset: Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 10),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    InkWell(
+                                      onTap: () {
+                                        Get.defaultDialog(
+                                          backgroundColor:
+                                              ColorResources.white6,
+                                          contentPadding: EdgeInsets.zero,
+                                          title: "",
+                                          titlePadding: EdgeInsets.zero,
+                                          content: Center(
+                                            child: Image.network(
+                                              dataController
+                                                  .shopProducts[dataController
+                                                      .selectedShop
+                                                      .value!
+                                                      .id]![index]
+                                                  .images
+                                                  .first,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        height: 150,
+                                        width: Get.width,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                          color: ColorResources.white6,
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(5),
                                           child: Image.network(
                                             dataController
                                                 .shopProducts[dataController
@@ -195,116 +246,162 @@ class _ShopDetailViewState extends State<ShopDetailView> {
                                                 .first,
                                           ),
                                         ),
-                                      );
-                                    },
-                                    child: Container(
-                                      height: 150,
-                                      width: Get.width,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(15),
-                                        color: ColorResources.white6,
                                       ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(5),
-                                        child: Image.network(
+                                    ),
+                                    Text(
+                                      dataController
+                                          .shopProducts[dataController
+                                              .selectedShop.value!.id]![index]
+                                          .name,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontFamily: TextFontFamily.SEN_BOLD,
+                                        color:
+                                            themeController.isLightTheme.value
+                                                ? ColorResources.black2
+                                                : ColorResources.white,
+                                      ),
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
                                           dataController
                                               .shopProducts[dataController
                                                   .selectedShop
                                                   .value!
                                                   .id]![index]
-                                              .images
-                                              .first,
+                                              .price
+                                              .toString(),
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontFamily:
+                                                TextFontFamily.SEN_EXTRA_BOLD,
+                                            color: ColorResources.blue1,
+                                          ),
                                         ),
-                                      ),
-                                    ),
-                                  ),
-                                  Text(
-                                    dataController
-                                        .shopProducts[dataController
-                                            .selectedShop.value!.id]![index]
-                                        .name,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontFamily: TextFontFamily.SEN_BOLD,
-                                      color: themeController.isLightTheme.value
-                                          ? ColorResources.black2
-                                          : ColorResources.white,
-                                    ),
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        dataController
-                                            .shopProducts[dataController
-                                                .selectedShop.value!.id]![index]
-                                            .price
-                                            .toString(),
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontFamily:
-                                              TextFontFamily.SEN_EXTRA_BOLD,
-                                          color: ColorResources.blue1,
-                                        ),
-                                      ),
-                                      /*  Obx(
-                                        () => InkWell(
-                                          onTap: () {
-                                            controller.favourite1[index] =
-                                                !controller.favourite1[index];
+                                        //Favourite Icon
+                                        ValueListenableBuilder(
+                                          valueListenable:
+                                              Hive.box<FavouriteItem>(
+                                                      favouriteBox)
+                                                  .listenable(),
+                                          builder: (context,
+                                              Box<FavouriteItem> box, widget) {
+                                            final currentObj = box.get(
+                                                dataController
+                                                    .shopProducts[dataController
+                                                        .selectedShop
+                                                        .value!
+                                                        .id]![index]
+                                                    .id);
+
+                                            if (!(currentObj == null)) {
+                                              return IconButton(
+                                                  onPressed: () {
+                                                    box.delete(currentObj.id);
+                                                  },
+                                                  icon: const Icon(
+                                                    FontAwesomeIcons.solidHeart,
+                                                    color: Colors.red,
+                                                    size: 25,
+                                                  ));
+                                            }
+                                            return IconButton(
+                                                onPressed: () {
+                                                  box.put(
+                                                    dataController
+                                                        .shopProducts[
+                                                            dataController
+                                                                .selectedShop
+                                                                .value!
+                                                                .id]![index]
+                                                        .id,
+                                                    FavouriteItem(
+                                                      id: dataController
+                                                          .shopProducts[
+                                                              dataController
+                                                                  .selectedShop
+                                                                  .value!
+                                                                  .id]![index]
+                                                          .id,
+                                                      name: dataController
+                                                          .shopProducts[
+                                                              dataController
+                                                                  .selectedShop
+                                                                  .value!
+                                                                  .id]![index]
+                                                          .name,
+                                                      image: dataController
+                                                          .shopProducts[
+                                                              dataController
+                                                                  .selectedShop
+                                                                  .value!
+                                                                  .id]![index]
+                                                          .images
+                                                          .first,
+                                                      price: dataController
+                                                          .shopProducts[
+                                                              dataController
+                                                                  .selectedShop
+                                                                  .value!
+                                                                  .id]![index]
+                                                          .price,
+                                                    ),
+                                                  );
+                                                },
+                                                icon: const Icon(
+                                                  Icons.favorite_outline,
+                                                  color: Colors.red,
+                                                  size: 25,
+                                                ));
                                           },
-                                          child: controller.favourite1[index] ==
-                                                  false
-                                              ? SvgPicture.asset(
-                                                  Images.blankfavoriteicon)
-                                              : SvgPicture.asset(
-                                                  Images.fillfavoriteicon),
                                         ),
-                                      ), */
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      RatingBar(
-                                        itemSize: 16,
-                                        maxRating: 5,
-                                        initialRating: 4,
-                                        itemCount: 5,
-                                        direction: Axis.horizontal,
-                                        ratingWidget: RatingWidget(
-                                          full: Icon(
-                                            Icons.star,
-                                            color: ColorResources.yellow,
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        RatingBar(
+                                          itemSize: 16,
+                                          maxRating: 5,
+                                          initialRating: 4,
+                                          itemCount: 5,
+                                          direction: Axis.horizontal,
+                                          ratingWidget: RatingWidget(
+                                            full: Icon(
+                                              Icons.star,
+                                              color: ColorResources.yellow,
+                                            ),
+                                            empty: Icon(
+                                              Icons.star,
+                                              color: ColorResources.white2,
+                                            ),
+                                            half: Icon(Icons.star),
                                           ),
-                                          empty: Icon(
-                                            Icons.star,
-                                            color: ColorResources.white2,
+                                          onRatingUpdate: (rating) {},
+                                        ),
+                                        Text(
+                                          "932 Sale",
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            fontFamily:
+                                                TextFontFamily.SEN_REGULAR,
+                                            color: ColorResources.white3,
                                           ),
-                                          half: Icon(Icons.star),
                                         ),
-                                        onRatingUpdate: (rating) {},
-                                      ),
-                                      Text(
-                                        "932 Sale",
-                                        style: TextStyle(
-                                          fontSize: 10,
-                                          fontFamily:
-                                              TextFontFamily.SEN_REGULAR,
-                                          color: ColorResources.white3,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      },
-                    ),
+                          );
+                        },
+                      );
+                    }),
                   ),
                 ),
                 Align(
