@@ -4,6 +4,7 @@ import 'package:citymall/controller/clickcontroller.dart';
 import 'package:citymall/controller/db_data_controller.dart';
 import 'package:citymall/controller/theme_controller.dart';
 import 'package:citymall/images/images.dart';
+import 'package:citymall/model/cart_product.dart';
 import 'package:citymall/productdetailsscreen/addaddressscreen.dart';
 import 'package:citymall/productdetailsscreen/confirmaddressscreen.dart';
 import 'package:citymall/productdetailsscreen/product_detail_controller.dart';
@@ -18,7 +19,10 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../controller/cart_controller.dart';
 import '../widgets/other/cache_image.dart';
+import '../widgets/other/cart_icon_widget.dart';
+import '../widgets/other/related_address_widget.dart';
 
 // ignore: must_be_immutable
 class ProductDetailScreen extends StatelessWidget {
@@ -62,6 +66,7 @@ class ProductDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final CartController cartController = Get.find();
     final DBDataController dataController = Get.find();
     final ProductDetailController detailController = Get.find();
     final currentProduct = dataController.selectedProduct.value;
@@ -126,21 +131,9 @@ class ProductDetailScreen extends StatelessWidget {
                   builder: (context) => NavigationBarBottom(),
                 ));
               },
-              child: Container(
-                height: 40,
-                width: 40,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color: themeController.isLightTheme.value
-                      ? ColorResources.white
-                      : ColorResources.black6,
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: SvgPicture.asset(
-                    Images.cartblank,
-                  ),
-                ),
+              child: CartIconWidget(
+                themeController: themeController,
+                color: ColorResources.white,
               ),
             ),
           ),
@@ -1126,515 +1119,44 @@ class ProductDetailScreen extends StatelessWidget {
                   padding: EdgeInsets.only(bottom: 20, left: 20, right: 20),
                   child: Row(
                     children: [
-                      Container(
-                        height: 50,
-                        width: 50,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          color: themeController.isLightTheme.value
-                              ? ColorResources.grey10
-                              : ColorResources.white.withOpacity(0.8),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: SvgPicture.asset(
-                            Images.cartblank,
-                            color: ColorResources.black,
-                          ),
-                        ),
+                      CartIconWidget(
+                        themeController: themeController,
                       ),
                       SizedBox(width: 15),
                       Expanded(
                         child: InkWell(
                           onTap: () {
-                            Get.bottomSheet(
+                            cartController.addIntoCart(CartProduct(
+                              id: currentProduct.id,
+                              name: currentProduct.name,
+                              image: detailController.selectedImage.isNotEmpty
+                                  ? detailController.selectedImage.value
+                                  : currentProduct.images.first,
+                              lastPrice:
+                                  detailController.selectedPrice.value == 0
+                                      ? currentProduct.price
+                                      : detailController.selectedPrice.value,
+                              color:
+                                  detailController.selectedColor.value.isEmpty
+                                      ? null
+                                      : detailController.selectedColor.value,
+                              size: detailController.selectedSize.value.isEmpty
+                                  ? null
+                                  : detailController.selectedSize.value,
+                              count: 0,
+                            ));
+                            /* Get.bottomSheet(
                               Container(
-                                child: SingleChildScrollView(
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        height: 50,
-                                        width: Get.width,
-                                        color:
-                                            themeController.isLightTheme.value
-                                                ? ColorResources.white11
-                                                : ColorResources.black1,
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 20),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(
-                                                "Saved Address",
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  fontFamily:
-                                                      TextFontFamily.SEN_BOLD,
-                                                  color: themeController
-                                                          .isLightTheme.value
-                                                      ? ColorResources.black2
-                                                      : ColorResources.white,
-                                                ),
-                                              ),
-                                              InkWell(
-                                                onTap: () {
-                                                  Get.off(AddAddressScreen());
-                                                },
-                                                child: Text(
-                                                  "Add New Address",
-                                                  style: TextStyle(
-                                                    fontSize: 14,
-                                                    fontFamily:
-                                                        TextFontFamily.SEN_BOLD,
-                                                    color: ColorResources.blue1,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      Obx(
-                                        () => InkWell(
-                                          onTap: () {
-                                            if (addressClickController1
-                                                    .one.isTrue ||
-                                                addressClickController1
-                                                    .two.isTrue) {
-                                              addressClickController1
-                                                  .one(false);
-                                              addressClickController1
-                                                  .two(false);
-                                            }
-                                            addressClickController1.one(true);
-                                          },
-                                          child: Padding(
-                                            padding: EdgeInsets.only(
-                                                left: 20, right: 20, top: 20),
-                                            child: Container(
-                                              height: 165,
-                                              width: Get.width,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(15),
-                                                color: themeController
-                                                        .isLightTheme.value
-                                                    ? addressClickController1
-                                                            .one.isTrue
-                                                        ? ColorResources
-                                                            .lightgreen
-                                                        : ColorResources.white
-                                                    : addressClickController1
-                                                            .one.isTrue
-                                                        ? ColorResources.black6
-                                                        : ColorResources.black6,
-                                                border: Border.all(
-                                                  width: 1,
-                                                  color: themeController
-                                                          .isLightTheme.value
-                                                      ? addressClickController1
-                                                              .one.isTrue
-                                                          ? ColorResources
-                                                              .green1
-                                                          : ColorResources
-                                                              .grey11
-                                                      : addressClickController1
-                                                              .one.isTrue
-                                                          ? ColorResources.blue1
-                                                          : ColorResources
-                                                              .black5,
-                                                ),
-                                              ),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 20,
-                                                        vertical: 20),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        SvgPicture.asset(
-                                                          Images.homefill,
-                                                          height: 15,
-                                                          width: 15,
-                                                          color: themeController
-                                                                  .isLightTheme
-                                                                  .value
-                                                              ? addressClickController1
-                                                                      .one
-                                                                      .isTrue
-                                                                  ? ColorResources
-                                                                      .green1
-                                                                  : ColorResources
-                                                                      .black2
-                                                              : addressClickController1
-                                                                      .one
-                                                                      .isTrue
-                                                                  ? ColorResources
-                                                                      .blue1
-                                                                  : ColorResources
-                                                                      .white,
-                                                        ),
-                                                        SizedBox(width: 10),
-                                                        Text(
-                                                          "Home Address",
-                                                          style: TextStyle(
-                                                            fontSize: 14,
-                                                            fontFamily:
-                                                                TextFontFamily
-                                                                    .SEN_BOLD,
-                                                            color: themeController
-                                                                    .isLightTheme
-                                                                    .value
-                                                                ? addressClickController1
-                                                                        .one
-                                                                        .isTrue
-                                                                    ? ColorResources
-                                                                        .green1
-                                                                    : ColorResources
-                                                                        .black2
-                                                                : addressClickController1
-                                                                        .one
-                                                                        .isTrue
-                                                                    ? ColorResources
-                                                                        .blue1
-                                                                    : ColorResources
-                                                                        .white,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    SizedBox(height: 10),
-                                                    Text(
-                                                      " John Doe",
-                                                      style: TextStyle(
-                                                        fontSize: 14,
-                                                        fontFamily:
-                                                            TextFontFamily
-                                                                .SEN_BOLD,
-                                                        color: themeController
-                                                                .isLightTheme
-                                                                .value
-                                                            ? addressClickController1
-                                                                    .one.isTrue
-                                                                ? ColorResources
-                                                                    .black2
-                                                                : ColorResources
-                                                                    .black2
-                                                            : addressClickController1
-                                                                    .one.isTrue
-                                                                ? ColorResources
-                                                                    .white
-                                                                : ColorResources
-                                                                    .white,
-                                                      ),
-                                                    ),
-                                                    SizedBox(height: 8),
-                                                    Text(
-                                                      "+91 12345 67890",
-                                                      style: TextStyle(
-                                                        fontSize: 13,
-                                                        fontFamily:
-                                                            TextFontFamily
-                                                                .SEN_REGULAR,
-                                                        color: themeController
-                                                                .isLightTheme
-                                                                .value
-                                                            ? addressClickController1
-                                                                    .one.isTrue
-                                                                ? ColorResources
-                                                                    .black2
-                                                                : ColorResources
-                                                                    .black2
-                                                            : addressClickController1
-                                                                    .one.isTrue
-                                                                ? ColorResources
-                                                                    .white
-                                                                : ColorResources
-                                                                    .white,
-                                                      ),
-                                                    ),
-                                                    SizedBox(height: 12),
-                                                    Text(
-                                                      "Building No,66, 78th Main Road, 100ft\nRoad, Indiranagar, Bangalore 123456",
-                                                      style: TextStyle(
-                                                        fontSize: 13,
-                                                        fontFamily:
-                                                            TextFontFamily
-                                                                .SEN_REGULAR,
-                                                        color: themeController
-                                                                .isLightTheme
-                                                                .value
-                                                            ? addressClickController1
-                                                                    .one.isTrue
-                                                                ? ColorResources
-                                                                    .black9
-                                                                : ColorResources
-                                                                    .black9
-                                                            : addressClickController1
-                                                                    .one.isTrue
-                                                                ? ColorResources
-                                                                    .white
-                                                                    .withOpacity(
-                                                                        0.6)
-                                                                : ColorResources
-                                                                    .white
-                                                                    .withOpacity(
-                                                                        0.6),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(height: 8),
-                                      Obx(
-                                        () => InkWell(
-                                          onTap: () {
-                                            if (addressClickController1
-                                                    .one.isTrue ||
-                                                addressClickController1
-                                                    .two.isTrue) {
-                                              addressClickController1
-                                                  .one(false);
-                                              addressClickController1
-                                                  .two(false);
-                                            }
-                                            addressClickController1.two(true);
-                                          },
-                                          child: Padding(
-                                            padding: EdgeInsets.only(
-                                                left: 20, right: 20),
-                                            child: Container(
-                                              height: 165,
-                                              width: Get.width,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(15),
-                                                color: themeController
-                                                        .isLightTheme.value
-                                                    ? addressClickController1
-                                                            .two.isTrue
-                                                        ? ColorResources
-                                                            .lightgreen
-                                                        : ColorResources.white
-                                                    : addressClickController1
-                                                            .two.isTrue
-                                                        ? ColorResources.black6
-                                                        : ColorResources.black6,
-                                                border: Border.all(
-                                                  width: 1,
-                                                  color: themeController
-                                                          .isLightTheme.value
-                                                      ? addressClickController1
-                                                              .two.isTrue
-                                                          ? ColorResources
-                                                              .green1
-                                                          : ColorResources
-                                                              .grey11
-                                                      : addressClickController1
-                                                              .two.isTrue
-                                                          ? ColorResources.blue1
-                                                          : ColorResources
-                                                              .black5,
-                                                ),
-                                              ),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 20,
-                                                        vertical: 20),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        SvgPicture.asset(
-                                                          Images.office,
-                                                          height: 15,
-                                                          width: 15,
-                                                          color: themeController
-                                                                  .isLightTheme
-                                                                  .value
-                                                              ? addressClickController1
-                                                                      .two
-                                                                      .isTrue
-                                                                  ? ColorResources
-                                                                      .green1
-                                                                  : ColorResources
-                                                                      .black2
-                                                              : addressClickController1
-                                                                      .two
-                                                                      .isTrue
-                                                                  ? ColorResources
-                                                                      .blue1
-                                                                  : ColorResources
-                                                                      .white,
-                                                        ),
-                                                        SizedBox(width: 10),
-                                                        Text(
-                                                          "Office Address",
-                                                          style: TextStyle(
-                                                            fontSize: 14,
-                                                            fontFamily:
-                                                                TextFontFamily
-                                                                    .SEN_BOLD,
-                                                            color: themeController
-                                                                    .isLightTheme
-                                                                    .value
-                                                                ? addressClickController1
-                                                                        .two
-                                                                        .isTrue
-                                                                    ? ColorResources
-                                                                        .green1
-                                                                    : ColorResources
-                                                                        .black2
-                                                                : addressClickController1
-                                                                        .two
-                                                                        .isTrue
-                                                                    ? ColorResources
-                                                                        .blue1
-                                                                    : ColorResources
-                                                                        .white,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    SizedBox(height: 10),
-                                                    Text(
-                                                      " John Doe",
-                                                      style: TextStyle(
-                                                        fontSize: 14,
-                                                        fontFamily:
-                                                            TextFontFamily
-                                                                .SEN_BOLD,
-                                                        color: themeController
-                                                                .isLightTheme
-                                                                .value
-                                                            ? addressClickController1
-                                                                    .two.isTrue
-                                                                ? ColorResources
-                                                                    .black2
-                                                                : ColorResources
-                                                                    .black2
-                                                            : addressClickController1
-                                                                    .two.isTrue
-                                                                ? ColorResources
-                                                                    .white
-                                                                : ColorResources
-                                                                    .white,
-                                                      ),
-                                                    ),
-                                                    SizedBox(height: 8),
-                                                    Text(
-                                                      "+91 98765 43210",
-                                                      style: TextStyle(
-                                                        fontSize: 13,
-                                                        fontFamily:
-                                                            TextFontFamily
-                                                                .SEN_REGULAR,
-                                                        color: themeController
-                                                                .isLightTheme
-                                                                .value
-                                                            ? addressClickController1
-                                                                    .two.isTrue
-                                                                ? ColorResources
-                                                                    .black2
-                                                                : ColorResources
-                                                                    .black2
-                                                            : addressClickController1
-                                                                    .two.isTrue
-                                                                ? ColorResources
-                                                                    .white
-                                                                : ColorResources
-                                                                    .white,
-                                                      ),
-                                                    ),
-                                                    SizedBox(height: 12),
-                                                    Text(
-                                                      "Building No,66, 78th Main Road, 100ft\nRoad, Indiranagar, Bangalore 123456",
-                                                      style: TextStyle(
-                                                        fontSize: 13,
-                                                        fontFamily:
-                                                            TextFontFamily
-                                                                .SEN_REGULAR,
-                                                        color: themeController
-                                                                .isLightTheme
-                                                                .value
-                                                            ? addressClickController1
-                                                                    .two.isTrue
-                                                                ? ColorResources
-                                                                    .black9
-                                                                : ColorResources
-                                                                    .black9
-                                                            : addressClickController1
-                                                                    .two.isTrue
-                                                                ? ColorResources
-                                                                    .white
-                                                                    .withOpacity(
-                                                                        0.6)
-                                                                : ColorResources
-                                                                    .white
-                                                                    .withOpacity(
-                                                                        0.6),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(height: 30),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 20),
-                                        child: InkWell(
-                                          onTap: () {
-                                            Get.off(ConfirmAddressScreen());
-                                          },
-                                          child: Container(
-                                            height: 50,
-                                            width: Get.width,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(45),
-                                              color: ColorResources.blue1,
-                                            ),
-                                            child: Center(
-                                              child: Text(
-                                                "Confirm Address",
-                                                style: TextStyle(
-                                                  fontFamily:
-                                                      TextFontFamily.SEN_BOLD,
-                                                  fontSize: 20,
-                                                  color: ColorResources.white,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(height: 20),
-                                    ],
-                                  ),
-                                ),
+                                child: RelatedAddressWidget(
+                                    themeController: themeController,
+                                    addressClickController1:
+                                        addressClickController1),
                               ),
                               backgroundColor:
                                   themeController.isLightTheme.value
                                       ? ColorResources.white
                                       : ColorResources.black4,
-                            );
+                            ); */
                           },
                           child: Container(
                             height: 50,
@@ -1643,9 +1165,9 @@ class ProductDetailScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(15),
                               color: ColorResources.blue1,
                             ),
-                            child: Center(
+                            child: const Center(
                               child: Text(
-                                "Pay",
+                                "Add to cart",
                                 style: TextStyle(
                                   fontFamily: TextFontFamily.SEN_BOLD,
                                   fontSize: 20,

@@ -14,6 +14,7 @@ import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'constant/constant.dart';
+import 'controller/cart_controller.dart';
 import 'controller/week_promotion_controller.dart';
 import 'model/hive_purchase.dart';
 import 'model/hive_purchase_item.dart';
@@ -50,6 +51,7 @@ class CityMall extends StatelessWidget {
     Get.put(WeekPromotionControllerUser());
     Get.put(FlashSaleController());
     Get.put(RecommendScreenController());
+    Get.put(CartController());
     return GetMaterialApp(
       theme: themeController.isLightTheme.value ? light : dark,
       darkTheme: ThemeData.dark(),
