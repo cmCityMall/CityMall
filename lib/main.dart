@@ -4,6 +4,7 @@ import 'package:citymall/controller/flash_sale_controller.dart';
 import 'package:citymall/controller/recommend_screen_controller.dart';
 import 'package:citymall/controller/theme_controller.dart';
 import 'package:citymall/model/favourite_item.dart';
+import 'package:citymall/model/hive_personal_address.dart';
 import 'package:citymall/splashscreen/splash.dart';
 import 'package:citymall/theme/dark_theme.dart';
 import 'package:citymall/theme/light_theme.dart';
@@ -31,6 +32,8 @@ Future<void> main() async {
   Hive.registerAdapter<FavouriteItem>(FavouriteItemAdapter());
   Hive.registerAdapter<HivePurchase>(HivePurchaseAdapter());
   Hive.registerAdapter<HivePurchaseItem>(HivePurchaseItemAdapter());
+  Hive.registerAdapter<HivePersonalAddress>(HivePersonalAddressAdapter());
+  await Hive.openBox<HivePersonalAddress>(addressBox);
   await Hive.openBox<FavouriteItem>(favouriteBox);
   await Hive.openBox<HivePurchase>(purchaseBox);
   SystemChrome.setPreferredOrientations(

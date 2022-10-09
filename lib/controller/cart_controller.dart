@@ -1,14 +1,37 @@
 import 'dart:developer';
 
 import 'package:citymall/model/cart_product.dart';
+import 'package:citymall/model/hive_personal_address.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 class CartController extends GetxController {
   RxMap<String, CartProduct> cartMap = <String, CartProduct>{}.obs;
+  Rxn<HivePersonalAddress> selectedHivePersonalAddress =
+      Rxn<HivePersonalAddress>();
   var subTotal = 0.obs;
   String? townshipName; //Township Name
   Map<String, dynamic> townShipNameAndFee = {}; //Township Name and Fee
   int mouseIndex = -1; //Mouse Region
+  var paidScreenShotImage = "".obs;
+  var selectedPaymentIndex = 0
+      .obs; //if index == 0 => "CashOnDelivery" : index == 1 => "Bank(or)Wave Screenshoot"
+
+  //Get Bank Slip
+  getPaidScreenShot() async {
+    try {
+      final XFile? image =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+      paidScreenShotImage.value = image?.path ?? "";
+    } catch (e) {
+      log("Error Bank Slip Image Picking");
+    }
+  }
+
+  void setSelectedPaymentIndex(int index) => selectedPaymentIndex.value = index;
+
+  void setSelectedHivePersonalAddress(HivePersonalAddress hp) =>
+      selectedHivePersonalAddress.value = hp;
 
   void changeMouseIndex(int i) {
     // Change Mouse Region

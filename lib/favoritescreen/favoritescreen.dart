@@ -8,6 +8,7 @@ import 'package:citymall/textstylefontfamily/textfontfamily.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -28,10 +29,9 @@ class FavoriteScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.only(top: 10),
         child: Container(
-          height: Get.height,
           width: Get.width,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(
+            borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(30),
               topRight: Radius.circular(30),
             ),
@@ -140,20 +140,15 @@ class FavoriteScreen extends StatelessWidget {
                                       color: ColorResources.blue1,
                                     ),
                                   ),
-                                  Obx(
-                                    () => InkWell(
-                                      onTap: () {
-                                        controller.favourite[index] =
-                                            !controller.favourite[index];
+                                  IconButton(
+                                      onPressed: () {
+                                        box.delete(list[index].id);
                                       },
-                                      child:
-                                          controller.favourite[index] == false
-                                              ? SvgPicture.asset(
-                                                  Images.blankfavoriteicon)
-                                              : SvgPicture.asset(
-                                                  Images.fillfavoriteicon),
-                                    ),
-                                  ),
+                                      icon: const Icon(
+                                        FontAwesomeIcons.solidHeart,
+                                        color: Colors.red,
+                                        size: 25,
+                                      ))
                                 ],
                               ),
                               /*  Row(

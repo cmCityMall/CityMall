@@ -291,7 +291,8 @@ class NPVAView extends StatelessWidget {
                                       RatingBar(
                                         itemSize: 16,
                                         maxRating: 5,
-                                        initialRating: 4,
+                                        initialRating:
+                                            dataList[index].reviewCount + 0.0,
                                         itemCount: 5,
                                         direction: Axis.horizontal,
                                         ratingWidget: RatingWidget(
@@ -308,7 +309,7 @@ class NPVAView extends StatelessWidget {
                                         onRatingUpdate: (rating) {},
                                       ),
                                       Text(
-                                        "932 Sale",
+                                        "${dataList[index].reviewCount + 0.0}",
                                         style: TextStyle(
                                           fontSize: 10,
                                           fontFamily:

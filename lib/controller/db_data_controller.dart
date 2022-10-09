@@ -12,6 +12,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../model/hive_personal_address.dart';
 import '../model/product.dart';
 import '../model/shop.dart';
 import '../model/sub_category.dart';
@@ -26,6 +27,14 @@ class DBDataController extends GetxController {
   RxMap<String, bool> subCategoriesLoading = <String, bool>{}.obs;
   List<Brand> brands = [];
   List<Shop> shops = [];
+
+  //**For Hive Personal Address */
+  var selectedAddressId = "".obs;
+  Rxn<HivePersonalAddress?> selectedHivePersonalAddress =
+      Rxn<HivePersonalAddress?>(null);
+  void setSelectedHivePersonalAddress(HivePersonalAddress? hp) =>
+      selectedHivePersonalAddress.value = hp;
+  void setSelectedAddressId(String id) => selectedAddressId.value = id;
 
   /// For Real Data */
   RxList<Product> homePopularProducts = <Product>[].obs;

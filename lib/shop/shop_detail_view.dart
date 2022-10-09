@@ -367,7 +367,13 @@ class _ShopDetailViewState extends State<ShopDetailView> {
                                         RatingBar(
                                           itemSize: 16,
                                           maxRating: 5,
-                                          initialRating: 4,
+                                          initialRating: dataController
+                                                  .shopProducts[dataController
+                                                      .selectedShop
+                                                      .value!
+                                                      .id]![index]
+                                                  .reviewCount +
+                                              0.0,
                                           itemCount: 5,
                                           direction: Axis.horizontal,
                                           ratingWidget: RatingWidget(
@@ -384,7 +390,7 @@ class _ShopDetailViewState extends State<ShopDetailView> {
                                           onRatingUpdate: (rating) {},
                                         ),
                                         Text(
-                                          "932 Sale",
+                                          "${dataController.shopProducts[dataController.selectedShop.value!.id]![index].reviewCount + 0.0}",
                                           style: TextStyle(
                                             fontSize: 10,
                                             fontFamily:

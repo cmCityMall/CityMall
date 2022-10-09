@@ -846,7 +846,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 RatingBar(
                                   itemSize: 16,
                                   maxRating: 5,
-                                  initialRating: 4,
+                                  initialRating: product.reviewCount + 0.0,
                                   itemCount: 5,
                                   direction: Axis.horizontal,
                                   ratingWidget: RatingWidget(
@@ -864,7 +864,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   onRatingUpdate: (rating) {},
                                 ),
                                 Text(
-                                  "932 Sale",
+                                  "${product.reviewCount + 0.0}",
                                   style: TextStyle(
                                     fontSize: 10,
                                     fontFamily: TextFontFamily.SEN_REGULAR,

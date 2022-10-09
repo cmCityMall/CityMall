@@ -17,6 +17,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import '../constant/constant.dart';
 import '../model/favourite_item.dart';
+import '../productdetailsscreen/product_detail_binding.dart';
 
 // ignore: must_be_immutable
 class RecomendedScreen extends StatelessWidget {
@@ -45,11 +46,12 @@ class RecomendedScreen extends StatelessWidget {
           padding: const EdgeInsets.only(left: 25),
           child: InkWell(
             onTap: () {
-              selectedIndex = 0;
+              Get.back();
+              /* selectedIndex = 0;
               Navigator.of(context, rootNavigator: true)
                   .pushReplacement(MaterialPageRoute(
                 builder: (context) => NavigationBarBottom(),
-              ));
+              )); */
             },
             child: Container(
               decoration: BoxDecoration(
@@ -146,21 +148,30 @@ class RecomendedScreen extends StatelessWidget {
                       shrinkWrap: true,
                       controller: recoController.scrollController,
                       physics: const BouncingScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         crossAxisSpacing: 8,
                         mainAxisSpacing: 8,
-                        childAspectRatio: Get.width > 450
+                        childAspectRatio:
+                            0.58 /* Get.width > 450
                             ? 1.58 / 2.1
                             : Get.width < 370
                                 ? 1.62 / 2.68
-                                : 1.8 / 2.5,
+                                : 1.8 / 2.5 */
+                        ,
                       ),
                       itemBuilder: (context, index) {
                         final product = dataList[index];
                         return InkWell(
                           onTap: () {
-                            Get.off(ProductDetailScreen());
+                            dataController.setSelectedProduct(
+                                dataController.brandProducts[dataController
+                                    .selectedBrand.value!.id]![index]);
+                            Get.to(
+                              () => ProductDetailScreen(),
+                              binding: ProductDetailBinding(),
+                            );
                           },
                           child: Container(
                             decoration: BoxDecoration(
@@ -290,7 +301,8 @@ class RecomendedScreen extends StatelessWidget {
                                       RatingBar(
                                         itemSize: 16,
                                         maxRating: 5,
-                                        initialRating: 4,
+                                        initialRating:
+                                            product.reviewCount + 0.0,
                                         itemCount: 5,
                                         direction: Axis.horizontal,
                                         ratingWidget: RatingWidget(
@@ -307,7 +319,7 @@ class RecomendedScreen extends StatelessWidget {
                                         onRatingUpdate: (rating) {},
                                       ),
                                       Text(
-                                        "932 Sale",
+                                        "${product.reviewCount + 0.0}",
                                         style: TextStyle(
                                           fontSize: 10,
                                           fontFamily:

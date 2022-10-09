@@ -15,9 +15,10 @@ class Product with _$Product {
     @JsonKey(nullable: true) int? promotion,
     @JsonKey(nullable: true) String? promotionId,
     required String subCategoryId,
-    required int reviewCount,
+    required double reviewCount,
     required int totalQuantity,
     required int remainQuantity,
+    @JsonKey(nullable: true) int? saleCount,
     @JsonKey(nullable: true) String? shopId,
     @JsonKey(nullable: true) String? brandId,
     @JsonKey(nullable: true) String? mainCategoryId,
@@ -34,9 +35,10 @@ class Product with _$Product {
         description: '',
         price: 0,
         subCategoryId: '',
-        reviewCount: 0,
+        reviewCount: 0.0,
         totalQuantity: 0,
         remainQuantity: 0,
+        saleCount: 0,
         dateTime: DateTime.now(),
       );
 }

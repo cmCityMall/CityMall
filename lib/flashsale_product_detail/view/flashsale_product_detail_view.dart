@@ -13,6 +13,10 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
+import '../../controller/cart_controller.dart';
+import '../../model/cart_product.dart';
+import '../../widgets/other/cart_icon_widget.dart';
+
 // ignore: must_be_immutable
 class FlashSaleDetailView extends StatelessWidget {
   FlashSaleDetailView({Key? key}) : super(key: key);
@@ -20,6 +24,7 @@ class FlashSaleDetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final CartController cartController = Get.find();
     final DBDataController dataController = Get.find();
     final FSPDController fspdController = Get.find();
     return Scaffold(
@@ -78,23 +83,15 @@ class FlashSaleDetailView extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 8, bottom: 8, right: 25),
                 child: InkWell(
                   onTap: () {
-                    Get.back();
+                    selectedIndex = 4;
+                    Navigator.of(context, rootNavigator: true)
+                        .pushReplacement(MaterialPageRoute(
+                      builder: (context) => NavigationBarBottom(),
+                    ));
                   },
-                  child: Container(
-                    height: 40,
-                    width: 40,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color: themeController.isLightTheme.value
-                          ? ColorResources.white
-                          : ColorResources.black6,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: SvgPicture.asset(
-                        Images.cartblank,
-                      ),
-                    ),
+                  child: CartIconWidget(
+                    themeController: themeController,
+                    color: ColorResources.white,
                   ),
                 ),
               ),
@@ -711,39 +708,41 @@ class FlashSaleDetailView extends StatelessWidget {
                             SizedBox(height: 30),
                             Row(
                               children: [
-                                Container(
-                                  height: 50,
-                                  width: 50,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(16),
-                                    color: themeController.isLightTheme.value
-                                        ? ColorResources.grey10
-                                        : ColorResources.white.withOpacity(0.8),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(12),
-                                    child: SvgPicture.asset(
-                                      Images.cartblank,
-                                      color: ColorResources.black,
-                                    ),
-                                  ),
+                                CartIconWidget(
+                                  themeController: themeController,
                                 ),
                                 SizedBox(width: 15),
                                 Expanded(
-                                  child: Container(
-                                    height: 50,
-                                    width: Get.width,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15),
-                                      color: ColorResources.blue1,
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        "Pay",
-                                        style: TextStyle(
-                                          fontFamily: TextFontFamily.SEN_BOLD,
-                                          fontSize: 20,
-                                          color: ColorResources.white,
+                                  child: InkWell(
+                                    onTap: () {
+                                      final p =
+                                          dataController.selectedProduct.value!;
+                                      cartController.addIntoCart(CartProduct(
+                                        id: p.id,
+                                        name: p.name,
+                                        image: p.images.first,
+                                        lastPrice:
+                                            fspdController.discountPrice.value,
+                                        color: null,
+                                        size: null,
+                                        count: 0,
+                                      ));
+                                    },
+                                    child: Container(
+                                      height: 50,
+                                      width: Get.width,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(15),
+                                        color: ColorResources.blue1,
+                                      ),
+                                      child: const Center(
+                                        child: Text(
+                                          "Add to cart",
+                                          style: TextStyle(
+                                            fontFamily: TextFontFamily.SEN_BOLD,
+                                            fontSize: 20,
+                                            color: ColorResources.white,
+                                          ),
                                         ),
                                       ),
                                     ),

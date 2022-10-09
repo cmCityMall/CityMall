@@ -5,8 +5,6 @@ import 'package:citymall/controller/db_data_controller.dart';
 import 'package:citymall/controller/theme_controller.dart';
 import 'package:citymall/images/images.dart';
 import 'package:citymall/model/cart_product.dart';
-import 'package:citymall/productdetailsscreen/addaddressscreen.dart';
-import 'package:citymall/productdetailsscreen/confirmaddressscreen.dart';
 import 'package:citymall/productdetailsscreen/product_detail_controller.dart';
 import 'package:citymall/productdetailsscreen/viewallreviewscreen.dart';
 import 'package:citymall/rout_screens/rout_1.dart';

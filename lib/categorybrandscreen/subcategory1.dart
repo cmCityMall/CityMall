@@ -16,6 +16,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import '../constant/constant.dart';
 import '../model/favourite_item.dart';
+import '../productdetailsscreen/product_detail_binding.dart';
+import '../productdetailsscreen/productdetailscreen.dart';
 import '../utils/widgets/loading_widget.dart';
 import 'brand_detail_view_controller.dart';
 
@@ -173,7 +175,13 @@ class _BrandsDetailViewState extends State<BrandsDetailView> {
                         itemBuilder: (context, index) {
                           return InkWell(
                             onTap: () {
-                              Get.off(SubCategoryScreen2());
+                              dataController.setSelectedProduct(
+                                  dataController.brandProducts[dataController
+                                      .selectedBrand.value!.id]![index]);
+                              Get.to(
+                                () => ProductDetailScreen(),
+                                binding: ProductDetailBinding(),
+                              );
                             },
                             child: Container(
                               decoration: BoxDecoration(
@@ -363,7 +371,13 @@ class _BrandsDetailViewState extends State<BrandsDetailView> {
                                         RatingBar(
                                           itemSize: 16,
                                           maxRating: 5,
-                                          initialRating: 4,
+                                          initialRating: dataController
+                                                  .brandProducts[dataController
+                                                      .selectedBrand
+                                                      .value!
+                                                      .id]![index]
+                                                  .reviewCount +
+                                              0.0,
                                           itemCount: 5,
                                           direction: Axis.horizontal,
                                           ratingWidget: RatingWidget(
@@ -380,7 +394,7 @@ class _BrandsDetailViewState extends State<BrandsDetailView> {
                                           onRatingUpdate: (rating) {},
                                         ),
                                         Text(
-                                          "932 Sale",
+                                          "${dataController.brandProducts[dataController.selectedBrand.value!.id]![index].reviewCount + 0.0}",
                                           style: TextStyle(
                                             fontSize: 10,
                                             fontFamily:

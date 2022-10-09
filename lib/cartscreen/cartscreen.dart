@@ -11,11 +11,13 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
+import '../controller/clickcontroller.dart';
+import '../widgets/other/related_address_widget.dart';
+
 // ignore: must_be_immutable
 class CartScreen extends StatelessWidget {
   CartScreen({Key? key}) : super(key: key);
   final ThemeController themeController = Get.put(ThemeController());
-  CartCounterController controller = Get.put(CartCounterController());
 
   @override
   Widget build(BuildContext context) {
@@ -317,24 +319,45 @@ class CartScreen extends StatelessWidget {
                                 );
                               });
                             }),
-                            Container(
-                              height: 30,
-                              width: 100,
-                              decoration: BoxDecoration(
-                                color: ColorResources.blue1,
-                                borderRadius: BorderRadius.circular(18),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  "PAY",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontFamily: TextFontFamily.SEN_BOLD,
-                                    color: ColorResources.white,
+                            Obx(() {
+                              return InkWell(
+                                onTap: (cartController.subTotal.value > 0 &&
+                                        cartController
+                                            .townShipNameAndFee.isNotEmpty)
+                                    ? () {
+                                        Get.bottomSheet(
+                                          Container(
+                                            child: RelatedAddressWidget(
+                                              themeController: themeController,
+                                            ),
+                                          ),
+                                          backgroundColor:
+                                              themeController.isLightTheme.value
+                                                  ? ColorResources.white
+                                                  : ColorResources.black4,
+                                        );
+                                      }
+                                    : null,
+                                child: Container(
+                                  height: 30,
+                                  width: 100,
+                                  decoration: BoxDecoration(
+                                    color: ColorResources.blue1,
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
+                                  child: const Center(
+                                    child: Text(
+                                      "PAY",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontFamily: TextFontFamily.SEN_BOLD,
+                                        color: ColorResources.white,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
+                              );
+                            }),
                           ],
                         ),
                       ),

@@ -340,7 +340,8 @@ class _ActionScreenState extends State<ActionScreen> {
                                       RatingBar(
                                         itemSize: 16,
                                         maxRating: 5,
-                                        initialRating: 4,
+                                        initialRating:
+                                            dataList[index].reviewCount + 0.0,
                                         itemCount: 5,
                                         direction: Axis.horizontal,
                                         ratingWidget: RatingWidget(
@@ -357,7 +358,7 @@ class _ActionScreenState extends State<ActionScreen> {
                                         onRatingUpdate: (rating) {},
                                       ),
                                       Text(
-                                        "932 Sale",
+                                        "${dataList[index].reviewCount + 0.0}",
                                         style: TextStyle(
                                           fontSize: 10,
                                           fontFamily:
