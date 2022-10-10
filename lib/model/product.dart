@@ -22,6 +22,7 @@ class Product with _$Product {
     @JsonKey(nullable: true) String? shopId,
     @JsonKey(nullable: true) String? brandId,
     @JsonKey(nullable: true) String? mainCategoryId,
+    @JsonKey(nullable: true) List<String>? nameArray,
     required DateTime dateTime,
   }) = _Product;
 
@@ -39,6 +40,7 @@ class Product with _$Product {
         totalQuantity: 0,
         remainQuantity: 0,
         saleCount: 0,
+        nameArray: [],
         dateTime: DateTime.now(),
       );
 }

@@ -28,16 +28,18 @@ class SearchController extends GetxController {
     //Else Start Search
     isSearching.value = true;
     try {
+      log("********Fetching......***");
       final result = await FirebaseFirestore.instance
           .collection(productCollection)
-          .where("name", arrayContainsAny: [value]).get();
-
-      searchResultMap.putIfAbsent(value,
-          () => result.docs.map((e) => Product.fromJson(e.data())).toList());
+          .where("nameArray", arrayContainsAny: [value]).get();
+      log("********Result: ${result.docs.length}\n SearchValue: $value****");
+      searchResultMap[value] =
+          result.docs.map((e) => Product.fromJson(e.data())).toList();
+      isSearching.value = false;
     } catch (e) {
       log("*******Error: $e");
+      isSearching.value = false;
     }
-    isSearching.value = false;
   }
 
   void removeFromHistoryBox(String key) => searchBox.delete(key);
