@@ -93,6 +93,42 @@ class _UploadProductState extends State<UploadProduct> {
                 return ListView(
                   children: [
                     const SizedBox(height: 20),
+                    //Scan Bar Code
+                    SizedBox(
+                      height: 50,
+                      child: Row(
+                        children: [
+                          //Label
+                          const Text(
+                            "Scan bar code => ",
+                            style: TextStyle(
+                              color: Colors.black,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          //Barcode image
+                          InkWell(
+                            onTap: () => productController.scanBarCode(),
+                            child: Image.asset(
+                              Images.barCode,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Obx(() {
+                      final isError =
+                          productController.isFirstTimePressed.value &&
+                              productController.barCode.isEmpty;
+                      return isError
+                          ? const Text(
+                              "Bar code is required.",
+                              style: TextStyle(
+                                color: Colors.red,
+                              ),
+                            )
+                          : const SizedBox();
+                    }),
                     //Name
                     CustomTextForm(
                       padding: 0,

@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 import 'package:citymall/controller/db_data_controller.dart';
 import 'package:citymall/model/cips.dart';
 import 'package:citymall/model/main_category.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
@@ -49,6 +51,7 @@ class ProductController extends GetxController {
   var isSearch = false.obs;
   var isFile = false.obs;
   //Selected Type
+  var barCode = "".obs;
   RxList<String> pickedImage = <String>[].obs;
   var selectedBrandId = "".obs;
   var selectedSubCategoryId = "".obs;
@@ -62,6 +65,7 @@ class ProductController extends GetxController {
   var selectedMainCategoryIdError = "".obs;
   var selectedShopIdError = "".obs;
   var selectedPromotionIdError = "".obs;
+  var barCodeError = "".obs;
   //Temporary
   var isLoading = true.obs;
   var isFirstTimePressed = false.obs;
@@ -96,6 +100,7 @@ class ProductController extends GetxController {
     }
   }
 
+  void setBarCode(String value) => barCode.value = value;
   void setSelectedSubCategoryId(String vaue) =>
       selectedSubCategoryId.value = vaue;
   void setSelectedBrandId(String value) => selectedBrandId.value = value;
@@ -105,6 +110,7 @@ class ProductController extends GetxController {
   }
 
   //Error
+  void setBarCodeError(String value) => barCodeError.value = value;
   void setSelectedMainCategoryIdError(String value) =>
       selectedMainCategoryIdError.value = value;
   void setSelectedSubCategoryIdError(String vaue) =>
@@ -143,6 +149,7 @@ class ProductController extends GetxController {
     } else {
       final product = _dataController.editProduct!;
       isLoading.value = true;
+
       nameController.text = product.name;
       descriptionController.text = product.description;
       priceController.text = product.price.toString();
@@ -164,6 +171,7 @@ class ProductController extends GetxController {
         }
       }
       //Selected Type
+      barCode.value = product.barCode ?? "";
       if (!(product.brandId == null) && product.brandId!.isNotEmpty) {
         selectedBrandId.value =
             brands.where((e) => e.id == product.brandId).first.name;
@@ -196,6 +204,19 @@ class ProductController extends GetxController {
         isLoading.value = false;
       });
     }
+  }
+
+  Future<void> scanBarCode() async {
+    FlutterBarcodeScanner.scanBarcode(
+            "#ff6666", "Cancel", false, ScanMode.DEFAULT)
+        .then((value) {
+      if (value != "-1") {
+        barCode.value = value;
+      }
+      log("********Barcode Scan Value: $value");
+    }).catchError((e) {
+      log("*****Error scan bar code");
+    });
   }
 
   pickSizeImage(String key) async {
@@ -243,6 +264,7 @@ class ProductController extends GetxController {
     remainQuantityController.clear();
     pickedImage.value = [];
     selectedBrandId.value = "";
+    barCode.value = "";
     selectedShopId.value = "";
     selectedMainCategoryId.value = "";
     selectedSubCategoryId.value = "";
@@ -264,7 +286,8 @@ class ProductController extends GetxController {
         selectedSubCategoryId.isEmpty ||
         selectedMainCategoryId.isEmpty ||
         selectedShopId.isEmpty ||
-        selectedPromotionId.isEmpty) {
+        selectedPromotionId.isEmpty ||
+        barCode.isEmpty) {
       return false;
     } else {
       return true;
@@ -379,9 +402,17 @@ class ProductController extends GetxController {
     var promotion = 0;
     var tQuantity = 0;
     var rQuantity = 0;
+    var lBarCode = barCode.value;
     var name = nameController.text;
     var desc = descriptionController.text;
     var price = int.tryParse(priceController.text) ?? 0;
+    List<String> nameArray = [];
+    var preString = "";
+    for (var e in name.characters.toList()) {
+      preString += e.toLowerCase();
+      nameArray.add(preString);
+    }
+    log("*******NameArray: ${nameArray.toString()}");
     try {
       mainId = mainCategories
           .where((e) => e.name == selectedMainCategoryId.value)
@@ -449,6 +480,8 @@ class ProductController extends GetxController {
               shopId: shopId,
               brandId: brandId,
               reviewCount: 0,
+              barCode: lBarCode,
+              nameArray: nameArray,
               totalQuantity: tQuantity,
               remainQuantity: rQuantity,
               sizeColorImagePrice: sizeMap,
@@ -463,6 +496,9 @@ class ProductController extends GetxController {
           });
           clearAll();
           hideLoading();
+          if (!(_dataController.editProduct == null)) {
+            Get.back();
+          }
         });
       } catch (e) {
         hideLoading();

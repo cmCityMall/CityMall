@@ -18,6 +18,7 @@ class Product with _$Product {
     required double reviewCount,
     required int totalQuantity,
     required int remainQuantity,
+    @JsonKey(nullable: true) String? barCode,
     @JsonKey(nullable: true) int? saleCount,
     @JsonKey(nullable: true) String? shopId,
     @JsonKey(nullable: true) String? brandId,

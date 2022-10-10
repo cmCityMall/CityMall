@@ -1,3 +1,4 @@
+import 'package:barcode_widget/barcode_widget.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:citymall/admin/week_promotion/view/week_promotion_view.dart';
 import 'package:citymall/categorybrandscreen/brand_view_all.dart';
@@ -120,6 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final FlashSaleController flashController = Get.find();
     final WeekPromotionControllerUser weekPromotionController = Get.find();
     final DBDataController dbDataController = Get.find();
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: themeController.isLightTheme.value

@@ -144,4 +144,5 @@ class Images {
   static const String darktrack4 = "assets/images/darktrack4.svg";
   static const String darktrackhomeimage =
       "assets/images/darktrackhomeimage.svg";
+  static const String barCode = "assets/images/barcode.png";
 }

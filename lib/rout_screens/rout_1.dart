@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:citymall/cartscreen/cartscreen.dart';
 import 'package:citymall/categorybrandscreen/categorybrandscreen.dart';
 import 'package:citymall/colors/colors.dart';
@@ -13,9 +15,12 @@ import 'package:citymall/searchscreen/searchscreen.dart';
 import 'package:citymall/searchscreen/subsearchscreen.dart';
 import 'package:citymall/textstylefontfamily/textfontfamily.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
+
+import '../searchscreen/search_controller.dart';
 
 class NavigationBarBottom extends StatefulWidget {
   @override
@@ -66,6 +71,7 @@ class _NavigationBarBottomState extends State<NavigationBarBottom> {
 
   @override
   Widget build(BuildContext context) {
+    final SearchController searchController = Get.find();
     return Obx(
       () => SideMenu(
         closeIcon: Icon(
@@ -287,6 +293,22 @@ class _NavigationBarBottomState extends State<NavigationBarBottom> {
                                   ),
                                 )
                               : Container(),
+                  if (selectedIndex == 2) ...[
+                    //Barcode image
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        top: 8,
+                        right: 20,
+                        bottom: 8,
+                      ),
+                      child: InkWell(
+                        onTap: () => searchController.scanBarCode(),
+                        child: Image.asset(
+                          Images.barCode,
+                        ),
+                      ),
+                    ),
+                  ]
                 ],
               ),
               body: WillPopScope(

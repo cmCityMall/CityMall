@@ -151,10 +151,10 @@ class ViewAllReviewScreen extends StatelessWidget {
                 ),
                 Expanded(
                   child: ListView.builder(
-                    itemCount: detailController.reviewList.length,
+                    itemCount: detailController.reviewsList.length,
                     shrinkWrap: true,
                     itemBuilder: (context, index) {
-                      final review = detailController.reviewList[index];
+                      final review = detailController.reviewsList[index];
                       return Padding(
                         padding: const EdgeInsets.only(top: 10),
                         child: Column(
