@@ -1,26 +1,26 @@
 import 'package:citymall/colors/colors.dart';
 import 'package:citymall/controller/theme_controller.dart';
 import 'package:citymall/images/images.dart';
+import 'package:citymall/searchscreen/search_controller.dart';
 import 'package:citymall/textstylefontfamily/textfontfamily.dart';
+import 'package:citymall/utils/widgets/empty_widgt.dart';
+import 'package:citymall/utils/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
+import '../constant/constant.dart';
 
 class SearchScreen extends StatelessWidget {
   SearchScreen({Key? key}) : super(key: key);
   final ThemeController themeController = Get.put(ThemeController());
 
-  //SearchController searchController = Get.put(SearchController());
-
-  final List<Map> searchList = [
-    {"text": "Action Camera"},
-    {"text": "Cable"},
-    {"text": "Macbook"},
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final SearchController searchController = Get.find();
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: themeController.isLightTheme.value
@@ -32,7 +32,7 @@ class SearchScreen extends StatelessWidget {
           height: Get.height,
           width: Get.width,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(
+            borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(30),
               topRight: Radius.circular(30),
             ),
@@ -40,16 +40,39 @@ class SearchScreen extends StatelessWidget {
                 ? ColorResources.white1
                 : ColorResources.black1,
           ),
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // GetBuilder(
-                  //   init: searchController,
-                  //builder: (search) =>
-                  TextFormField(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            child: Stack(
+              children: [
+                //Searching Loading
+                Obx(() {
+                  if (searchController.isSearching.value) {
+                    return const Align(
+                      alignment: Alignment.center,
+                      child: LoadingWidget(),
+                    );
+                  }
+                  if (searchController.searchResultMap
+                          .containsKey(searchController.searchValue.value) &&
+                      searchController
+                          .searchResultMap[searchController.searchValue.value]!
+                          .isEmpty) {
+                    return const Align(
+                        alignment: Alignment.center,
+                        child: EmptyWidget("No products found."));
+                  }
+                  return const Center(child: Text("Product found"));
+                }),
+                //Search Text Form Field
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: TextFormField(
+                    onFieldSubmitted: (value) {
+                      if (value.isNotEmpty) {
+                        searchController.search(value);
+                      }
+                    },
+                    focusNode: searchController.focusNode,
                     style: TextStyle(
                         fontFamily: TextFontFamily.SEN_REGULAR,
                         fontSize: 15,
@@ -70,9 +93,10 @@ class SearchScreen extends StatelessWidget {
                       fillColor: themeController.isLightTheme.value
                           ? ColorResources.white
                           : ColorResources.black4,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 10),
                       hintText: "Search Product Name",
-                      hintStyle: TextStyle(
+                      hintStyle: const TextStyle(
                           fontFamily: TextFontFamily.SEN_REGULAR,
                           fontSize: 16,
                           color: ColorResources.grey5),
@@ -114,60 +138,104 @@ class SearchScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // ),
-                  SizedBox(height: 10),
-                  Text(
-                    "RECENT",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontFamily: TextFontFamily.SEN_REGULAR,
-                      color: themeController.isLightTheme.value
-                          ? ColorResources.grey9
-                          : ColorResources.white.withOpacity(0.6),
+                ),
+
+                // ),
+                //SearchHistory
+                Obx(() {
+                  if (!searchController.isFocus.value) {
+                    return const SizedBox();
+                  }
+                  return AnimatedPositioned(
+                    duration: const Duration(
+                      milliseconds: 500,
                     ),
-                  ),
-                  SizedBox(height: 10),
-                  Container(
-                    height: 300,
-                    width: Get.width,
-                    child:
-                        // Obx(
-                        //       () =>
-                        ListView.builder(
-                            // itemCount: searchController.searchlist.length,
-                            itemCount: searchList.length,
-                            shrinkWrap: true,
-                            itemBuilder: (context, index) {
-                              return InkWell(
-                                onTap: () {},
-                                child: ListTile(
-                                    contentPadding: EdgeInsets.zero,
-                                    leading: SvgPicture.asset(Images.clock),
-                                    title: Text(
-                                      // " ${searchController
-                                      //     .searchlist[index]["text"]}",
-                                      searchList[index]["text"],
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontFamily: TextFontFamily.SEN_REGULAR,
-                                        color:
-                                            themeController.isLightTheme.value
-                                                ? ColorResources.black
-                                                : ColorResources.white,
-                                      ),
-                                    ),
-                                    trailing: Icon(
-                                      Icons.close,
-                                      color: themeController.isLightTheme.value
-                                          ? ColorResources.black
-                                          : ColorResources.white,
-                                    )),
-                              );
-                            }),
-                    //),
-                  ),
-                ],
-              ),
+                    top: 75,
+                    child: SizedBox(
+                      height: size.height,
+                      width: size.width,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: size.width,
+                              color: Colors.white,
+                              padding: const EdgeInsets.all(10),
+                              child: Text(
+                                "RECENT",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontFamily: TextFontFamily.SEN_REGULAR,
+                                  color: themeController.isLightTheme.value
+                                      ? ColorResources.grey9
+                                      : ColorResources.white.withOpacity(0.6),
+                                ),
+                              ),
+                            ),
+                            //Search History
+                            ValueListenableBuilder(
+                              valueListenable:
+                                  Hive.box<String>(searchHistoryBox)
+                                      .listenable(),
+                              builder: (context, Box<String> box, __) {
+                                return Container(
+                                  color: Colors.white,
+                                  padding: const EdgeInsets.all(10),
+                                  child: ListView(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    children: box.values.map((e) {
+                                      return ListTile(
+                                          contentPadding: EdgeInsets.zero,
+                                          leading:
+                                              SvgPicture.asset(Images.clock),
+                                          title: Row(
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  e,
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontFamily: TextFontFamily
+                                                        .SEN_REGULAR,
+                                                    color: themeController
+                                                            .isLightTheme.value
+                                                        ? ColorResources.black
+                                                        : ColorResources.white,
+                                                  ),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: IconButton(
+                                                  onPressed: () =>
+                                                      searchController
+                                                          .removeFromHistoryBox(
+                                                              e),
+                                                  icon: Icon(
+                                                    Icons.close,
+                                                    color: themeController
+                                                            .isLightTheme.value
+                                                        ? ColorResources.black
+                                                        : ColorResources.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ));
+                                    }).toList(),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ],
             ),
           ),
         ),

@@ -20,6 +20,7 @@ import 'controller/week_promotion_controller.dart';
 import 'model/hive_purchase.dart';
 import 'model/hive_purchase_item.dart';
 import 'rout_screens/rout_1.dart';
+import 'searchscreen/search_controller.dart';
 //import 'package:get/get.dart';
 
 Future<void> main() async {
@@ -36,6 +37,7 @@ Future<void> main() async {
   await Hive.openBox<HivePersonalAddress>(addressBox);
   await Hive.openBox<FavouriteItem>(favouriteBox);
   await Hive.openBox<HivePurchase>(purchaseBox);
+  await Hive.openBox<String>(searchHistoryBox);
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   Get.put(AuthController());
@@ -55,6 +57,7 @@ class CityMall extends StatelessWidget {
     Get.put(FlashSaleController());
     Get.put(RecommendScreenController());
     Get.put(CartController());
+    Get.put(SearchController());
     return GetMaterialApp(
       theme: themeController.isLightTheme.value ? light : dark,
       darkTheme: ThemeData.dark(),

@@ -708,8 +708,8 @@ class _HomeScreenState extends State<HomeScreen> {
               GridView.builder(
                 itemCount: 4,
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 8,
                   mainAxisSpacing: 8,
@@ -959,7 +959,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 );
               }),
-              SizedBox(height: 13),
+              const SizedBox(height: 13),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
