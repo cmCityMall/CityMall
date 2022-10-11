@@ -2,10 +2,22 @@ import 'dart:developer';
 
 import 'package:citymall/model/cart_product.dart';
 import 'package:citymall/model/hive_personal_address.dart';
+import 'package:citymall/model/personal_address.dart';
+import 'package:citymall/model/purchase.dart';
+import 'package:citymall/show_loading/show_loading.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:uuid/uuid.dart';
+
+import '../productdetailsscreen/paymentscreen.dart';
+import '../rout_screens/rout_1.dart';
+import '../server/database.dart';
+import 'auth_controller.dart';
 
 class CartController extends GetxController {
+  final Database _database = Database();
+  final AuthController authController = Get.find();
   RxMap<String, CartProduct> cartMap = <String, CartProduct>{}.obs;
   Rxn<HivePersonalAddress> selectedHivePersonalAddress =
       Rxn<HivePersonalAddress>();
@@ -90,6 +102,49 @@ class CartController extends GetxController {
     for (var element in cart.entries) {
       subTotal.value =
           subTotal.value + (element.value.lastPrice * element.value.count);
+    }
+  }
+
+  Future<void> uploadPurchase() async {
+    showLoading();
+    try {
+      await _database.writePurchase(
+        Purchase(
+          id: Uuid().v1(),
+          eta: "",
+          items: cartMap.entries.map((e) => e.value).toList(),
+          personalAddress: PersonalAddress(
+            fullName: selectedHivePersonalAddress.value!.fullName,
+            phoneNumber: selectedHivePersonalAddress.value!.phoneNumber,
+            address: selectedHivePersonalAddress.value!.address,
+            zipCode: selectedHivePersonalAddress.value!.zipCode,
+            country: selectedHivePersonalAddress.value!.country,
+            city: selectedHivePersonalAddress.value!.city,
+            district: selectedHivePersonalAddress.value!.district,
+            addressType: selectedHivePersonalAddress.value!.addressType,
+          ),
+          screenShotImage: paidScreenShotImage.value,
+          townShipNameAndFee: townShipNameAndFee,
+          userId: authController.currentUser.value!.id,
+          status: 0, //For processing
+          dateTime: DateTime.now(),
+        ),
+      );
+      hideLoading();
+      Get.defaultDialog(
+        title: "",
+        titlePadding: EdgeInsets.zero,
+        content: const PaymentSuccessDialogWidget(),
+      );
+      await Future.delayed(const Duration(seconds: 2));
+      //After delaying,mean after show success,Get back to until home
+      selectedIndex = 0;
+      Navigator.of(Get.context!, rootNavigator: true)
+          .pushReplacement(MaterialPageRoute(
+        builder: (context) => NavigationBarBottom(),
+      ));
+    } catch (e) {
+      log("*****Error Uploading Purchase: $e");
     }
   }
 }

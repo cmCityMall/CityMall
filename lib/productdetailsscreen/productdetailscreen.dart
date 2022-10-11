@@ -9,6 +9,7 @@ import 'package:citymall/productdetailsscreen/product_detail_controller.dart';
 import 'package:citymall/productdetailsscreen/viewallreviewscreen.dart';
 import 'package:citymall/rout_screens/rout_1.dart';
 import 'package:citymall/textstylefontfamily/textfontfamily.dart';
+import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -18,9 +19,11 @@ import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../controller/cart_controller.dart';
+import '../model/review.dart';
 import '../widgets/other/cache_image.dart';
 import '../widgets/other/cart_icon_widget.dart';
 import '../widgets/other/related_address_widget.dart';
+import '../widgets/rating_bar/immutable_ratingbar.dart';
 
 // ignore: must_be_immutable
 class ProductDetailScreen extends StatelessWidget {
@@ -68,6 +71,7 @@ class ProductDetailScreen extends StatelessWidget {
     final DBDataController dataController = Get.find();
     final ProductDetailController detailController = Get.find();
     final currentProduct = dataController.selectedProduct.value;
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: themeController.isLightTheme.value
           ? ColorResources.white6
@@ -710,7 +714,7 @@ class ProductDetailScreen extends StatelessWidget {
                                       : ColorResources.white,
                                 ),
                               ),
-                              InkWell(
+                              /* InkWell(
                                 onTap: () {
                                   if (detailController.reviewsList.isNotEmpty) {
                                     Get.to(() => ViewAllReviewScreen());
@@ -729,7 +733,7 @@ class ProductDetailScreen extends StatelessWidget {
                                     SvgPicture.asset(Images.viewallarrow),
                                   ],
                                 ),
-                              ),
+                              ), */
                             ],
                           ),
                           const SizedBox(height: 4),
@@ -785,9 +789,42 @@ class ProductDetailScreen extends StatelessWidget {
                             ],
                           ),
                           Obx(() {
+                            final reviewsList = detailController.reviewsList;
+                            if (reviewsList.isNotEmpty) {
+                              final header = reviewsList.first;
+                              final expande = reviewsList.length > 1
+                                  ? reviewsList.sublist(1, reviewsList.length)
+                                  : [];
+                              return Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.grey),
+                                ),
+                                child: ExpandablePanel(
+                                  header: UserReviewWidget(
+                                      review: header, size: size),
+                                  collapsed: const SizedBox(),
+                                  expanded: ListView.builder(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemCount: expande.length,
+                                    itemBuilder: (context, index) {
+                                      return UserReviewWidget(
+                                          review: expande[index], size: size);
+                                    },
+                                  ),
+                                ),
+                              );
+                            }
+                            return const SizedBox();
+                          }),
+                          /* Obx(() {
+                            if (detailController.isLoading.value) {
+                              return const Text("Review Loading.....");
+                            }
                             return detailController.reviewsList.isNotEmpty
                                 ? Container(
-                                    height: 280,
                                     width: Get.width,
                                     decoration: BoxDecoration(
                                       color: themeController.isLightTheme.value
@@ -820,88 +857,19 @@ class ProductDetailScreen extends StatelessWidget {
                                         final review =
                                             detailController.reviewsList[index];
                                         return Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 10),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                          padding: const EdgeInsets.only(
+                                              top: 10, bottom: 10),
+                                          child: ListView(
+                                            shrinkWrap: true,
+                                            physics:
+                                                const NeverScrollableScrollPhysics(),
+                                            /* crossAxisAlignment:
+                                                CrossAxisAlignment.start */
                                             children: [
-                                              ListTile(
-                                                contentPadding: EdgeInsets.zero,
-                                                leading: CachedNetworkImage(
-                                                  imageBuilder:
-                                                      (conext, imageUrl) {
-                                                    return CircleAvatar(
-                                                      radius: 30,
-                                                      backgroundImage: imageUrl,
-                                                    );
-                                                  },
-                                                  progressIndicatorBuilder:
-                                                      (context, url, status) {
-                                                    return Shimmer.fromColors(
-                                                      baseColor: Colors.grey,
-                                                      highlightColor:
-                                                          Colors.white,
-                                                      child: Container(
-                                                        color: Colors.white,
-                                                      ),
-                                                    );
-                                                  },
-                                                  errorWidget:
-                                                      (context, url, whatever) {
-                                                    return const Text(
-                                                        "Image not available");
-                                                  },
-                                                  imageUrl: review.user.image,
-                                                  fit: BoxFit.contain,
-                                                ),
-                                                title: Text(
-                                                  review.user.userName,
-                                                  style: TextStyle(
-                                                    fontSize: 14,
-                                                    fontFamily:
-                                                        TextFontFamily.SEN_BOLD,
-                                                    color: themeController
-                                                            .isLightTheme.value
-                                                        ? ColorResources.black1
-                                                        : ColorResources.white,
-                                                  ),
-                                                ),
-                                                subtitle: RatingBar(
-                                                  itemSize: 20,
-                                                  maxRating: 5,
-                                                  initialRating: review.rating,
-                                                  itemCount: 5,
-                                                  direction: Axis.horizontal,
-                                                  ratingWidget: RatingWidget(
-                                                    full: Icon(
-                                                      Icons.star,
-                                                      color:
-                                                          ColorResources.yellow,
-                                                    ),
-                                                    empty: Icon(
-                                                      Icons.star,
-                                                      color:
-                                                          ColorResources.white2,
-                                                    ),
-                                                    half: Icon(Icons.star),
-                                                  ),
-                                                  onRatingUpdate: (rating) {},
-                                                ),
-                                                trailing: Text(
-                                                  DateFormat.yMMMMd()
-                                                      .format(review.dateTime),
-                                                  style: TextStyle(
-                                                    fontSize: 10,
-                                                    fontFamily: TextFontFamily
-                                                        .SEN_REGULAR,
-                                                    color: themeController
-                                                            .isLightTheme.value
-                                                        ? ColorResources.grey4
-                                                        : ColorResources.white
-                                                            .withOpacity(0.6),
-                                                  ),
-                                                ),
+                                              SizedBox(
+                                                height: 65,
+                                                width: size.width * 0.8,
+                                                child: 
                                               ),
                                               Center(
                                                 child: Text(
@@ -926,192 +894,10 @@ class ProductDetailScreen extends StatelessWidget {
                                     ),
                                   )
                                 : const SizedBox();
-                          }),
+                          }), */
 
                           const SizedBox(height: 20),
-                          /* Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Top Rated Products",
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  fontFamily: TextFontFamily.SEN_BOLD,
-                                  color: themeController.isLightTheme.value
-                                      ? ColorResources.black2
-                                      : ColorResources.white,
-                                ),
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  // selectedIndex = 0;
-                                  // Navigator.of(context, rootNavigator: true)
-                                  //     .pushReplacement(MaterialPageRoute(
-                                  //   builder: (context) => NavigationBarBottom(),
-                                  // ));
-                                  // Navigator.pushReplacement(
-                                  //     context,
-                                  //     MaterialPageRoute(
-                                  //       builder: (context) => MenuViewAllScreen(),
-                                  //     ));
-                                },
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      "View all",
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontFamily: TextFontFamily.SEN_REGULAR,
-                                        color: ColorResources.blue1,
-                                      ),
-                                    ),
-                                    SvgPicture.asset(Images.viewallarrow),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 15), */
-                          /* GridView.builder(
-                            itemCount: topRatedProductList.length,
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              crossAxisSpacing: 8,
-                              mainAxisSpacing: 8,
-                              childAspectRatio: Get.width > 450
-                                  ? 1.58 / 2.1
-                                  : Get.width < 370
-                                      ? 1.62 / 2.68
-                                      : 1.8 / 2.5,
-                            ),
-                            itemBuilder: (context, index) {
-                              return InkWell(
-                                onTap: () {},
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: themeController.isLightTheme.value
-                                        ? ColorResources.white
-                                        : ColorResources.black5,
-                                    borderRadius: BorderRadius.circular(20),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        blurRadius: 20,
-                                        color:
-                                            themeController.isLightTheme.value
-                                                ? ColorResources.blue1
-                                                    .withOpacity(0.05)
-                                                : ColorResources.black1,
-                                        spreadRadius: 0,
-                                        offset: Offset(0, 4),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 10),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        InkWell(
-                                          onTap: () {
-                                            Get.defaultDialog(
-                                              backgroundColor:
-                                                  ColorResources.white6,
-                                              contentPadding: EdgeInsets.zero,
-                                              title: "",
-                                              titlePadding: EdgeInsets.zero,
-                                              content: Center(
-                                                child: Image.asset(
-                                                  topRatedProductList[index]
-                                                      ["image"],
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                          child: Container(
-                                            height: 150,
-                                            width: Get.width,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
-                                              color: ColorResources.white6,
-                                            ),
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(5),
-                                              child: Image.asset(
-                                                topRatedProductList[index]
-                                                    ["image"],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Text(
-                                          topRatedProductList[index]["text"],
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontFamily: TextFontFamily.SEN_BOLD,
-                                            color: themeController
-                                                    .isLightTheme.value
-                                                ? ColorResources.black2
-                                                : ColorResources.white,
-                                          ),
-                                        ),
-                                        Text(
-                                          topRatedProductList[index]["price"],
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontFamily:
-                                                TextFontFamily.SEN_EXTRA_BOLD,
-                                            color: ColorResources.blue1,
-                                          ),
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            RatingBar(
-                                              itemSize: 16,
-                                              maxRating: 5,
-                                              initialRating: 4,
-                                              itemCount: 5,
-                                              direction: Axis.horizontal,
-                                              ratingWidget: RatingWidget(
-                                                full: Icon(
-                                                  Icons.star,
-                                                  color: ColorResources.yellow,
-                                                ),
-                                                empty: Icon(
-                                                  Icons.star,
-                                                  color: ColorResources.white2,
-                                                ),
-                                                half: Icon(Icons.star),
-                                              ),
-                                              onRatingUpdate: (rating) {},
-                                            ),
-                                            Text(
-                                              "932 Sale",
-                                              style: TextStyle(
-                                                fontSize: 10,
-                                                fontFamily:
-                                                    TextFontFamily.SEN_REGULAR,
-                                                color: ColorResources.white3,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ), */
+
                           const SizedBox(height: 10),
                           //Rating Bar
                           Obx(() {
@@ -1319,6 +1105,94 @@ class ProductDetailScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class UserReviewWidget extends StatelessWidget {
+  const UserReviewWidget({
+    Key? key,
+    required this.review,
+    required this.size,
+  }) : super(key: key);
+
+  final Review review;
+  final Size size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        //Top
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                //Profile
+                CachedNetworkImage(
+                  progressIndicatorBuilder: (context, url, status) {
+                    return Shimmer.fromColors(
+                      baseColor: Colors.red,
+                      highlightColor: Colors.yellow,
+                      child: Container(
+                        color: Colors.white,
+                      ),
+                    );
+                  },
+                  errorWidget: (context, url, whatever) {
+                    return const Text("Image not available");
+                  },
+                  imageUrl: review.user.image,
+                  imageBuilder: (context, provider) {
+                    return CircleAvatar(
+                      radius: 25,
+                      backgroundColor: Colors.grey.shade300,
+                      child: CircleAvatar(
+                        radius: 20,
+                        backgroundImage: provider,
+                      ),
+                    );
+                  },
+                  fit: BoxFit.cover,
+                ),
+                Text(
+                  review.user.userName,
+                ),
+              ],
+            ),
+            //Rating Bar
+            ImmutableRatingBar(
+              rating: review.rating,
+            ),
+          ],
+        ),
+        //Message
+        SizedBox(
+          width: size.width * 0.8,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              review.reviewMessage,
+              style: const TextStyle(
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+        ),
+        //Date
+        Align(
+          alignment: Alignment.centerRight,
+          child: Text(
+            "${review.dateTime.year}-${review.dateTime.month}-${review.dateTime.day}",
+            style: const TextStyle(
+              fontWeight: FontWeight.w400,
+              fontSize: 12,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

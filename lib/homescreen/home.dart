@@ -1,6 +1,4 @@
-import 'package:barcode_widget/barcode_widget.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:citymall/admin/week_promotion/view/week_promotion_view.dart';
 import 'package:citymall/categorybrandscreen/brand_view_all.dart';
 import 'package:citymall/colors/colors.dart';
 import 'package:citymall/constant/constant.dart';
@@ -10,7 +8,6 @@ import 'package:citymall/controller/homegridfavouritecontroller.dart';
 import 'package:citymall/controller/theme_controller.dart';
 import 'package:citymall/controller/week_promotion_controller.dart';
 import 'package:citymall/homescreen/cameradashboardscreen/cameradeshboard.dart';
-import 'package:citymall/homescreen/fashionmandashboardscreen/fashionmandashboardscreen.dart';
 import 'package:citymall/homescreen/flashdashboard/flashdashboard.dart';
 import 'package:citymall/homescreen/menuviewallscreen.dart';
 import 'package:citymall/homescreen/recomendedscreen.dart';
@@ -22,7 +19,10 @@ import 'package:citymall/shop/shop_detail_view.dart';
 import 'package:citymall/shop/shop_view_all.dart';
 import 'package:citymall/textstylefontfamily/textfontfamily.dart';
 import 'package:citymall/week_promotion/week_promotion_detail.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -32,12 +32,13 @@ import 'package:shrink_sidemenu/shrink_sidemenu.dart';
 
 import '../categorybrandscreen/brand_view_all_binding.dart';
 import '../categorybrandscreen/subcategory1.dart';
+import '../myorderscreen/tabscreen.dart';
 import '../productdetailsscreen/product_detail_binding.dart';
 import '../shop/shop_view_all_binding.dart';
 import '../utils/widgets/loading_widget.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -56,18 +57,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   toggleMenu([bool end = false]) {
     if (end) {
-      final _state = _endSideMenuKey.currentState!;
-      if (_state.isOpened) {
-        _state.closeSideMenu();
+      final state = _endSideMenuKey.currentState!;
+      if (state.isOpened) {
+        state.closeSideMenu();
       } else {
-        _state.openSideMenu();
+        state.openSideMenu();
       }
     } else {
-      final _state = _sideMenuKey.currentState!;
-      if (_state.isOpened) {
-        _state.closeSideMenu();
+      final state = _sideMenuKey.currentState!;
+      if (state.isOpened) {
+        state.closeSideMenu();
       } else {
-        _state.openSideMenu();
+        state.openSideMenu();
       }
     }
   }
@@ -75,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Text text(String text) {
     return Text(
       text,
-      style: TextStyle(
+      style: const TextStyle(
         fontFamily: TextFontFamily.SEN_REGULAR,
         fontSize: 24,
         color: ColorResources.white,
@@ -95,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Center(
         child: Text(
           text,
-          style: TextStyle(
+          style: const TextStyle(
             fontFamily: TextFontFamily.SEN_BOLD,
             fontSize: 14,
             color: ColorResources.black8,
@@ -106,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Text text1() {
-    return Text(
+    return const Text(
       ":",
       style: TextStyle(
         fontFamily: TextFontFamily.SEN_BOLD,
@@ -115,6 +116,100 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  //**FOR FCM */
+  selectNotification(String? payload) async {
+    if (payload != null) {
+      debugPrint('notification payload: $payload');
+    }
+    await Get.off(MyOrderScreen());
+  }
+
+  void onDidReceiveLocalNotification(
+      int id, String? title, String? body, String? payload) async {
+    // display a dialog with the notification details, tap ok to go to another page
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => CupertinoAlertDialog(
+        title: Text(title ?? ""),
+        content: Text(body ?? ""),
+        actions: [
+          CupertinoDialogAction(
+            isDefaultAction: true,
+            child: const Text('Ok'),
+            onPressed: () async {
+              Navigator.of(context, rootNavigator: true).pop();
+              await Get.toNamed(payload!);
+            },
+          )
+        ],
+      ),
+    );
+  }
+
+  Future<void> setUpForegroundNotification() async {
+    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+        FlutterLocalNotificationsPlugin();
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings("@mipmap/ic_launcher");
+    const DarwinInitializationSettings initializationSettingsIOS =
+        DarwinInitializationSettings(
+      // ...
+      notificationCategories: [
+        DarwinNotificationCategory(
+          'demoCategory',
+          actions: <DarwinNotificationAction>[],
+          options: <DarwinNotificationCategoryOption>{
+            DarwinNotificationCategoryOption.hiddenPreviewShowTitle,
+          },
+        )
+      ],
+    );
+    //Initialization Setting
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsIOS,
+    );
+    //Initialization
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onDidReceiveNotificationResponse: (r) => selectNotification(r.payload));
+
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'Channel ID: 1',
+      'your channel name',
+      channelDescription: 'your channel description',
+      importance: Importance.max,
+      priority: Priority.high,
+      sound: RawResourceAndroidNotificationSound('noti'),
+      ticker: 'ticker',
+    );
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+      iOS: DarwinNotificationDetails(
+        sound: "noti",
+      ),
+    );
+    //LIsten Notification
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+      final noti = message.notification!;
+      await flutterLocalNotificationsPlugin.show(
+          0, //ID
+          noti.title,
+          noti.body,
+          platformChannelSpecifics,
+          payload: message.data["route"]);
+      debugPrint("**********Push Reach******");
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    setUpForegroundNotification();
+  }
+  //**End */
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +228,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               //Advertisement
               Obx(() {
                 if (dbDataController.advertisementLoading.value) {
@@ -167,7 +262,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: List.generate(
                             dbDataController.advertisements.length,
                             (position) => Padding(
-                              padding: EdgeInsets.only(right: 8),
+                              padding: const EdgeInsets.only(right: 8),
                               child: Container(
                                 width: position == index ? 14 : 5,
                                 height: 5,
@@ -189,7 +284,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   options: CarouselOptions(
                     height: 200,
                     autoPlay: true,
-                    autoPlayAnimationDuration: Duration(milliseconds: 800),
+                    autoPlayAnimationDuration:
+                        const Duration(milliseconds: 800),
                     enlargeCenterPage: true,
                     scrollDirection: Axis.horizontal,
                     initialPage: 3,
@@ -197,7 +293,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 );
               }),
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               //Menu Main Catgory
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -218,7 +314,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                     child: Row(
                       children: [
-                        Text(
+                        const Text(
                           "View all  ",
                           style: TextStyle(
                             fontSize: 14,
@@ -232,7 +328,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 13),
+              const SizedBox(height: 13),
               GridView.builder(
                   physics: const NeverScrollableScrollPhysics(),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -316,7 +412,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                     child: Row(
                       children: [
-                        Text(
+                        const Text(
                           "View all  ",
                           style: TextStyle(
                             fontSize: 14,
@@ -330,7 +426,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 13),
+              const SizedBox(height: 13),
               Obx(() {
                 if (dbDataController.promotionsLoading.value) {
                   return const LoadingWidget();
@@ -389,10 +485,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                       fit: BoxFit.fill,
                                     ),
                                   ),
-                                  SizedBox(height: 8),
+                                  const SizedBox(height: 8),
                                   Text(
                                     dbDataController.weekPromotions[index].desc,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 13,
                                       fontFamily: TextFontFamily.SEN_BOLD,
                                       color: ColorResources.blue1,
@@ -484,87 +580,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 );
               }),
-              /* const SizedBox(height: 21),
-              Text(
-                "Category",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontFamily: TextFontFamily.SEN_BOLD,
-                  color: themeController.isLightTheme.value
-                      ? ColorResources.black2
-                      : ColorResources.white,
-                ),
-              ),
-              const SizedBox(height: 14),
-              Obx(() {
-                if (dbDataController.mainCategoryLoading.value) {
-                  return const LoadingWidget();
-                }
-                if (dbDataController.mainCategories.isEmpty) {
-                  return const SizedBox();
-                }
-                final list = dbDataController.mainCategories;
-                return Container(
-                  height: 168,
-                  width: Get.width,
-                  decoration: BoxDecoration(
-                    color: themeController.isLightTheme.value
-                        ? ColorResources.white1
-                        : ColorResources.black1,
-                  ),
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: list.length,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      return Stack(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: InkWell(
-                              onTap: () {
-                                Get.off(FashionManDashboard());
-                              },
-                              child: Container(
-                                height: 168,
-                                width: 122,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  image: DecorationImage(
-                                    image: NetworkImage(list[index].image),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(15),
-                                  child: Image.asset(
-                                    Images.categoryhomecanvas,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 15,
-                            left: 21,
-                            child: Text(
-                              list[index].name,
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontFamily: TextFontFamily.SEN_REGULAR,
-                                fontWeight: FontWeight.w500,
-                                color: ColorResources.white,
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                );
-              }), */
-              SizedBox(height: 20),
+
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -599,7 +616,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 13),
+              const SizedBox(height: 13),
               Obx(() {
                 if (dbDataController.shopLoading.value) {
                   return const LoadingWidget();
@@ -655,10 +672,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                       fit: BoxFit.fill,
                                     ),
                                   ),
-                                  SizedBox(height: 8),
+                                  const SizedBox(height: 8),
                                   Text(
                                     dbDataController.shopRxList[index].name,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 13,
                                       fontFamily: TextFontFamily.SEN_BOLD,
                                       color: ColorResources.blue1,
@@ -672,7 +689,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       }),
                 );
               }),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -692,7 +709,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                     child: Row(
                       children: [
-                        Text(
+                        const Text(
                           "View all  ",
                           style: TextStyle(
                             fontSize: 14,
@@ -706,7 +723,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               GridView.builder(
                 itemCount: 4,
                 shrinkWrap: true,
@@ -740,7 +757,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ? ColorResources.blue1.withOpacity(0.05)
                                 : ColorResources.black1,
                             spreadRadius: 0,
-                            offset: Offset(0, 4),
+                            offset: const Offset(0, 4),
                           ),
                         ],
                       ),
@@ -852,22 +869,22 @@ class _HomeScreenState extends State<HomeScreen> {
                                   itemCount: 5,
                                   direction: Axis.horizontal,
                                   ratingWidget: RatingWidget(
-                                    full: Icon(
+                                    full: const Icon(
                                       Icons.star,
                                       color: ColorResources.yellow,
                                       size: 10,
                                     ),
-                                    empty: Icon(
+                                    empty: const Icon(
                                       Icons.star,
                                       color: ColorResources.white2,
                                     ),
-                                    half: Icon(Icons.star),
+                                    half: const Icon(Icons.star),
                                   ),
                                   onRatingUpdate: (rating) {},
                                 ),
                                 Text(
                                   "${product.reviewCount + 0.0}",
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 10,
                                     fontFamily: TextFontFamily.SEN_REGULAR,
                                     color: ColorResources.white3,
@@ -984,7 +1001,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                     child: Row(
                       children: [
-                        Text(
+                        const Text(
                           "View all  ",
                           style: TextStyle(
                             fontSize: 14,
@@ -1054,10 +1071,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                       fit: BoxFit.fill,
                                     ),
                                   ),
-                                  SizedBox(height: 8),
+                                  const SizedBox(height: 8),
                                   Text(
                                     dbDataController.brandRxList[index].name,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 13,
                                       fontFamily: TextFontFamily.SEN_BOLD,
                                       color: ColorResources.blue1,

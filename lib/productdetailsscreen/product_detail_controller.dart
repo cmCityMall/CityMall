@@ -142,55 +142,16 @@ class ProductDetailController extends GetxController {
   }
   //**End */
 
-  Future<void> getInitialWhere() async {
-    isLoading.value = true;
-    try {
-      final result = await _database.getInitialWhere(
-        reviewCollection,
-        "productId",
-        dataController.selectedProduct.value!.id,
-      );
-      if (result.docs.isNotEmpty) {
-        reviewsList.value =
-            result.docs.map((e) => Review.fromJson(e.data())).toList();
-      }
-    } catch (e) {
-      log("****Error: $e");
-    }
-    isLoading.value = false;
-  }
-
-  Future<void> fetchWhere(List<String> startAfterId) async {
-    try {
-      final result = await _database.fetchMoreWhere(
-        reviewCollection,
-        startAfterId,
-        "productId",
-        dataController.selectedProduct.value!.id,
-      );
-      if (result.docs.isNotEmpty) {
-        for (var e in result.docs) {
-          reviewsList.add(Review.fromJson(e.data()));
-        }
-      }
-    } catch (e) {
-      log("****Error: $e");
-    }
-  }
-
   @override
   Future<void> onInit() async {
-    await getInitialWhere();
-    scrollController.addListener(() {
-      if (scrollController.position.pixels ==
-          scrollController.position.maxScrollExtent) {
-        if (!(isLoading.value)) {
-          isLoading.value = true;
-          final lastD = reviewsList.last;
-          fetchWhere([lastD.toJson()["dateTime"]])
-              .then((value) => isLoading.value = false);
-        }
-      }
+    _database.firestore
+        .collection(reviewCollection)
+        .where("productId", isEqualTo: dataController.selectedProduct.value!.id)
+        .get()
+        .then((value) {
+      reviewsList.value = value.docs.map((e) {
+        return Review.fromJson(e.data());
+      }).toList();
     });
     FirebaseFirestore.instance
         .collection(productCollection)

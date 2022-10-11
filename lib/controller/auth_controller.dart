@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:developer';
 
+import 'package:citymall/model/purchase.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -17,8 +19,10 @@ class AuthController extends GetxController {
   final _authObject = Auth();
   final _database = Database();
   StreamSubscription? userStreamSubscription;
+  StreamSubscription? orderStreamSubscription;
   int currentUserPoint = 0;
   var currentUserDeviceToken = "".obs;
+  RxList<Purchase> orderList = <Purchase>[].obs;
   Rxn<AuthUser> currentUser = Rxn<AuthUser>(AuthUser.guest());
 
   @override
@@ -92,9 +96,24 @@ class AuthController extends GetxController {
             .snapshots()
             .listen((event) {
           if (event.exists) {
-            debugPrint("****UserEvent: ${event.data()}");
+            log("****UserEvent: ${event.data()}");
             currentUser.value = AuthUser.fromJson(event.data()!);
             currentUserPoint = currentUser.value!.points;
+
+            //For Order
+            if (currentUser.value!.status! > 1) {
+              //IF user is admin,need to listen purchase collection
+              if (!(orderStreamSubscription == null)) {
+                orderStreamSubscription!.cancel();
+                log("*****OrderStreamSubscription is canceled.**");
+              }
+              log("****OrderStreamSubcription is starting...");
+              orderStreamSubscription =
+                  _database.watchCollection(purchaseCollection).listen((event) {
+                orderList.value =
+                    event.docs.map((e) => Purchase.fromJson(e.data())).toList();
+              });
+            }
           }
         });
       }

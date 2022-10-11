@@ -1,4 +1,13 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:uuid/uuid.dart';
+
+import '../constant/collection_path.dart';
+import '../model/purchase.dart';
+import 'api.dart';
 
 class Database {
   final firestore = FirebaseFirestore.instance;
@@ -110,5 +119,55 @@ class Database {
         .startAfter([startAfterId])
         .limit(limit)
         .get();
+  }
+
+  Future<void> writePurchase(Purchase purchase) async {
+    if (purchase.screenShotImage.isNotEmpty) {
+      //For prepay
+      uploadImage(purchase.screenShotImage).then((value) async {
+        write(
+          collectionPath: purchaseCollection,
+          documentPath: purchase.id,
+          data: purchase.copyWith(screenShotImage: value).toJson(),
+        ).then((value) {
+          //After purchase uploaded.Push send FCM
+          Api.sendOrder(
+                  "အော်ဒါတင်ခြင်း",
+                  "🧑အမည်:${purchase.personalAddress.fullName}\n"
+                      "🏠လိပ်စာ: ${purchase.personalAddress.address}\n"
+                      "☎: ${purchase.personalAddress.phoneNumber}")
+              .then((value) => log("*****Success push notification*****"));
+        }).catchError((e) {
+          log("****Error in uploading purchase: $e");
+        });
+      }).catchError((e) {
+        log("Error in $e");
+      });
+    } else {
+      write(
+        collectionPath: purchaseCollection,
+        documentPath: purchase.id,
+        data: purchase.toJson(),
+      ).then((value) {
+        //After purchase uploaded.Push send FCM
+        Api.sendOrder(
+                "အော်ဒါတင်ခြင်း",
+                "🧑အမည်:${purchase.personalAddress.fullName}\n"
+                    "🏠လိပ်စာ: ${purchase.personalAddress.address}\n"
+                    "☎: ${purchase.personalAddress.phoneNumber}")
+            .then((value) => log("*****Success push notification*****"));
+      }).catchError((e) {
+        log("****Error in uploading purchase: $e");
+      });
+    }
+  }
+
+  Future<String> uploadImage(String imagePath) async {
+    final snapshot = await FirebaseStorage.instance
+        .ref()
+        .child("screenShot/${Uuid().v1()}")
+        .putFile(File(imagePath));
+    final resultImage = await snapshot.ref.getDownloadURL();
+    return resultImage;
   }
 }

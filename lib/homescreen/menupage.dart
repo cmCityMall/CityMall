@@ -3,6 +3,8 @@ import 'package:citymall/admin/brand/bin/brand_binding.dart';
 import 'package:citymall/admin/brand/view/brand_view.dart';
 import 'package:citymall/admin/main_category/bin/mc_binding.dart';
 import 'package:citymall/admin/main_category/view/mc_view.dart';
+import 'package:citymall/admin/orders/bin/order_main_binding.dart';
+import 'package:citymall/admin/orders/order_main_view.dart';
 import 'package:citymall/admin/product/bin/product_binding.dart';
 import 'package:citymall/admin/product/view/manage_product.dart';
 import 'package:citymall/admin/shop/bin/shop_binding.dart';
@@ -21,6 +23,7 @@ import 'package:citymall/menuscreens/aboutusscreen.dart';
 import 'package:citymall/menuscreens/languegescreen.dart';
 import 'package:citymall/menuscreens/profilescreen/profilescreen.dart';
 import 'package:citymall/menuscreens/settingscreens/settingscreen.dart';
+import 'package:citymall/myorderscreen/myorder_screen_binding.dart';
 import 'package:citymall/myorderscreen/tabscreen.dart';
 import 'package:citymall/textstylefontfamily/textfontfamily.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -172,14 +175,29 @@ class MenuPage extends GetView {
                             binding: ProductBinding(),
                           );
                         }),
+                        inkwell(Images.myordericon, "Manage Orders", () {
+                          Get.to(
+                            () => OrderMainView(),
+                            binding: OrderMainBinding(),
+                          );
+                        })
                       ],
                     );
                   }),
                   inkwell(Images.categoryicon, "All Categories", () {
                     Get.off(MenuViewAllScreen());
                   }),
-                  inkwell(Images.myordericon, "My Order", () {
-                    Get.off(MyOrderScreen());
+                  Obx(() {
+                    final isNotAdmin =
+                        authController.currentUser.value!.status! == 1;
+                    return isNotAdmin
+                        ? inkwell(Images.myordericon, "My Order", () {
+                            Get.to(
+                              () => MyOrderScreen(),
+                              binding: MyOrderScreenBinding(),
+                            );
+                          })
+                        : const SizedBox();
                   }),
                   inkwell(Images.settingicon, "Settings", () {
                     Get.off(SettingScreen());

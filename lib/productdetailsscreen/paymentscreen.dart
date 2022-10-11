@@ -389,11 +389,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 bottom: 20,
                 child: InkWell(
                   onTap: () {
-                    Get.defaultDialog(
+                    cartController.uploadPurchase();
+                    /* Get.defaultDialog(
                       title: "",
                       titlePadding: EdgeInsets.zero,
                       content: const PaymentSuccessDialogWidget(),
-                    );
+                    ); */
                   },
                   child: Container(
                     height: 50,

@@ -1,16 +1,15 @@
+import 'package:citymall/admin/orders/canceled_order.dart';
+import 'package:citymall/admin/orders/delivered_order.dart';
+import 'package:citymall/admin/orders/procesing_order.dart';
 import 'package:citymall/colors/colors.dart';
 import 'package:citymall/controller/tabcontroller.dart';
 import 'package:citymall/controller/theme_controller.dart';
-import 'package:citymall/myorderscreen/Deliverdlistscreen.dart';
-import 'package:citymall/myorderscreen/canceledlistscreen.dart';
-import 'package:citymall/myorderscreen/proccesinglistscreen.dart';
-import 'package:citymall/rout_screens/rout_1.dart';
 import 'package:citymall/textstylefontfamily/textfontfamily.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class MyOrderScreen extends StatelessWidget {
-  MyOrderScreen({Key? key}) : super(key: key);
+class OrderMainView extends StatelessWidget {
+  OrderMainView({Key? key}) : super(key: key);
   final TabviewController controller = Get.put(TabviewController());
   final ThemeController themeController = Get.put(ThemeController());
   final List<Tab> myTabs = <Tab>[
@@ -124,9 +123,9 @@ class MyOrderScreen extends StatelessWidget {
                 child: TabBarView(
                   controller: controller.tabController,
                   children: [
-                    DeliveredListScreen(),
-                    ProcessingListScreen(),
-                    CanceledListScreen(),
+                    DeliveredOrders(),
+                    ProcessingOrders(),
+                    CanceledOrder(),
                   ],
                 ),
               ),

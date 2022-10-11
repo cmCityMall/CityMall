@@ -59,6 +59,9 @@ class SearchController extends GetxController {
 
   Future<void> search(String value) async {
     searchValue.value = value;
+    if (focusNode.hasFocus) {
+      focusNode.unfocus();
+    }
     searchBox.put(value, value);
     if (searchResultMap.containsKey(value) &&
         searchResultMap[value]!.isNotEmpty) {

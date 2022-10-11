@@ -83,7 +83,6 @@ class SearchScreen extends StatelessWidget {
                       itemCount:
                           list[searchController.searchValue.value]!.length,
                       shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
@@ -355,8 +354,10 @@ class SearchScreen extends StatelessWidget {
                   if (!searchController.isFocus.value) {
                     return const SizedBox();
                   }
-                  return Positioned(
-                    top: 75,
+                  return Padding(
+                    padding: const EdgeInsets.only(
+                      top: 70,
+                    ),
                     child: SingleChildScrollView(
                       child: Container(
                         width: size.width,

@@ -11,32 +11,31 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../utils/widgets/loading_widget.dart';
+import 'order_detail_view.dart';
 
-class ProcessingListScreen extends StatelessWidget {
-  ProcessingListScreen({Key? key}) : super(key: key);
+class ProcessingOrders extends StatelessWidget {
+  ProcessingOrders({Key? key}) : super(key: key);
   final ThemeController themeController = Get.put(ThemeController());
   final TabviewController controller = Get.put(TabviewController());
 
   @override
   Widget build(BuildContext context) {
     final AuthController authController = Get.find();
-    final MyOrderScreenController orderController = Get.find();
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
       child: Obx(() {
-        if (orderController.isLoading.value) {
-          return const LoadingWidget();
-        }
-        if (orderController.processList.isEmpty) {
+        final list = authController.orderList;
+        final processList = list.where((e) => e.status == 0).toList();
+
+        if (processList.isEmpty) {
           return const EmptyWidget("No processing orders yet.");
         }
         return ListView.builder(
-          itemCount: orderController.processList.length,
+          itemCount: processList.length,
           shrinkWrap: true,
           itemBuilder: (BuildContext context, int index) {
-            final purchase = orderController.processList[index];
+            final purchase = processList[index];
             final quantity = getQuantity(purchase);
             final totalAmount =
                 getTotalAmount(purchase) + purchase.townShipNameAndFee["fee"];
@@ -160,9 +159,10 @@ class ProcessingListScreen extends StatelessWidget {
                           children: [
                             InkWell(
                               onTap: () {
-                                Get.to(() => TrackOrderScreen2(
+                                Get.to(() => OrderDetailView(
                                       purchase: purchase,
                                       amt: totalAmount,
+                                      isProcessing: true,
                                     ));
                               },
                               child: Container(

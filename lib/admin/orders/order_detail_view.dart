@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:citymall/admin/orders/controller/order_main_controller.dart';
 import 'package:citymall/colors/colors.dart';
 import 'package:citymall/controller/theme_controller.dart';
 import 'package:citymall/images/images.dart';
@@ -10,18 +13,21 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:intl/intl.dart';
 
 // ignore: must_be_immutable
-class TrackOrderScreen2 extends StatelessWidget {
+class OrderDetailView extends StatelessWidget {
   final Purchase purchase;
   final int amt;
-  TrackOrderScreen2({
+  final bool isProcessing;
+  OrderDetailView({
     Key? key,
     required this.purchase,
     required this.amt,
+    required this.isProcessing,
   }) : super(key: key);
   final ThemeController themeController = Get.put(ThemeController());
 
   @override
   Widget build(BuildContext context) {
+    final OrderMainController orderMainController = Get.find();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: themeController.isLightTheme.value
@@ -65,7 +71,7 @@ class TrackOrderScreen2 extends StatelessWidget {
           ),
         ),
         title: Text(
-          "My Order Detail",
+          "Order Detail",
           style: TextStyle(
             fontFamily: TextFontFamily.SEN_BOLD,
             fontSize: 22,
@@ -135,7 +141,7 @@ class TrackOrderScreen2 extends StatelessWidget {
                   const SizedBox(height: 20),
                   const Divider(thickness: 0.5, color: ColorResources.grey4),
                   const SizedBox(height: 20),
-                  Text(
+                  /* Text(
                     "ETA: ${purchase.eta}",
                     style: TextStyle(
                       fontFamily: TextFontFamily.SEN_BOLD,
@@ -145,7 +151,7 @@ class TrackOrderScreen2 extends StatelessWidget {
                           : ColorResources.white,
                     ),
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 18), */
                   Text(
                     "Items Detail: ",
                     style: TextStyle(
@@ -338,9 +344,217 @@ class TrackOrderScreen2 extends StatelessWidget {
                       ),
                     ),
                   ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  //Functions For Adim To do IF this order is processing status
+                  SizedBox(
+                    height: 50,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              primary: ColorResources.white1,
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
+                                side: BorderSide(
+                                  color: ColorResources.green1,
+                                ),
+                              )),
+                          onPressed: () {
+                            showAcceptModelButtonSheet(context);
+                            log("Make delivering....");
+                          },
+                          child: const Text(
+                            "Deliver order",
+                            style: TextStyle(
+                              fontFamily: TextFontFamily.SEN_BOLD,
+                              fontSize: 18,
+                              color: ColorResources.black,
+                            ),
+                          ),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              primary: ColorResources.white1,
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
+                                side: BorderSide(
+                                  color: ColorResources.red1,
+                                ),
+                              )),
+                          onPressed: () {
+                            log("Making cancel...");
+                            orderMainController.cancelOrder(
+                                purchase.id, purchase.userId);
+                          },
+                          child: const Text(
+                            "Cancel order",
+                            style: TextStyle(
+                              fontFamily: TextFontFamily.SEN_BOLD,
+                              fontSize: 18,
+                              color: ColorResources.black,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  showAcceptModelButtonSheet(BuildContext context) {
+    Get.bottomSheet(
+      BottomSheetFormField(),
+      useRootNavigator: true,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(20),
+        topRight: Radius.circular(20),
+      )),
+    );
+  }
+}
+
+class BottomSheetFormField extends StatefulWidget {
+  const BottomSheetFormField({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<BottomSheetFormField> createState() => _BottomSheetFormFieldState();
+}
+
+class _BottomSheetFormFieldState extends State<BottomSheetFormField> {
+  late FocusNode focusNode;
+  bool isHasFocus = false;
+  late TextEditingController textController;
+
+  @override
+  void initState() {
+    textController = TextEditingController();
+    focusNode = FocusNode();
+    focusNode.addListener(() {
+      if (focusNode.hasFocus) {
+        if (mounted) {
+          setState(() {
+            isHasFocus = true;
+          });
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            isHasFocus = false;
+          });
+        }
+      }
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    textController.dispose();
+    focusNode.removeListener(() {});
+    focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    return Container(
+      decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          )),
+      height: isHasFocus ? double.infinity : 200,
+      child: Form(
+        child: Padding(
+          padding: const EdgeInsets.only(left: 20, right: 20),
+          child: Column(
+            mainAxisAlignment:
+                isHasFocus ? MainAxisAlignment.start : MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              isHasFocus ? const SizedBox(height: 25) : const SizedBox(),
+              //DeliveryTime,
+              const Text(
+                "Estimated Time of Arrival",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+              const SizedBox(height: 10),
+              //TextformField
+              TextFormField(
+                controller: textController,
+                enableSuggestions: false,
+                maxLines: 2,
+                onChanged: (value) {
+                  if (value.isNotEmpty && value.length == 2) {
+                    if (isHasFocus) {
+                      focusNode.unfocus();
+                    }
+                  }
+                },
+                focusNode: focusNode,
+                decoration: const InputDecoration(
+                  counter: null,
+                  counterText: "",
+                  hintText: "0",
+                  hintStyle: TextStyle(color: Colors.grey),
+                  prefixIcon: Icon(Icons.lock_clock),
+                  /* suffix: Text(
+                      "မိနစ်",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ), */
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                    borderSide: BorderSide(color: Colors.orange),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              //Accept button
+              SizedBox(
+                height: 50,
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: ColorResources.blue1,
+                  ),
+                  onPressed: () {
+                    if (textController.text.isNotEmpty) {
+                      /*  _controller.acceptPurchase(_controller.inProgressPurchaseModel.value!,
+                              textController.text,); */
+                    }
+                  },
+                  child: const Text("Save"),
+                ),
+              ),
+            ],
           ),
         ),
       ),
