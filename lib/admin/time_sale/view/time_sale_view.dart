@@ -12,6 +12,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../../colors/colors.dart';
 import '../../../model/product.dart';
 import '../../../widgets/form/custon_swich.dart';
 import '../../../widgets/form/image_pick_form.dart';
@@ -46,6 +47,9 @@ class TimeSaleView extends StatelessWidget {
               right: 10,
             ),
             child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: ColorResources.blue1,
+              ),
               onPressed: () => timeSaleController.save(),
               child: const Text("Save"),
             ),

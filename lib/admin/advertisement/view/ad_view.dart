@@ -5,6 +5,7 @@ import 'package:citymall/admin/advertisement/controller/ad_controller.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter_swipe_action_cell/flutter_swipe_action_cell.dart';
 
+import '../../../colors/colors.dart';
 import '../../../controller/db_data_controller.dart';
 import '../../../widgets/form/image_pick_form.dart';
 
@@ -35,6 +36,9 @@ class AdView extends StatelessWidget {
                 right: 10,
               ),
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: ColorResources.blue1,
+                ),
                 onPressed: () => adController.save(),
                 child: const Text("Save"),
               )),

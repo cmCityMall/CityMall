@@ -173,7 +173,7 @@ class SettingScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 20),
-                    Text(
+                    /* Text(
                       "Setting",
                       style: TextStyle(
                         fontFamily: TextFontFamily.SEN_BOLD,
@@ -288,7 +288,7 @@ class SettingScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: 20), */
                     Text(
                       "Account",
                       style: TextStyle(
@@ -301,12 +301,12 @@ class SettingScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 14),
                     container("Address", () {
-                      Get.off(SaveAddressScreen());
+                      Get.to(() => SaveAddressScreen());
                     }),
-                    SizedBox(height: 10),
+                    /* SizedBox(height: 10),
                     container("Payment Method", () {
                       Get.off(CardDetailScreen());
-                    }),
+                    }), */
                     SizedBox(height: 10),
                     container("Privacy policy", () {}),
                     SizedBox(height: 10),

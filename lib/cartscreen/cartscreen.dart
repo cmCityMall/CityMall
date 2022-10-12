@@ -319,44 +319,48 @@ class CartScreen extends StatelessWidget {
                                 );
                               });
                             }),
-                            Obx(() {
-                              return InkWell(
-                                onTap: (cartController.subTotal.value > 0 &&
-                                        cartController
-                                            .townShipNameAndFee.isNotEmpty)
-                                    ? () {
-                                        Get.bottomSheet(
-                                          Container(
-                                            child: RelatedAddressWidget(
-                                              themeController: themeController,
+                            GetBuilder<CartController>(builder: (controller) {
+                              final deliveryEmpty =
+                                  cartController.townShipNameAndFee.isNotEmpty;
+                              return Obx(() {
+                                return InkWell(
+                                  onTap: (cartController.subTotal.value > 0 &&
+                                          deliveryEmpty)
+                                      ? () {
+                                          Get.bottomSheet(
+                                            Container(
+                                              child: RelatedAddressWidget(
+                                                themeController:
+                                                    themeController,
+                                              ),
                                             ),
-                                          ),
-                                          backgroundColor:
-                                              themeController.isLightTheme.value
-                                                  ? ColorResources.white
-                                                  : ColorResources.black4,
-                                        );
-                                      }
-                                    : null,
-                                child: Container(
-                                  height: 30,
-                                  width: 100,
-                                  decoration: BoxDecoration(
-                                    color: ColorResources.blue1,
-                                    borderRadius: BorderRadius.circular(18),
-                                  ),
-                                  child: const Center(
-                                    child: Text(
-                                      "PAY",
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontFamily: TextFontFamily.SEN_BOLD,
-                                        color: ColorResources.white,
+                                            backgroundColor: themeController
+                                                    .isLightTheme.value
+                                                ? ColorResources.white
+                                                : ColorResources.black4,
+                                          );
+                                        }
+                                      : null,
+                                  child: Container(
+                                    height: 30,
+                                    width: 100,
+                                    decoration: BoxDecoration(
+                                      color: ColorResources.blue1,
+                                      borderRadius: BorderRadius.circular(18),
+                                    ),
+                                    child: const Center(
+                                      child: Text(
+                                        "PAY",
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontFamily: TextFontFamily.SEN_BOLD,
+                                          color: ColorResources.white,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              );
+                                );
+                              });
                             }),
                           ],
                         ),

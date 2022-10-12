@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:citymall/categorybrandscreen/brand_view_all.dart';
 import 'package:citymall/colors/colors.dart';
@@ -30,12 +31,17 @@ import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
 
+import '../admin/orders/bin/order_main_binding.dart';
+import '../admin/orders/order_main_tab_view.dart';
 import '../categorybrandscreen/brand_view_all_binding.dart';
 import '../categorybrandscreen/subcategory1.dart';
+import '../controller/auth_controller.dart';
+import '../myorderscreen/myorder_screen_binding.dart';
 import '../myorderscreen/tabscreen.dart';
 import '../productdetailsscreen/product_detail_binding.dart';
 import '../shop/shop_view_all_binding.dart';
 import '../utils/widgets/loading_widget.dart';
+import '../widgets/other/cache_image.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -46,7 +52,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final ThemeController themeController = Get.put(ThemeController());
-
+  final AuthController authController = Get.find();
   final HomeFavouriteController controller = Get.put(HomeFavouriteController());
 
   bool isOpened = false;
@@ -122,6 +128,20 @@ class _HomeScreenState extends State<HomeScreen> {
     if (payload != null) {
       debugPrint('notification payload: $payload');
     }
+    if (authController.currentUser.value!.status! > 1) {
+      //this is admin,so go to admin's order
+      Get.to(
+        () => OrderMainTabView(),
+        binding: OrderMainBinding(),
+      );
+    } else {
+      //User,so go to user's order
+      Get.to(
+        () => MyOrderScreen(),
+        binding: MyOrderScreenBinding(),
+      );
+    }
+
     await Get.off(MyOrderScreen());
   }
 
@@ -242,17 +262,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemBuilder:
                       (BuildContext context, index, int pageViewIndex) => Stack(
                     children: [
-                      Container(
-                        height: 200,
-                        width: Get.width,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          image: DecorationImage(
-                            image: NetworkImage(
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: CachedNetworkImage(
+                          fit: BoxFit.fill,
+                          height: 200,
+                          width: Get.width,
+                          imageUrl:
                               dbDataController.advertisements[index].image,
-                            ),
-                            fit: BoxFit.fill,
-                          ),
                         ),
                       ),
                       Positioned(
@@ -333,7 +350,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   physics: const NeverScrollableScrollPhysics(),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 4,
-                    childAspectRatio: 0.6,
+                    childAspectRatio: 0.7,
                     crossAxisSpacing: 1,
                     mainAxisSpacing: 1,
                   ),
@@ -363,6 +380,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                       child: Card(
                         elevation: 5,
+                        color: themeController.isLightTheme.value
+                            ? ColorResources.white5
+                            : ColorResources.black7,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -479,10 +499,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ? ColorResources.white5
                                           : ColorResources.black7,
                                     ),
-                                    child: Image.network(
-                                      dbDataController
+                                    child: CustomCacheNetworkImage(
+                                      imageUrl: dbDataController
                                           .weekPromotions[index].image,
-                                      fit: BoxFit.fill,
+                                      boxFit: BoxFit.fill,
                                     ),
                                   ),
                                   const SizedBox(height: 8),
@@ -667,9 +687,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ? ColorResources.white5
                                           : ColorResources.black7,
                                     ),
-                                    child: Image.network(
-                                      dbDataController.shopRxList[index].image,
-                                      fit: BoxFit.fill,
+                                    child: CustomCacheNetworkImage(
+                                      imageUrl: dbDataController
+                                          .shopRxList[index].image,
+                                      boxFit: BoxFit.fill,
                                     ),
                                   ),
                                   const SizedBox(height: 8),
@@ -724,181 +745,192 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               const SizedBox(height: 15),
-              GridView.builder(
-                itemCount: 4,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 8,
-                  mainAxisSpacing: 8,
-                  childAspectRatio: 0.55,
-                ),
-                itemBuilder: (context, index) {
-                  final product = dbDataController.homePopularProducts[index];
-                  return InkWell(
-                    onTap: () {
-                      dbDataController.setSelectedProduct(product);
-                      Get.to(
-                        () => ProductDetailScreen(),
-                        binding: ProductDetailBinding(),
-                      );
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: themeController.isLightTheme.value
-                            ? ColorResources.white
-                            : ColorResources.black5,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            blurRadius: 20,
-                            color: themeController.isLightTheme.value
-                                ? ColorResources.blue1.withOpacity(0.05)
-                                : ColorResources.black1,
-                            spreadRadius: 0,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            InkWell(
-                              onTap: () {
-                                Get.defaultDialog(
-                                  backgroundColor: ColorResources.white6,
-                                  contentPadding: EdgeInsets.zero,
-                                  title: "",
-                                  titlePadding: EdgeInsets.zero,
-                                  content: Center(
-                                    child: Image.network(
-                                      product.images.first,
-                                    ),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                height: 160,
-                                width: Get.width,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(15),
-                                  color: ColorResources.white6,
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(5),
-                                  child: Image.network(
-                                    product.images.first,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Text(
-                              product.name,
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontFamily: TextFontFamily.SEN_BOLD,
-                                color: themeController.isLightTheme.value
-                                    ? ColorResources.black2
-                                    : ColorResources.white,
-                              ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "${product.price}",
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontFamily: TextFontFamily.SEN_EXTRA_BOLD,
-                                    color: ColorResources.blue1,
-                                  ),
-                                ),
-                                //Favourite Icon
-                                ValueListenableBuilder(
-                                  valueListenable:
-                                      Hive.box<FavouriteItem>(favouriteBox)
-                                          .listenable(),
-                                  builder: (context, Box<FavouriteItem> box,
-                                      widget) {
-                                    final currentObj = box.get(product.id);
-
-                                    if (!(currentObj == null)) {
-                                      return IconButton(
-                                          onPressed: () {
-                                            box.delete(currentObj.id);
-                                          },
-                                          icon: const Icon(
-                                            FontAwesomeIcons.solidHeart,
-                                            color: Colors.red,
-                                            size: 25,
-                                          ));
-                                    }
-                                    return IconButton(
-                                        onPressed: () {
-                                          box.put(
-                                            product.id,
-                                            FavouriteItem(
-                                              id: product.id,
-                                              name: product.name,
-                                              image: product.images.first,
-                                              price: product.price,
-                                            ),
-                                          );
-                                        },
-                                        icon: const Icon(
-                                          Icons.favorite_outline,
-                                          color: Colors.red,
-                                          size: 25,
-                                        ));
-                                  },
-                                ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                RatingBar(
-                                  itemSize: 16,
-                                  maxRating: 5,
-                                  initialRating: product.reviewCount + 0.0,
-                                  itemCount: 5,
-                                  direction: Axis.horizontal,
-                                  ratingWidget: RatingWidget(
-                                    full: const Icon(
-                                      Icons.star,
-                                      color: ColorResources.yellow,
-                                      size: 10,
-                                    ),
-                                    empty: const Icon(
-                                      Icons.star,
-                                      color: ColorResources.white2,
-                                    ),
-                                    half: const Icon(Icons.star),
-                                  ),
-                                  onRatingUpdate: (rating) {},
-                                ),
-                                Text(
-                                  "${product.reviewCount + 0.0}",
-                                  style: const TextStyle(
-                                    fontSize: 10,
-                                    fontFamily: TextFontFamily.SEN_REGULAR,
-                                    color: ColorResources.white3,
-                                  ),
-                                ),
-                              ],
+              Obx(() {
+                if (dbDataController.homePopularProductsLoading.value) {
+                  return const LoadingWidget();
+                }
+                if (dbDataController.homePopularProducts.isEmpty) {
+                  return const SizedBox();
+                }
+                return GridView.builder(
+                  itemCount: 4,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 8,
+                    childAspectRatio: 0.55,
+                  ),
+                  itemBuilder: (context, index) {
+                    final product = dbDataController.homePopularProducts[index];
+                    return InkWell(
+                      onTap: () {
+                        dbDataController.setSelectedProduct(product);
+                        Get.to(
+                          () => ProductDetailScreen(),
+                          binding: ProductDetailBinding(),
+                        );
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: themeController.isLightTheme.value
+                              ? ColorResources.white
+                              : ColorResources.black5,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              blurRadius: 20,
+                              color: themeController.isLightTheme.value
+                                  ? ColorResources.blue1.withOpacity(0.05)
+                                  : ColorResources.black1,
+                              spreadRadius: 0,
+                              offset: const Offset(0, 4),
                             ),
                           ],
                         ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  Get.defaultDialog(
+                                    backgroundColor: ColorResources.white6,
+                                    contentPadding: EdgeInsets.zero,
+                                    title: "",
+                                    titlePadding: EdgeInsets.zero,
+                                    content: Center(
+                                      child: Image.network(
+                                        product.images.first,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  height: 160,
+                                  width: Get.width,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15),
+                                    color: ColorResources.white6,
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(5),
+                                    child: CustomCacheNetworkImage(
+                                      imageUrl: product.images.first,
+                                      boxFit: BoxFit.contain,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                product.name,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontFamily: TextFontFamily.SEN_BOLD,
+                                  color: themeController.isLightTheme.value
+                                      ? ColorResources.black2
+                                      : ColorResources.white,
+                                ),
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "${product.price}",
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontFamily: TextFontFamily.SEN_EXTRA_BOLD,
+                                      color: ColorResources.blue1,
+                                    ),
+                                  ),
+                                  //Favourite Icon
+                                  ValueListenableBuilder(
+                                    valueListenable:
+                                        Hive.box<FavouriteItem>(favouriteBox)
+                                            .listenable(),
+                                    builder: (context, Box<FavouriteItem> box,
+                                        widget) {
+                                      final currentObj = box.get(product.id);
+
+                                      if (!(currentObj == null)) {
+                                        return IconButton(
+                                            onPressed: () {
+                                              box.delete(currentObj.id);
+                                            },
+                                            icon: const Icon(
+                                              FontAwesomeIcons.solidHeart,
+                                              color: Colors.red,
+                                              size: 25,
+                                            ));
+                                      }
+                                      return IconButton(
+                                          onPressed: () {
+                                            box.put(
+                                              product.id,
+                                              FavouriteItem(
+                                                id: product.id,
+                                                name: product.name,
+                                                image: product.images.first,
+                                                price: product.price,
+                                              ),
+                                            );
+                                          },
+                                          icon: const Icon(
+                                            Icons.favorite_outline,
+                                            color: Colors.red,
+                                            size: 25,
+                                          ));
+                                    },
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  RatingBar(
+                                    itemSize: 16,
+                                    maxRating: 5,
+                                    initialRating: product.reviewCount + 0.0,
+                                    itemCount: 5,
+                                    direction: Axis.horizontal,
+                                    ratingWidget: RatingWidget(
+                                      full: const Icon(
+                                        Icons.star,
+                                        color: ColorResources.yellow,
+                                        size: 10,
+                                      ),
+                                      empty: const Icon(
+                                        Icons.star,
+                                        color: ColorResources.white2,
+                                      ),
+                                      half: const Icon(Icons.star),
+                                    ),
+                                    onRatingUpdate: (rating) {},
+                                  ),
+                                  Text(
+                                    "${product.reviewCount + 0.0}",
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      fontFamily: TextFontFamily.SEN_REGULAR,
+                                      color: ColorResources.white3,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
-                  );
-                },
-              ),
+                    );
+                  },
+                );
+              }),
               const SizedBox(height: 15),
 
               Obx(() {
@@ -1066,9 +1098,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ? ColorResources.white5
                                           : ColorResources.black7,
                                     ),
-                                    child: Image.network(
-                                      dbDataController.brandRxList[index].image,
-                                      fit: BoxFit.fill,
+                                    child: CustomCacheNetworkImage(
+                                      imageUrl: dbDataController
+                                          .brandRxList[index].image,
+                                      boxFit: BoxFit.fill,
                                     ),
                                   ),
                                   const SizedBox(height: 8),

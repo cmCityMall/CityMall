@@ -1,3 +1,4 @@
+import 'package:citymall/colors/colors.dart';
 import 'package:citymall/model/sub_category.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -22,7 +23,7 @@ class SelectableSubCategoriesBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Container(
       color: Colors.white,
       child: Column(
         children: [
@@ -40,8 +41,8 @@ class SelectableSubCategoriesBottomSheet extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
-                        height: 100,
-                        color: isSelected ? Colors.green : Colors.white,
+                        height: 50,
+                        color: Colors.white,
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
@@ -49,14 +50,13 @@ class SelectableSubCategoriesBottomSheet extends StatelessWidget {
                               //Text
                               Expanded(
                                 child: Text(sub.name,
-                                    style: TextStyle(
-                                      color: isSelected
-                                          ? Colors.white
-                                          : Colors.black,
+                                    style: const TextStyle(
+                                      color: Colors.black,
                                     )),
                               ),
                               //CheckBox
                               Checkbox(
+                                activeColor: ColorResources.blue1,
                                 value: isSelected,
                                 onChanged: (b) => selectedSubCategory(sub),
                                 checkColor: Colors.white,
@@ -78,6 +78,8 @@ class SelectableSubCategoriesBottomSheet extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: ColorResources.blue1),
                       onPressed: () {
                         Get.back();
                         pressedCancelButton();
@@ -86,6 +88,8 @@ class SelectableSubCategoriesBottomSheet extends StatelessWidget {
                     ),
                     const SizedBox(width: 15),
                     ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: ColorResources.blue1),
                       onPressed: () => pressedSaveButton(),
                       child: const Text("Save"),
                     ),
@@ -114,7 +118,7 @@ class SelectableBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Container(
       color: Colors.white,
       child: Column(
         children: [
@@ -132,8 +136,8 @@ class SelectableBottomSheet extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
-                        height: 100,
-                        color: isSelected ? Colors.green : Colors.white,
+                        height: 50,
+                        color: Colors.white,
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
@@ -141,14 +145,13 @@ class SelectableBottomSheet extends StatelessWidget {
                               //Text
                               Expanded(
                                 child: Text(product.name,
-                                    style: TextStyle(
-                                      color: isSelected
-                                          ? Colors.white
-                                          : Colors.black,
+                                    style: const TextStyle(
+                                      color: Colors.black,
                                     )),
                               ),
                               //CheckBox
                               Checkbox(
+                                activeColor: ColorResources.blue1,
                                 value: isSelected,
                                 onChanged: (b) => selectedProduct(product),
                                 checkColor: Colors.white,
@@ -170,6 +173,9 @@ class SelectableBottomSheet extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: ColorResources.blue1,
+                      ),
                       onPressed: () {
                         Get.back();
                         pressedCancelButton();
@@ -178,6 +184,9 @@ class SelectableBottomSheet extends StatelessWidget {
                     ),
                     const SizedBox(width: 15),
                     ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: ColorResources.blue1,
+                      ),
                       onPressed: () => pressedSaveButton(),
                       child: const Text("Save"),
                     ),

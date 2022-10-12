@@ -108,9 +108,9 @@ class MenuPage extends GetView {
                     ),
                   ),
                   SizedBox(height: 40),
-                  inkwell(Images.profileicon, "My profile", () {
+                  /* inkwell(Images.profileicon, "My profile", () {
                     Get.off(ProfileScreen());
-                  }),
+                  }), */
                   inkwell(Images.languegeicon, "Language", () {
                     Get.off(LangueageScreen());
                   }),
@@ -185,9 +185,9 @@ class MenuPage extends GetView {
                       ],
                     );
                   }),
-                  inkwell(Images.categoryicon, "All Categories", () {
+                  /* inkwell(Images.categoryicon, "All Categories", () {
                     Get.off(MenuViewAllScreen());
-                  }),
+                  }), */
                   Obx(() {
                     final isNotAdmin =
                         authController.currentUser.value!.status! == 1;
@@ -201,7 +201,7 @@ class MenuPage extends GetView {
                         : const SizedBox();
                   }),
                   inkwell(Images.settingicon, "Settings", () {
-                    Get.off(SettingScreen());
+                    Get.to(() => SettingScreen());
                   }),
                   inkwell(Images.aboutusicon, "About Us", () {
                     Get.off(AboutUsScreen());

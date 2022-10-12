@@ -305,7 +305,7 @@ class ProductController extends GetxController {
             "#ff6666", "Cancel", false, ScanMode.DEFAULT)
         .then((value) async {
       if (value != "-1") {
-        await searchWithBarCode(value);
+        searchWithBarCode(value);
       }
       log("********Barcode Scan Value: $value");
     }).catchError((e) {
@@ -313,21 +313,20 @@ class ProductController extends GetxController {
     });
   }
 
-  Future<void> searchWithBarCode(String value) async {
+  void searchWithBarCode(String value) {
     isSearch.value = true;
     try {
-      log("********Fetching......***");
-      final result = await FirebaseFirestore.instance
-          .collection(productCollection)
-          .where("barCode", isEqualTo: value)
-          .get();
-      log("********Result: ${result.docs.length}\n SearchValue: $value****");
-      searchItems.value =
-          result.docs.map((e) => Product.fromJson(e.data())).toList();
+      log("********Search with Bar Code......***");
+      final result = products.where((e) => e.barCode == value);
+      log("********Result: ${result.length}\n SearchValue: $value****");
+      if (result.isNotEmpty) {
+        searchItems.value = [result.first];
+      } else {
+        searchItems.value = [];
+      }
     } catch (e) {
       log("*******Error: $e");
     }
-    isSearch.value = false;
   }
 
   Future<List<String>> uploadMultipleImages(

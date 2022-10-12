@@ -1,4 +1,6 @@
+import 'package:citymall/address_form_screen/view/addaddressscreen.dart';
 import 'package:citymall/colors/colors.dart';
+import 'package:citymall/controller/db_data_controller.dart';
 import 'package:citymall/controller/theme_controller.dart';
 import 'package:citymall/images/images.dart';
 import 'package:citymall/menuscreens/settingscreens/settingaddaddressscreen.dart';
@@ -7,6 +9,11 @@ import 'package:citymall/textstylefontfamily/textfontfamily.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
+import '../../address_form_screen/bin/address_form_binding.dart';
+import '../../constant/constant.dart';
+import '../../model/hive_personal_address.dart';
 
 class SaveAddressScreen extends StatelessWidget {
   SaveAddressScreen({Key? key}) : super(key: key);
@@ -14,6 +21,7 @@ class SaveAddressScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final DBDataController dataController = Get.find();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: themeController.isLightTheme.value
@@ -30,7 +38,7 @@ class SaveAddressScreen extends StatelessWidget {
           padding: const EdgeInsets.only(left: 25),
           child: InkWell(
             onTap: () {
-              Get.off(SettingScreen());
+              Get.back();
             },
             child: Container(
               decoration: BoxDecoration(
@@ -81,50 +89,88 @@ class SaveAddressScreen extends StatelessWidget {
                 : ColorResources.black1,
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            child: ListView.builder(
-              itemCount: 3,
-              shrinkWrap: true,
-              scrollDirection: Axis.vertical,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Container(
-                    height: 160,
-                    width: Get.width,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color: themeController.isLightTheme.value
-                          ? ColorResources.white
-                          : ColorResources.black6,
-                      border: Border.all(
-                        color: themeController.isLightTheme.value
-                            ? ColorResources.grey13
-                            : ColorResources.black5,
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              child: ValueListenableBuilder(
+                  valueListenable:
+                      Hive.box<HivePersonalAddress>(addressBox).listenable(),
+                  builder: (context, Box<HivePersonalAddress> box, __) {
+                    return ListView(
+                      shrinkWrap: true,
+                      children: box.values.map((e) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Container(
+                            height: 160,
+                            width: Get.width,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              color: themeController.isLightTheme.value
+                                  ? ColorResources.white
+                                  : ColorResources.black6,
+                              border: Border.all(
+                                color: themeController.isLightTheme.value
+                                    ? ColorResources.grey13
+                                    : ColorResources.black5,
+                              ),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 20),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  SvgPicture.asset(
-                                    Images.homefill,
-                                    color: themeController.isLightTheme.value
-                                        ? ColorResources.black2
-                                        : ColorResources.white,
-                                    height: 15,
-                                    width: 15,
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          SvgPicture.asset(
+                                            Images.homefill,
+                                            color: themeController
+                                                    .isLightTheme.value
+                                                ? ColorResources.black2
+                                                : ColorResources.white,
+                                            height: 15,
+                                            width: 15,
+                                          ),
+                                          SizedBox(width: 5),
+                                          Text(
+                                            e.addressType == 0
+                                                ? "Home Address"
+                                                : "Office Address",
+                                            style: TextStyle(
+                                              fontFamily:
+                                                  TextFontFamily.SEN_BOLD,
+                                              fontSize: 14,
+                                              color: themeController
+                                                      .isLightTheme.value
+                                                  ? ColorResources.black2
+                                                  : ColorResources.white,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      InkWell(
+                                        onTap: () {
+                                          dataController
+                                              .setSelectedHivePersonalAddress(
+                                                  e);
+                                          Get.to(() => AddAddressScreen(),
+                                              binding: AddressFormBinding());
+                                        },
+                                        child: SvgPicture.asset(
+                                          Images.editicon,
+                                          color: ColorResources.blue1,
+                                          height: 22,
+                                          width: 22,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  SizedBox(width: 5),
+                                  SizedBox(height: 10),
                                   Text(
-                                    "Home Address",
+                                    e.fullName,
                                     style: TextStyle(
                                       fontFamily: TextFontFamily.SEN_BOLD,
                                       fontSize: 14,
@@ -133,67 +179,46 @@ class SaveAddressScreen extends StatelessWidget {
                                           : ColorResources.white,
                                     ),
                                   ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    "${e.phoneNumber}",
+                                    style: TextStyle(
+                                      fontFamily: TextFontFamily.SEN_REGULAR,
+                                      fontSize: 13,
+                                      color: themeController.isLightTheme.value
+                                          ? ColorResources.black2
+                                          : ColorResources.white,
+                                    ),
+                                  ),
+                                  SizedBox(height: 12),
+                                  Text(
+                                    e.address,
+                                    style: TextStyle(
+                                      fontFamily: TextFontFamily.SEN_REGULAR,
+                                      fontSize: 13,
+                                      color: themeController.isLightTheme.value
+                                          ? ColorResources.black9
+                                          : ColorResources.white
+                                              .withOpacity(0.6),
+                                    ),
+                                  ),
                                 ],
                               ),
-                              InkWell(
-                                onTap: () {
-                                  Get.off(SettingAddAddressScreen());
-                                },
-                                child: SvgPicture.asset(
-                                  Images.editicon,
-                                  color: ColorResources.blue1,
-                                  height: 22,
-                                  width: 22,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            "John Doe",
-                            style: TextStyle(
-                              fontFamily: TextFontFamily.SEN_BOLD,
-                              fontSize: 14,
-                              color: themeController.isLightTheme.value
-                                  ? ColorResources.black2
-                                  : ColorResources.white,
                             ),
                           ),
-                          SizedBox(height: 8),
-                          Text(
-                            "+91 12345 67890",
-                            style: TextStyle(
-                              fontFamily: TextFontFamily.SEN_REGULAR,
-                              fontSize: 13,
-                              color: themeController.isLightTheme.value
-                                  ? ColorResources.black2
-                                  : ColorResources.white,
-                            ),
-                          ),
-                          SizedBox(height: 12),
-                          Text(
-                            "Building No,66, 78th Main Road, 100ft Road, Indiranagar, Bangalore 123456",
-                            style: TextStyle(
-                              fontFamily: TextFontFamily.SEN_REGULAR,
-                              fontSize: 13,
-                              color: themeController.isLightTheme.value
-                                  ? ColorResources.black9
-                                  : ColorResources.white.withOpacity(0.6),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
+                        );
+                      }).toList(),
+                    );
+                  })),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Get.off(SettingAddAddressScreen());
+          dataController.setSelectedHivePersonalAddress(null);
+          Get.to(
+            () => AddAddressScreen(),
+            binding: AddressFormBinding(),
+          );
         },
         elevation: 0,
         backgroundColor: ColorResources.blue1,

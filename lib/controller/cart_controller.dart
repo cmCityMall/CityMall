@@ -136,6 +136,7 @@ class CartController extends GetxController {
         titlePadding: EdgeInsets.zero,
         content: const PaymentSuccessDialogWidget(),
       );
+      clearAll();
       await Future.delayed(const Duration(seconds: 2));
       //After delaying,mean after show success,Get back to until home
       selectedIndex = 0;
@@ -146,5 +147,12 @@ class CartController extends GetxController {
     } catch (e) {
       log("*****Error Uploading Purchase: $e");
     }
+  }
+
+  void clearAll() {
+    cartMap.clear();
+    paidScreenShotImage.value = "";
+    selectedPaymentIndex.value = 0;
+    townShipNameAndFee = {};
   }
 }

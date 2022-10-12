@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_swipe_action_cell/core/cell.dart';
 import 'package:get/get.dart';
 
+import '../../../colors/colors.dart';
 import '../../../widgets/form/image_pick_form.dart';
 import '../../../widgets/form/text_form.dart';
 import '../controller/sc_controller.dart';
@@ -34,6 +35,9 @@ class SCView extends StatelessWidget {
                 bottom: 10,
               ),
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: ColorResources.blue1,
+                ),
                 onPressed: () => scController.save(),
                 child: const Text("Save"),
               )),

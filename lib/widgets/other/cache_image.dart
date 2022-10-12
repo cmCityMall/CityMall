@@ -15,7 +15,7 @@ class CustomCacheNetworkImage extends StatelessWidget {
     return CachedNetworkImage(
       progressIndicatorBuilder: (context, url, status) {
         return Shimmer.fromColors(
-          baseColor: Colors.grey,
+          baseColor: Colors.grey.shade300,
           highlightColor: Colors.white,
           child: Container(
             color: Colors.white,

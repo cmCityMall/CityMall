@@ -71,6 +71,7 @@ class _NavigationBarBottomState extends State<NavigationBarBottom> {
 
   @override
   Widget build(BuildContext context) {
+    final DBDataController dataController = Get.find();
     final SearchController searchController = Get.find();
     return Obx(
       () => SideMenu(
@@ -185,14 +186,21 @@ class _NavigationBarBottomState extends State<NavigationBarBottom> {
                                 ),
                               ],
                             ),
-                            Text(
-                              "lekki phase 1, Estate",
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontFamily: TextFontFamily.SEN_REGULAR,
-                                color: ColorResources.orange,
-                              ),
-                            ),
+                            Obx(() {
+                              return Text(
+                                dataController.selectedHivePersonalAddress
+                                            .value ==
+                                        null
+                                    ? ""
+                                    : dataController.selectedHivePersonalAddress
+                                        .value!.address,
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontFamily: TextFontFamily.SEN_REGULAR,
+                                  color: ColorResources.orange,
+                                ),
+                              );
+                            }),
                           ],
                         ),
                       )
@@ -243,7 +251,7 @@ class _NavigationBarBottomState extends State<NavigationBarBottom> {
                                       )
                                     : Container(),
                 actions: [
-                  selectedIndex == 0 || selectedIndex == 1 || selectedIndex == 4
+                  /* selectedIndex == 0 || selectedIndex == 1 || selectedIndex == 4
                       ? Padding(
                           padding: const EdgeInsets.only(top: 10, right: 8),
                           child: Container(
@@ -274,7 +282,7 @@ class _NavigationBarBottomState extends State<NavigationBarBottom> {
                             ),
                           ),
                         )
-                      : selectedIndex == 2
+                      :  */ /* selectedIndex == 2
                           ? Container()
                           : selectedIndex == 3
                               ? Padding(
@@ -292,7 +300,7 @@ class _NavigationBarBottomState extends State<NavigationBarBottom> {
                                     ),
                                   ),
                                 )
-                              : Container(),
+                              : Container(), */
                   if (selectedIndex == 2) ...[
                     //Barcode image
                     Padding(

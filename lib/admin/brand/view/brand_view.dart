@@ -5,6 +5,7 @@ import 'package:flutter_swipe_action_cell/core/cell.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../../colors/colors.dart';
 import '../../../utils/widgets/empty_widgt.dart';
 import '../../../utils/widgets/loading_widget.dart';
 import '../../../widgets/form/image_pick_form.dart';
@@ -43,6 +44,9 @@ class BrandView extends StatelessWidget {
               right: 10,
             ),
             child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: ColorResources.blue1,
+              ),
               onPressed: () => brandController.save(),
               child: const Text("Save"),
             ),

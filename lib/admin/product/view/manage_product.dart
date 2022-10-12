@@ -1,11 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:citymall/admin/product/view/upload_product.dart';
 import 'package:citymall/controller/db_data_controller.dart';
+import 'package:citymall/utils/widgets/empty_widgt.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swipe_action_cell/flutter_swipe_action_cell.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
+import '../../../colors/colors.dart';
 import '../../../images/images.dart';
 import '../controller/product_controller.dart';
 
@@ -47,7 +49,7 @@ class ManageProduct extends StatelessWidget {
               bottom: 8,
             ),
             child: InkWell(
-              onTap: () => productController.scanBarCode(),
+              onTap: () => productController.scanBarCodeForSearch(),
               child: Image.asset(
                 Images.barCode,
               ),
@@ -56,6 +58,7 @@ class ManageProduct extends StatelessWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: ColorResources.blue1,
         child: const Icon(
           FontAwesomeIcons.plus,
           color: Colors.white,
@@ -84,8 +87,12 @@ class ManageProduct extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: Obx(
-              () => ListView.builder(
+            child: Obx(() {
+              if (productController.isSearch.value &&
+                  productController.searchItems.isEmpty) {
+                return const EmptyWidget("No products found.");
+              }
+              return ListView.builder(
                   itemCount: productController.isSearch.value
                       ? productController.searchItems.length
                       : productController.products.length,
@@ -169,8 +176,8 @@ class ManageProduct extends StatelessWidget {
                         ),
                       ),
                     );
-                  }),
-            ),
+                  });
+            }),
           )
         ],
       ),

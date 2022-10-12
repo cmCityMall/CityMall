@@ -9,6 +9,7 @@ import 'package:flutter_swipe_action_cell/core/cell.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../../colors/colors.dart';
 import '../../../model/product.dart';
 import '../../../widgets/form/custon_swich.dart';
 import '../../../widgets/form/image_pick_form.dart';
@@ -43,6 +44,9 @@ class WeekPromotionView extends StatelessWidget {
               right: 10,
             ),
             child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: ColorResources.blue1,
+              ),
               onPressed: () => weekPromotionController.save(),
               child: const Text("Save"),
             ),

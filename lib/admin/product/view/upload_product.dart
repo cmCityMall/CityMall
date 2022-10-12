@@ -7,6 +7,7 @@ import 'package:flutter_material_color_picker/flutter_material_color_picker.dart
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../../colors/colors.dart';
 import '../../../images/images.dart';
 import '../../../widgets/form/color_picker.dart';
 import '../../../widgets/form/image_pick_form.dart';
@@ -62,9 +63,9 @@ class _UploadProductState extends State<UploadProduct> {
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: ElevatedButton(
-                /* style: ElevatedButton.styleFrom(
-                  primary: homeIndicatorColor,
-                ), */
+                style: ElevatedButton.styleFrom(
+                  primary: ColorResources.blue1,
+                ),
                 child: isNew ? const Text("Save") : const Text("Edit"),
                 onPressed: () => productController.save(),
               ),

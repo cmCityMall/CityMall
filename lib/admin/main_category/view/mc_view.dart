@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_swipe_action_cell/core/cell.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../../colors/colors.dart';
 import '../../../utils/widgets/empty_widgt.dart';
 import '../../../utils/widgets/loading_widget.dart';
 import '../../../widgets/form/custon_swich.dart';
@@ -34,6 +35,9 @@ class MCView extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(5.0),
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: ColorResources.blue1,
+                ),
                 onPressed: () => mcController.save(),
                 child: const Text("Save"),
               ),
@@ -205,7 +209,8 @@ class MCView extends StatelessWidget {
                                         child: const Padding(
                                           padding: EdgeInsets.all(8.0),
                                           child: Text(
-                                            "  Add\nub categories",
+                                            "  Add\nsub categories",
+                                            overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
                                               color: Colors.white,
                                             ),
@@ -270,6 +275,7 @@ class MCView extends StatelessWidget {
                                           padding: EdgeInsets.all(8.0),
                                           child: Text(
                                             "  Remove\nsub categories",
+                                            overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
                                               color: Colors.white,
                                             ),

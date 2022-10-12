@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:citymall/constant/collection_path.dart';
@@ -52,8 +53,15 @@ class SCController extends GetxController {
     }
   }
 
-  String getMainCategory(String id) =>
-      mainCategories.where((e) => e.id == id).first.name;
+  String getMainCategory(String id) {
+    var mainString = "";
+    try {
+      mainString = mainCategories.where((e) => e.id == id).first.name;
+    } catch (e) {
+      log("***No maing category name");
+    }
+    return mainString;
+  }
 
   Future<void> delete(String id) async {
     await _database.delete(
