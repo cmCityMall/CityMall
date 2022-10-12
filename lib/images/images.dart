@@ -11,7 +11,7 @@ class Images {
   static const String onboarddark3 = "assets/images/onboarddark3.svg";
   static const String mail = "assets/images/mail.svg";
   static const String password = "assets/images/password.svg";
-  static const String googleicon = "assets/images/google.svg";
+  static const String googleicon = "assets/images/google.png";
   static const String facebookicon = "assets/images/facebookicon.svg";
   static const String appleicon = "assets/images/appleicon.svg";
   static const String user = "assets/images/user.svg";

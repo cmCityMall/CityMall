@@ -97,242 +97,150 @@ class LoginScreen extends StatelessWidget {
     final AuthController authController = Get.find();
     return Scaffold(
       resizeToAvoidBottomInset: false,
+      /* appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 25),
+          child: InkWell(
+            onTap: () {
+              Get.off(() => OnBoardingScreen());
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: ColorResources.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: 13,
+                    color: ColorResources.blue1.withOpacity(0.3),
+                    spreadRadius: 0,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Center(
+                child: Icon(
+                  Icons.arrow_back,
+                  color: ColorResources.black,
+                  size: 20,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ), */
       backgroundColor: themeController.isLightTheme.value
           ? ColorResources.white
           : ColorResources.black1,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 25),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            SizedBox(height: 50),
-            InkWell(
+      body: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            child: SvgPicture.asset(
+              themeController.isLightTheme.value
+                  ? Images.onboardbacklight
+                  : Images.onboardbackdark,
+            ),
+          ),
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Let’s Get Started!",
+                    style: TextStyle(
+                      fontFamily: TextFontFamily.SEN_BOLD,
+                      fontSize: 28,
+                      color: themeController.isLightTheme.value
+                          ? ColorResources.black2
+                          : ColorResources.white,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 20,
+                    ),
+                    child: Text(
+                      "Login with Social.",
+                      style: TextStyle(
+                        fontFamily: TextFontFamily.SEN_REGULAR,
+                        fontSize: 12,
+                        color: themeController.isLightTheme.value
+                            ? ColorResources.black3.withOpacity(0.6)
+                            : ColorResources.white.withOpacity(0.6),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 25),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      InkWell(
+                          onTap: () => authController.googleSingIn(),
+                          child: Container(
+                            height: 60,
+                            width: 60,
+                            decoration: BoxDecoration(
+                              color: themeController.isLightTheme.value
+                                  ? ColorResources.white
+                                  : ColorResources.white.withOpacity(0.1),
+                              border: Border.all(
+                                color: themeController.isLightTheme.value
+                                    ? ColorResources.black3.withOpacity(0.1)
+                                    : ColorResources.black3.withOpacity(0.05),
+                              ),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Image.asset(Images.googleicon),
+                            ),
+                          )),
+                      const SizedBox(width: 15),
+                      container(
+                          Images.appleicon,
+                          themeController.isLightTheme.value
+                              ? ColorResources.black
+                              : ColorResources.white),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            child: InkWell(
               onTap: () {
-                Get.off(OnBoardingScreen());
+                Get.off(() => OnBoardingScreen());
               },
               child: Container(
-                height: 35,
-                width: 35,
+                height: 60,
+                width: 170,
                 decoration: BoxDecoration(
-                  color: ColorResources.white,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      blurRadius: 13,
-                      color: ColorResources.blue1.withOpacity(0.3),
-                      spreadRadius: 0,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
+                  color: ColorResources.blue1,
+                  borderRadius:
+                      BorderRadius.only(topRight: Radius.circular(30)),
                 ),
                 child: Center(
-                  child: Icon(
-                    Icons.arrow_back,
-                    color: ColorResources.black,
-                    size: 20,
+                  child: Text(
+                    "Back",
+                    style: TextStyle(
+                        fontFamily: TextFontFamily.SEN_BOLD,
+                        fontSize: 18,
+                        color: ColorResources.white1),
                   ),
                 ),
               ),
             ),
-            SizedBox(height: 25),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Let’s Get Started!",
-                  style: TextStyle(
-                    fontFamily: TextFontFamily.SEN_BOLD,
-                    fontSize: 28,
-                    color: themeController.isLightTheme.value
-                        ? ColorResources.black2
-                        : ColorResources.white,
-                  ),
-                ),
-                Text(
-                  "Login with Social of fill the form to continue.",
-                  style: TextStyle(
-                    fontFamily: TextFontFamily.SEN_REGULAR,
-                    fontSize: 12,
-                    color: themeController.isLightTheme.value
-                        ? ColorResources.black3.withOpacity(0.6)
-                        : ColorResources.white.withOpacity(0.6),
-                  ),
-                ),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                textFormField(
-                  "Email/Phone",
-                  Images.mail,
-                ),
-                SizedBox(height: 12),
-                textFormField(
-                  "Password",
-                  Images.password,
-                ),
-                SizedBox(height: 10),
-                InkWell(
-                  onTap: () {
-                    Get.off(ForgotPasswordScreen());
-                  },
-                  child: Text(
-                    "Reset Password",
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontFamily: TextFontFamily.SEN_REGULAR,
-                      color: ColorResources.blue,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 15),
-                Row(
-                  children: [
-                    Obx(
-                      () => InkWell(
-                        onTap: () {
-                          ontapcontroller.check.value =
-                              !ontapcontroller.check.value;
-                        },
-                        child: CircleAvatar(
-                          radius: 13,
-                          backgroundColor: themeController.isLightTheme.value
-                              ? ColorResources.black3.withOpacity(0.05)
-                              : ColorResources.white.withOpacity(0.1),
-                          child: ontapcontroller.check.isTrue
-                              ? Icon(
-                                  Icons.check,
-                                  color: ColorResources.blue,
-                                  size: 18,
-                                )
-                              : Text(""),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    RichText(
-                      text: TextSpan(
-                        text: "By Signing up, you agree to the",
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontFamily: TextFontFamily.SEN_REGULAR,
-                          color: themeController.isLightTheme.value
-                              ? ColorResources.grey4
-                              : ColorResources.grey5,
-                        ),
-                        children: <TextSpan>[
-                          TextSpan(
-                            text: " Terms of Service\n",
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontFamily: TextFontFamily.SEN_REGULAR,
-                              color: themeController.isLightTheme.value
-                                  ? ColorResources.black2
-                                  : ColorResources.blue,
-                            ),
-                          ),
-                          TextSpan(
-                            text: "and",
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontFamily: TextFontFamily.SEN_REGULAR,
-                              color: themeController.isLightTheme.value
-                                  ? ColorResources.grey4
-                                  : ColorResources.grey5,
-                            ),
-                          ),
-                          TextSpan(
-                            text: " Privacy Policy",
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontFamily: TextFontFamily.SEN_REGULAR,
-                              color: themeController.isLightTheme.value
-                                  ? ColorResources.black2
-                                  : ColorResources.blue,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            SizedBox(height: 100),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    InkWell(
-                        onTap: () => authController.googleSingIn(),
-                        child:
-                            container(Images.googleicon, ColorResources.blue5)),
-                    const SizedBox(width: 15),
-                    container(
-                        Images.appleicon,
-                        themeController.isLightTheme.value
-                            ? ColorResources.black
-                            : ColorResources.white),
-                  ],
-                ),
-                SizedBox(height: 42),
-                MaterialButton(
-                  onPressed: () {
-                    //Get.off(NavigationBarBottom());
-                  },
-                  child: Text(
-                    "Log in",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontFamily: TextFontFamily.SEN_BOLD,
-                      color: ColorResources.white,
-                    ),
-                  ),
-                  height: 50,
-                  minWidth: Get.width,
-                  color: ColorResources.blue1,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(60),
-                  ),
-                ),
-                SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Not Have an Account?",
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontFamily: TextFontFamily.SEN_REGULAR,
-                        color: themeController.isLightTheme.value
-                            ? ColorResources.grey4
-                            : ColorResources.grey5,
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        Get.off(SignUpScreen());
-                      },
-                      child: Text(
-                        " Sign Up",
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontFamily: TextFontFamily.SEN_BOLD,
-                          color: ColorResources.blue,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 12),
-              ],
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
