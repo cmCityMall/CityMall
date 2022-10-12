@@ -4,6 +4,7 @@ import 'package:citymall/controller/db_data_controller.dart';
 import 'package:citymall/controller/theme_controller.dart';
 import 'package:citymall/controller/weekpromotionfavoritecontroller.dart';
 import 'package:citymall/dialoguescreen/dialoguescreen.dart';
+import 'package:citymall/homescreen/cameradashboardscreen/action_screen_controller.dart';
 import 'package:citymall/homescreen/cameradashboardscreen/cameradeshboard.dart';
 import 'package:citymall/images/images.dart';
 import 'package:citymall/productdetailsscreen/productdetailscreen.dart';
@@ -49,6 +50,7 @@ class _ActionScreenState extends State<ActionScreen> {
   Widget build(BuildContext context) {
     final DBDataController dbDataController = Get.find();
     final ActionScreenController actionController = Get.find();
+    final ActionController aController = Get.find();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: themeController.isLightTheme.value
@@ -65,7 +67,7 @@ class _ActionScreenState extends State<ActionScreen> {
           padding: const EdgeInsets.only(left: 25),
           child: InkWell(
             onTap: () {
-              Get.off(CameraDeshBoard());
+              Get.back();
             },
             child: Container(
               decoration: BoxDecoration(
@@ -158,9 +160,19 @@ class _ActionScreenState extends State<ActionScreen> {
                       const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
                   child: Obx(() {
                     final mainData = dbDataController.products;
-                    final dataList = mainData[dbDataController.subId];
+                    final dataList = aController.isSort.value
+                        ? aController.dataList
+                        : mainData[dbDataController.subId];
                     final isLoading = dbDataController
                         .productsLoading[dbDataController.subId];
+                    if (aController.isSortLoading.value) {
+                      return const Center(
+                          child: SizedBox(
+                        height: 50,
+                        width: 50,
+                        child: CircularProgressIndicator(),
+                      ));
+                    }
                     if (!(isLoading == null) && isLoading == true) {
                       return const Center(
                           child: SizedBox(

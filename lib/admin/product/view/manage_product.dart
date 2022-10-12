@@ -6,6 +6,7 @@ import 'package:flutter_swipe_action_cell/flutter_swipe_action_cell.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
+import '../../../images/images.dart';
 import '../controller/product_controller.dart';
 
 class ManageProduct extends StatelessWidget {
@@ -38,6 +39,21 @@ class ManageProduct extends StatelessWidget {
             Icons.arrow_back,
           ),
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(
+              top: 8,
+              right: 20,
+              bottom: 8,
+            ),
+            child: InkWell(
+              onTap: () => productController.scanBarCode(),
+              child: Image.asset(
+                Images.barCode,
+              ),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(

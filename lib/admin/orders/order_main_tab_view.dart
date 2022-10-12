@@ -1,5 +1,6 @@
 import 'package:citymall/admin/orders/canceled_order.dart';
 import 'package:citymall/admin/orders/delivered_order.dart';
+import 'package:citymall/admin/orders/order_main_view.dart';
 import 'package:citymall/admin/orders/procesing_order.dart';
 import 'package:citymall/colors/colors.dart';
 import 'package:citymall/controller/tabcontroller.dart';
@@ -8,16 +9,34 @@ import 'package:citymall/textstylefontfamily/textfontfamily.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class OrderMainView extends StatelessWidget {
-  final bool isPrepay;
-  OrderMainView({Key? key, required this.isPrepay}) : super(key: key);
+class OrderMainTabView extends StatefulWidget {
+  OrderMainTabView({Key? key}) : super(key: key);
+
+  @override
+  State<OrderMainTabView> createState() => _OrderMainTabViewState();
+}
+
+class _OrderMainTabViewState extends State<OrderMainTabView>
+    with SingleTickerProviderStateMixin {
   final TabviewController controller = Get.put(TabviewController());
+  late TabController mainTabController;
   final ThemeController themeController = Get.put(ThemeController());
+
   final List<Tab> myTabs = <Tab>[
-    Tab(text: "Delivered"),
-    Tab(text: "Processing"),
-    Tab(text: "Canceled"),
+    Tab(text: "Cash On Delivery"),
+    Tab(text: "Prepay"),
   ];
+  @override
+  void initState() {
+    mainTabController = TabController(length: 2, vsync: this, initialIndex: 0);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    mainTabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +45,53 @@ class OrderMainView extends StatelessWidget {
       backgroundColor: themeController.isLightTheme.value
           ? ColorResources.white
           : ColorResources.black4,
+      appBar: AppBar(
+        backgroundColor: themeController.isLightTheme.value
+            ? ColorResources.white
+            : ColorResources.black4,
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+        elevation: 0,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 25),
+          child: InkWell(
+            onTap: () {
+              Get.back();
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: ColorResources.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: 13,
+                    color: ColorResources.blue1.withOpacity(0.3),
+                    spreadRadius: 0,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Center(
+                child: Icon(
+                  Icons.arrow_back,
+                  color: ColorResources.black,
+                  size: 20,
+                ),
+              ),
+            ),
+          ),
+        ),
+        title: Text(
+          "My Order",
+          style: TextStyle(
+            fontFamily: TextFontFamily.SEN_BOLD,
+            fontSize: 22,
+            color: themeController.isLightTheme.value
+                ? ColorResources.black2
+                : ColorResources.white,
+          ),
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.only(top: 10),
         child: Container(
@@ -43,7 +109,7 @@ class OrderMainView extends StatelessWidget {
           child: Column(
             children: [
               TabBar(
-                controller: controller.tabController,
+                controller: mainTabController,
                 labelPadding: EdgeInsets.zero,
                 indicatorPadding: EdgeInsets.zero,
                 indicatorColor: ColorResources.blue1,
@@ -70,11 +136,10 @@ class OrderMainView extends StatelessWidget {
               ),
               Expanded(
                 child: TabBarView(
-                  controller: controller.tabController,
+                  controller: mainTabController,
                   children: [
-                    DeliveredOrders(isPrepay: isPrepay),
-                    ProcessingOrders(isPrepay: isPrepay),
-                    CanceledOrder(isPrepay: isPrepay),
+                    OrderMainView(isPrepay: false),
+                    OrderMainView(isPrepay: true),
                   ],
                 ),
               ),

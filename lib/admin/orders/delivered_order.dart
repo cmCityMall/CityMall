@@ -15,7 +15,11 @@ import '../../utils/widgets/loading_widget.dart';
 import 'order_detail_view.dart';
 
 class DeliveredOrders extends StatelessWidget {
-  DeliveredOrders({Key? key}) : super(key: key);
+  final bool isPrepay;
+  DeliveredOrders({
+    Key? key,
+    required this.isPrepay,
+  }) : super(key: key);
   final ThemeController themeController = Get.put(ThemeController());
   final TabviewController controller = Get.put(TabviewController());
 
@@ -27,7 +31,13 @@ class DeliveredOrders extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
       child: Obx(() {
         final list = authController.orderList;
-        final deliveredList = list.where((e) => e.status == 1).toList();
+        final deliveredList = list
+            .where((e) =>
+                e.status == 1 &&
+                (isPrepay
+                    ? e.screenShotImage.isNotEmpty
+                    : e.screenShotImage.isEmpty))
+            .toList();
         if (deliveredList.isEmpty) {
           return const EmptyWidget("No delivered orders yet.");
         }
@@ -162,7 +172,9 @@ class DeliveredOrders extends StatelessWidget {
                                 Get.to(() => OrderDetailView(
                                       purchase: purchase,
                                       amt: totalAmount,
+                                      isPrepay: isPrepay,
                                       isProcessing: false,
+                                      isDelivered: true,
                                     ));
                               },
                               child: Container(

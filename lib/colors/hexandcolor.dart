@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 const String red = "#FF0000";
 const String lime = "#00FF00";
-const String blue = "	#0000FF";
+const String blue = "#0000FF";
 const String purple = "#800080";
 const String magenta = "#FF00FF";
 const String yellow = "#FFFF00";
@@ -19,7 +19,7 @@ const String navy = "#000080";
 const List<String> colorList = [
   "#FF0000",
   "#00FF00",
-  "	#0000FF",
+  "#0000FF",
   "#800080",
   "#FF00FF",
   "#FFFF00",

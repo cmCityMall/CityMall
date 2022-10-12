@@ -14,7 +14,11 @@ import 'package:intl/intl.dart';
 import 'order_detail_view.dart';
 
 class ProcessingOrders extends StatelessWidget {
-  ProcessingOrders({Key? key}) : super(key: key);
+  final bool isPrepay;
+  ProcessingOrders({
+    Key? key,
+    required this.isPrepay,
+  }) : super(key: key);
   final ThemeController themeController = Get.put(ThemeController());
   final TabviewController controller = Get.put(TabviewController());
 
@@ -26,7 +30,13 @@ class ProcessingOrders extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
       child: Obx(() {
         final list = authController.orderList;
-        final processList = list.where((e) => e.status == 0).toList();
+        final processList = list
+            .where((e) =>
+                e.status == 0 &&
+                (isPrepay
+                    ? e.screenShotImage.isNotEmpty
+                    : e.screenShotImage.isEmpty))
+            .toList();
 
         if (processList.isEmpty) {
           return const EmptyWidget("No processing orders yet.");
@@ -162,7 +172,9 @@ class ProcessingOrders extends StatelessWidget {
                                 Get.to(() => OrderDetailView(
                                       purchase: purchase,
                                       amt: totalAmount,
+                                      isPrepay: isPrepay,
                                       isProcessing: true,
+                                      isDelivered: false,
                                     ));
                               },
                               child: Container(

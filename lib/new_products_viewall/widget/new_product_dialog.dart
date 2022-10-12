@@ -4,23 +4,21 @@ import 'package:citymall/colors/colors.dart';
 import 'package:citymall/controller/clickcontroller.dart';
 import 'package:citymall/controller/slidercontroller.dart';
 import 'package:citymall/controller/theme_controller.dart';
+import 'package:citymall/new_products_viewall/controller/npva_controller.dart';
 import 'package:citymall/textstylefontfamily/textfontfamily.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 
-import '../controller/action_screen_controller.dart';
-import '../homescreen/cameradashboardscreen/action_screen_controller.dart';
-
 // ignore: must_be_immutable
-class DialogueScreen extends StatelessWidget {
-  DialogueScreen({Key? key}) : super(key: key);
+class NewProductDialog extends StatelessWidget {
+  NewProductDialog({Key? key}) : super(key: key);
 
   final ThemeController themeController = Get.put(ThemeController());
   SliderController sliderController = Get.put(SliderController());
   @override
   Widget build(BuildContext context) {
-    final ActionController actionController = Get.find();
+    final NPVAController actionController = Get.find();
     return AlertDialog(
       backgroundColor: themeController.isLightTheme.value
           ? ColorResources.white

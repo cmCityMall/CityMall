@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:citymall/controller/db_data_controller.dart';
 import 'package:citymall/model/cips.dart';
 import 'package:citymall/model/main_category.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
@@ -299,6 +300,36 @@ class ProductController extends GetxController {
     isSearch.value = false;
   }
 
+  Future<void> scanBarCodeForSearch() async {
+    FlutterBarcodeScanner.scanBarcode(
+            "#ff6666", "Cancel", false, ScanMode.DEFAULT)
+        .then((value) async {
+      if (value != "-1") {
+        await searchWithBarCode(value);
+      }
+      log("********Barcode Scan Value: $value");
+    }).catchError((e) {
+      log("*****Error scan bar code");
+    });
+  }
+
+  Future<void> searchWithBarCode(String value) async {
+    isSearch.value = true;
+    try {
+      log("********Fetching......***");
+      final result = await FirebaseFirestore.instance
+          .collection(productCollection)
+          .where("barCode", isEqualTo: value)
+          .get();
+      log("********Result: ${result.docs.length}\n SearchValue: $value****");
+      searchItems.value =
+          result.docs.map((e) => Product.fromJson(e.data())).toList();
+    } catch (e) {
+      log("*******Error: $e");
+    }
+    isSearch.value = false;
+  }
+
   Future<List<String>> uploadMultipleImages(
       List<File> images, String productId) async {
     final List<String> resultImages = [];
@@ -402,6 +433,9 @@ class ProductController extends GetxController {
     var promotion = 0;
     var tQuantity = 0;
     var rQuantity = 0;
+    var reviewCount = _dataController.selectedProduct.value == null
+        ? 0.0
+        : _dataController.selectedProduct.value!.reviewCount;
     var lBarCode = barCode.value;
     var name = nameController.text;
     var desc = descriptionController.text;
@@ -479,7 +513,7 @@ class ProductController extends GetxController {
               subCategoryId: subId,
               shopId: shopId,
               brandId: brandId,
-              reviewCount: 0,
+              reviewCount: reviewCount,
               barCode: lBarCode,
               nameArray: nameArray,
               totalQuantity: tQuantity,

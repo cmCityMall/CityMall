@@ -15,6 +15,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import '../constant/constant.dart';
 import '../model/favourite_item.dart';
+import '../widgets/other/cache_image.dart';
 import '../wppd/bin/wppd_binding.dart';
 import '../wppd/view/wppd_view.dart';
 
@@ -98,14 +99,14 @@ class WeekPromotionScreen extends StatelessWidget {
                 : ColorResources.black1,
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // GetBuilder(
                 //   init: searchController,
                 //   builder: (search) =>
-                TextFormField(
+                /* TextFormField(
                   style: TextStyle(
                       fontFamily: TextFontFamily.SEN_REGULAR,
                       fontSize: 15,
@@ -169,8 +170,17 @@ class WeekPromotionScreen extends StatelessWidget {
                       ),
                     ),
                   ),
+                ), */
+                SizedBox(
+                  width: Get.width,
+                  height: Get.height * 0.2,
+                  child: CustomCacheNetworkImage(
+                    imageUrl: weekPromotionController
+                        .selectedWeekPromotion.value!.image,
+                    boxFit: BoxFit.contain,
+                  ),
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 10),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(

@@ -6,8 +6,10 @@ import 'package:citymall/controller/theme_controller.dart';
 import 'package:citymall/dialoguescreen/dialoguescreen.dart';
 import 'package:citymall/images/images.dart';
 import 'package:citymall/productdetailsscreen/productdetailscreen.dart';
+import 'package:citymall/productdetailsscreen/recommend_dialog.dart';
 import 'package:citymall/rout_screens/rout_1.dart';
 import 'package:citymall/textstylefontfamily/textfontfamily.dart';
+import 'package:citymall/utils/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/svg.dart';
@@ -94,7 +96,7 @@ class RecomendedScreen extends StatelessWidget {
                 showDialog(
                   context: context,
                   builder: (context) {
-                    return DialogueScreen();
+                    return RecommendDialog();
                   },
                 );
               },
@@ -141,8 +143,12 @@ class RecomendedScreen extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: Obx(() {
-                    final dataList = dataController.homePopularProducts;
-
+                    final dataList = recoController.isSort.value
+                        ? recoController.dataList
+                        : dataController.homePopularProducts;
+                    if (recoController.isSortLoading.value) {
+                      return const LoadingWidget();
+                    }
                     return GridView.builder(
                       itemCount: dataList.length,
                       shrinkWrap: true,

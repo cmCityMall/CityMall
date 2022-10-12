@@ -7,6 +7,7 @@ import 'package:citymall/dialoguescreen/dialoguescreen.dart';
 import 'package:citymall/discount_product_viewall/controller/dpva_controller.dart';
 import 'package:citymall/images/images.dart';
 import 'package:citymall/new_products_viewall/controller/npva_controller.dart';
+import 'package:citymall/new_products_viewall/widget/new_product_dialog.dart';
 import 'package:citymall/popular_produts_viewall/controller/ppva_controller.dart';
 import 'package:citymall/productdetailsscreen/productdetailscreen.dart';
 import 'package:citymall/rout_screens/rout_1.dart';
@@ -90,7 +91,7 @@ class NPVAView extends StatelessWidget {
                 showDialog(
                   context: context,
                   builder: (context) {
-                    return DialogueScreen();
+                    return NewProductDialog();
                   },
                 );
               },
@@ -138,9 +139,14 @@ class NPVAView extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: Obx(() {
                     final mainData = dbDataController.newProducts;
-                    final dataList = mainData[dbDataController.mainId];
+                    final dataList = npvaController.isSort.value
+                        ? npvaController.dataList
+                        : mainData[dbDataController.mainId];
                     final isLoading = dbDataController
                         .newProductsLoading[dbDataController.mainId];
+                    if (npvaController.isSortLoading.value) {
+                      return const LoadingWidget();
+                    }
                     if (!(isLoading == null) && isLoading == true) {
                       return const LoadingWidget();
                     }
@@ -148,7 +154,7 @@ class NPVAView extends StatelessWidget {
                       return const EmptyWidget("No new products yet.");
                     }
                     return GridView.builder(
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const BouncingScrollPhysics(),
                       itemCount: dataList.length,
                       shrinkWrap: true,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

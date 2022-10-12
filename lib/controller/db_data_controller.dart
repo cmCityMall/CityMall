@@ -10,6 +10,7 @@ import 'package:citymall/model/week_promotion.dart';
 import 'package:citymall/server/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../model/hive_personal_address.dart';
@@ -496,10 +497,14 @@ class DBDataController extends GetxController {
       debugPrint("Something went wrong with $e");
     }
   }
-  //**End */
 
+  //**End */
+  late ByteData oleoBold;
+  late ByteData cherryUnicode;
   @override
-  void onInit() {
+  Future<void> onInit() async {
+    oleoBold = await rootBundle.load("fonts/OleoScriptSwashCaps-Bold.ttf");
+    cherryUnicode = await rootBundle.load("fonts/Cherry_Unicode.ttf");
     getInitialMenuMainCategories();
     getInitialHomeProducts();
     getInitialShops();

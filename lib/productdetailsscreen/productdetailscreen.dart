@@ -418,7 +418,9 @@ class ProductDetailScreen extends StatelessWidget {
                                                         color;
                                                     detailController
                                                             .setSelectedPrice =
-                                                        e.value["price"];
+                                                        int.tryParse(e.value[
+                                                                "price"]) ??
+                                                            0;
                                                     detailController
                                                             .setSelectedImage =
                                                         e.value["image"];
@@ -500,7 +502,9 @@ class ProductDetailScreen extends StatelessWidget {
                                                           size;
                                                       detailController
                                                               .setSelectedPrice =
-                                                          e.value["price"];
+                                                          int.tryParse(e.value[
+                                                                  "price"]) ??
+                                                              0;
                                                       /*  detailController
                                                         .setSelectedImage =
                                                     e.value["image"]; */

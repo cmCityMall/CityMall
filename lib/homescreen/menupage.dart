@@ -4,6 +4,7 @@ import 'package:citymall/admin/brand/view/brand_view.dart';
 import 'package:citymall/admin/main_category/bin/mc_binding.dart';
 import 'package:citymall/admin/main_category/view/mc_view.dart';
 import 'package:citymall/admin/orders/bin/order_main_binding.dart';
+import 'package:citymall/admin/orders/order_main_tab_view.dart';
 import 'package:citymall/admin/orders/order_main_view.dart';
 import 'package:citymall/admin/product/bin/product_binding.dart';
 import 'package:citymall/admin/product/view/manage_product.dart';
@@ -177,7 +178,7 @@ class MenuPage extends GetView {
                         }),
                         inkwell(Images.myordericon, "Manage Orders", () {
                           Get.to(
-                            () => OrderMainView(),
+                            () => OrderMainTabView(),
                             binding: OrderMainBinding(),
                           );
                         })

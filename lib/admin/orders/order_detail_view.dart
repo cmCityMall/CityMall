@@ -1,6 +1,8 @@
 import 'dart:developer';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:citymall/admin/orders/controller/order_main_controller.dart';
+import 'package:citymall/admin/orders/order_print_view/order_print_view.dart';
 import 'package:citymall/colors/colors.dart';
 import 'package:citymall/controller/theme_controller.dart';
 import 'package:citymall/images/images.dart';
@@ -8,20 +10,28 @@ import 'package:citymall/model/purchase.dart';
 import 'package:citymall/textstylefontfamily/textfontfamily.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:intl/intl.dart';
+
+import '../../rout_screens/rout_1.dart';
+import '../../widgets/other/photo_viewer.dart';
 
 // ignore: must_be_immutable
 class OrderDetailView extends StatelessWidget {
   final Purchase purchase;
   final int amt;
   final bool isProcessing;
+  final bool isPrepay;
+  final bool isDelivered;
   OrderDetailView({
     Key? key,
     required this.purchase,
     required this.amt,
     required this.isProcessing,
+    required this.isPrepay,
+    required this.isDelivered,
   }) : super(key: key);
   final ThemeController themeController = Get.put(ThemeController());
 
@@ -141,17 +151,19 @@ class OrderDetailView extends StatelessWidget {
                   const SizedBox(height: 20),
                   const Divider(thickness: 0.5, color: ColorResources.grey4),
                   const SizedBox(height: 20),
-                  /* Text(
-                    "ETA: ${purchase.eta}",
-                    style: TextStyle(
-                      fontFamily: TextFontFamily.SEN_BOLD,
-                      fontSize: 19,
-                      color: themeController.isLightTheme.value
-                          ? ColorResources.black2
-                          : ColorResources.white,
-                    ),
-                  ),
-                  const SizedBox(height: 18), */
+                  isProcessing && !isDelivered
+                      ? const SizedBox()
+                      : Text(
+                          "ETA: ${purchase.eta}",
+                          style: TextStyle(
+                            fontFamily: TextFontFamily.SEN_BOLD,
+                            fontSize: 19,
+                            color: themeController.isLightTheme.value
+                                ? ColorResources.black2
+                                : ColorResources.white,
+                          ),
+                        ),
+                  isProcessing ? const SizedBox() : const SizedBox(height: 18),
                   Text(
                     "Items Detail: ",
                     style: TextStyle(
@@ -347,64 +359,159 @@ class OrderDetailView extends StatelessWidget {
                   const SizedBox(
                     height: 10,
                   ),
+                  //If Prepay,need to show ScreenShot
+                  //PhotoView
+                  isPrepay
+                      ? Text(
+                          "Screenshot: ",
+                          style: TextStyle(
+                            fontFamily: TextFontFamily.SEN_BOLD,
+                            fontSize: 18,
+                            color: themeController.isLightTheme.value
+                                ? ColorResources.black3
+                                : ColorResources.white,
+                          ),
+                        )
+                      : const SizedBox(),
+                  isPrepay
+                      ? InkWell(
+                          onTap: () {
+                            //Show Dialog PhotoView
+                            showDialog(
+                              //barrierColor: Colors.white.withOpacity(0),
+                              context: Get.context!,
+                              builder: (context) {
+                                return photoViewer(
+                                  heroTags: purchase.screenShotImage,
+                                );
+                              },
+                            );
+                          },
+                          child: Hero(
+                            tag: purchase.screenShotImage,
+                            child: CachedNetworkImage(
+                              width: 200,
+                              height: 200,
+                              httpHeaders: const {
+                                "maxAgeSeconds": "3600",
+                                "method": "GET, HEAD",
+                                "Access-Control-Allow-Origin": "*",
+                                "Access-Control-Allow-Methods": "POST,HEAD",
+                                "responseHeader": "Content-Type",
+                              },
+                              imageUrl: purchase.screenShotImage,
+                              fit: BoxFit.contain,
+                              progressIndicatorBuilder: (context, url, status) {
+                                return Center(
+                                  child: SizedBox(
+                                    width: 50,
+                                    height: 50,
+                                    child: CircularProgressIndicator(
+                                      value: status.progress,
+                                    ),
+                                  ),
+                                );
+                              },
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.error),
+                            ),
+                          ),
+                        )
+                      : const SizedBox(),
                   //Functions For Adim To do IF this order is processing status
-                  SizedBox(
-                    height: 50,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              primary: ColorResources.white1,
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(10),
+                  isProcessing
+                      ? SizedBox(
+                          height: 50,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    primary: ColorResources.white1,
+                                    shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10),
+                                      ),
+                                      side: BorderSide(
+                                        color: ColorResources.green1,
+                                      ),
+                                    )),
+                                onPressed: () {
+                                  showAcceptModelButtonSheet(
+                                    context,
+                                    orderId: purchase.id,
+                                    userId: purchase.userId,
+                                  );
+                                },
+                                child: const Text(
+                                  "Deliver order",
+                                  style: TextStyle(
+                                    fontFamily: TextFontFamily.SEN_BOLD,
+                                    fontSize: 18,
+                                    color: ColorResources.black,
+                                  ),
                                 ),
-                                side: BorderSide(
-                                  color: ColorResources.green1,
+                              ),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    primary: ColorResources.white1,
+                                    shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10),
+                                      ),
+                                      side: BorderSide(
+                                        color: ColorResources.red1,
+                                      ),
+                                    )),
+                                onPressed: () {
+                                  log("Making cancel...");
+                                  orderMainController.cancelOrder(
+                                      purchase.id, purchase.userId);
+                                },
+                                child: const Text(
+                                  "Cancel order",
+                                  style: TextStyle(
+                                    fontFamily: TextFontFamily.SEN_BOLD,
+                                    fontSize: 18,
+                                    color: ColorResources.black,
+                                  ),
                                 ),
-                              )),
-                          onPressed: () {
-                            showAcceptModelButtonSheet(context);
-                            log("Make delivering....");
-                          },
-                          child: const Text(
-                            "Deliver order",
-                            style: TextStyle(
-                              fontFamily: TextFontFamily.SEN_BOLD,
-                              fontSize: 18,
-                              color: ColorResources.black,
+                              ),
+                            ],
+                          ),
+                        )
+                      : const SizedBox(),
+                  isDelivered
+                      ? Center(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                primary: ColorResources.white1,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(10),
+                                  ),
+                                  side: BorderSide(
+                                    color: ColorResources.blue1,
+                                  ),
+                                )),
+                            onPressed: () => Get.to(() => UserOrderPrintView(
+                                  purchaseModel: purchase,
+                                  total: amt,
+                                  shipping: purchase.townShipNameAndFee["fee"],
+                                  township:
+                                      purchase.townShipNameAndFee["townName"],
+                                )),
+                            child: const Text(
+                              "Print Preview",
+                              style: TextStyle(
+                                fontFamily: TextFontFamily.SEN_BOLD,
+                                fontSize: 18,
+                                color: ColorResources.black,
+                              ),
                             ),
                           ),
-                        ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              primary: ColorResources.white1,
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(10),
-                                ),
-                                side: BorderSide(
-                                  color: ColorResources.red1,
-                                ),
-                              )),
-                          onPressed: () {
-                            log("Making cancel...");
-                            orderMainController.cancelOrder(
-                                purchase.id, purchase.userId);
-                          },
-                          child: const Text(
-                            "Cancel order",
-                            style: TextStyle(
-                              fontFamily: TextFontFamily.SEN_BOLD,
-                              fontSize: 18,
-                              color: ColorResources.black,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                        )
+                      : const SizedBox(),
                 ],
               ),
             ),
@@ -414,9 +521,16 @@ class OrderDetailView extends StatelessWidget {
     );
   }
 
-  showAcceptModelButtonSheet(BuildContext context) {
+  showAcceptModelButtonSheet(
+    BuildContext context, {
+    required String orderId,
+    required String userId,
+  }) {
     Get.bottomSheet(
-      BottomSheetFormField(),
+      BottomSheetFormField(
+        orderId: orderId,
+        userId: userId,
+      ),
       useRootNavigator: true,
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -430,50 +544,36 @@ class OrderDetailView extends StatelessWidget {
 class BottomSheetFormField extends StatefulWidget {
   const BottomSheetFormField({
     Key? key,
+    required this.orderId,
+    required this.userId,
   }) : super(key: key);
+
+  final String orderId;
+  final String userId;
 
   @override
   State<BottomSheetFormField> createState() => _BottomSheetFormFieldState();
 }
 
 class _BottomSheetFormFieldState extends State<BottomSheetFormField> {
-  late FocusNode focusNode;
-  bool isHasFocus = false;
   late TextEditingController textController;
 
   @override
   void initState() {
     textController = TextEditingController();
-    focusNode = FocusNode();
-    focusNode.addListener(() {
-      if (focusNode.hasFocus) {
-        if (mounted) {
-          setState(() {
-            isHasFocus = true;
-          });
-        }
-      } else {
-        if (mounted) {
-          setState(() {
-            isHasFocus = false;
-          });
-        }
-      }
-    });
     super.initState();
   }
 
   @override
   void dispose() {
     textController.dispose();
-    focusNode.removeListener(() {});
-    focusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final OrderMainController orderMainController = Get.find();
     return Container(
       decoration: const BoxDecoration(
           color: Colors.white,
@@ -481,80 +581,114 @@ class _BottomSheetFormFieldState extends State<BottomSheetFormField> {
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
           )),
-      height: isHasFocus ? double.infinity : 200,
       child: Form(
         child: Padding(
           padding: const EdgeInsets.only(left: 20, right: 20),
-          child: Column(
-            mainAxisAlignment:
-                isHasFocus ? MainAxisAlignment.start : MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              isHasFocus ? const SizedBox(height: 25) : const SizedBox(),
-              //DeliveryTime,
-              const Text(
-                "Estimated Time of Arrival",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 10),
+                //DeliveryTime,
+                const Text(
+                  "Estimated Time of Arrival",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 10),
-              //TextformField
-              TextFormField(
-                controller: textController,
-                enableSuggestions: false,
-                maxLines: 2,
-                onChanged: (value) {
-                  if (value.isNotEmpty && value.length == 2) {
-                    if (isHasFocus) {
-                      focusNode.unfocus();
-                    }
-                  }
-                },
-                focusNode: focusNode,
-                decoration: const InputDecoration(
-                  counter: null,
-                  counterText: "",
-                  hintText: "0",
-                  hintStyle: TextStyle(color: Colors.grey),
-                  prefixIcon: Icon(Icons.lock_clock),
-                  /* suffix: Text(
-                      "မိနစ်",
-                      style: TextStyle(
+                const SizedBox(height: 10),
+                //TextformField
+                TextFormField(
+                  controller: textController,
+                  onFieldSubmitted: (value) async {},
+                  style: TextStyle(
+                      fontFamily: TextFontFamily.SEN_REGULAR,
+                      fontSize: 15,
+                      color: themeController.isLightTheme.value
+                          ? ColorResources.black2
+                          : ColorResources.white),
+                  cursorColor: ColorResources.grey,
+                  decoration: InputDecoration(
+                    suffixIcon: Icon(
+                      FontAwesomeIcons.clock,
+                      color: themeController.isLightTheme.value
+                          ? ColorResources.navyblue
+                          : ColorResources.white,
+                    ),
+                    filled: true,
+                    fillColor: themeController.isLightTheme.value
+                        ? ColorResources.white
+                        : ColorResources.black4,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                    hintText: "15 Min",
+                    hintStyle: const TextStyle(
+                        fontFamily: TextFontFamily.SEN_REGULAR,
                         fontSize: 16,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
+                        color: ColorResources.grey5),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: themeController.isLightTheme.value
+                            ? ColorResources.white8
+                            : ColorResources.black5,
+                        width: 1,
                       ),
-                    ), */
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(20)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(20)),
-                    borderSide: BorderSide(color: Colors.orange),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: themeController.isLightTheme.value
+                            ? ColorResources.white8
+                            : ColorResources.black5,
+                        width: 1,
+                      ),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: themeController.isLightTheme.value
+                            ? ColorResources.white8
+                            : ColorResources.black5,
+                        width: 1,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: themeController.isLightTheme.value
+                            ? ColorResources.white8
+                            : ColorResources.black5,
+                        width: 1,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              //Accept button
-              SizedBox(
-                height: 50,
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: ColorResources.blue1,
+                const SizedBox(height: 20),
+                //Accept button
+                SizedBox(
+                  height: 50,
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: ColorResources.blue1,
+                    ),
+                    onPressed: () {
+                      if (textController.text.isNotEmpty) {
+                        log("*****Delivering Order...");
+                        orderMainController.deliverOrder(
+                            widget.orderId, widget.userId, textController.text);
+                        Get.back();
+                      } else {
+                        log("**ETA text is empty..");
+                      }
+                    },
+                    child: const Text("Save"),
                   ),
-                  onPressed: () {
-                    if (textController.text.isNotEmpty) {
-                      /*  _controller.acceptPurchase(_controller.inProgressPurchaseModel.value!,
-                              textController.text,); */
-                    }
-                  },
-                  child: const Text("Save"),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

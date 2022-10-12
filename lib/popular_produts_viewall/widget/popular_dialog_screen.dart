@@ -9,18 +9,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 
-import '../controller/action_screen_controller.dart';
-import '../homescreen/cameradashboardscreen/action_screen_controller.dart';
+import '../controller/ppva_controller.dart';
 
 // ignore: must_be_immutable
-class DialogueScreen extends StatelessWidget {
-  DialogueScreen({Key? key}) : super(key: key);
+class PopularDialogScreen extends StatelessWidget {
+  PopularDialogScreen({Key? key}) : super(key: key);
 
   final ThemeController themeController = Get.put(ThemeController());
   SliderController sliderController = Get.put(SliderController());
   @override
   Widget build(BuildContext context) {
-    final ActionController actionController = Get.find();
+    final PPVAController actionController = Get.find();
     return AlertDialog(
       backgroundColor: themeController.isLightTheme.value
           ? ColorResources.white

@@ -7,6 +7,7 @@ import 'package:citymall/dialoguescreen/dialoguescreen.dart';
 import 'package:citymall/discount_product_viewall/controller/dpva_controller.dart';
 import 'package:citymall/images/images.dart';
 import 'package:citymall/popular_produts_viewall/controller/ppva_controller.dart';
+import 'package:citymall/popular_produts_viewall/widget/popular_dialog_screen.dart';
 import 'package:citymall/productdetailsscreen/productdetailscreen.dart';
 import 'package:citymall/rout_screens/rout_1.dart';
 import 'package:citymall/textstylefontfamily/textfontfamily.dart';
@@ -89,7 +90,7 @@ class PPVAView extends StatelessWidget {
                 showDialog(
                   context: context,
                   builder: (context) {
-                    return DialogueScreen();
+                    return PopularDialogScreen();
                   },
                 );
               },
@@ -137,9 +138,14 @@ class PPVAView extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: Obx(() {
                     final mainData = dbDataController.popularProducts;
-                    final dataList = mainData[dbDataController.mainId];
+                    final dataList = ppvaController.isSort.value
+                        ? ppvaController.dataList
+                        : mainData[dbDataController.mainId];
                     final isLoading = dbDataController
                         .popularProductsLoading[dbDataController.mainId];
+                    if (ppvaController.isSortLoading.value) {
+                      return const LoadingWidget();
+                    }
                     if (!(isLoading == null) && isLoading == true) {
                       return const LoadingWidget();
                     }

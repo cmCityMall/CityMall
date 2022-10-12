@@ -26,7 +26,11 @@ class ProductDetailController extends GetxController {
   var selectedPrice = 0.obs;
   var selectedImage = "".obs;
   set setSelectedImage(String v) => selectedImage.value = v;
-  set setSelectedColor(String v) => selectedColor.value = v;
+  set setSelectedColor(String v) {
+    selectedColor.value = v;
+    log(v);
+  }
+
   set setSelectedSize(String v) => selectedSize.value = v;
   set setSelectedPrice(int v) => selectedPrice.value = v;
 

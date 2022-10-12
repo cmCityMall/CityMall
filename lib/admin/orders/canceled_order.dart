@@ -15,7 +15,11 @@ import 'package:intl/intl.dart';
 import '../../utils/widgets/loading_widget.dart';
 
 class CanceledOrder extends StatelessWidget {
-  CanceledOrder({Key? key}) : super(key: key);
+  final bool isPrepay;
+  CanceledOrder({
+    Key? key,
+    required this.isPrepay,
+  }) : super(key: key);
   final ThemeController themeController = Get.put(ThemeController());
   final TabviewController controller = Get.put(TabviewController());
 
@@ -27,7 +31,13 @@ class CanceledOrder extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
       child: Obx(() {
         final list = authController.orderList;
-        final cancelList = list.where((e) => e.status == 2).toList();
+        final cancelList = list
+            .where((e) =>
+                e.status == 2 &&
+                (isPrepay
+                    ? e.screenShotImage.isNotEmpty
+                    : e.screenShotImage.isEmpty))
+            .toList();
         if (cancelList.isEmpty) {
           return const EmptyWidget("No canceled orders yet.");
         }
@@ -162,7 +172,9 @@ class CanceledOrder extends StatelessWidget {
                                 Get.to(() => OrderDetailView(
                                       purchase: purchase,
                                       amt: totalAmount,
+                                      isPrepay: isPrepay,
                                       isProcessing: false,
+                                      isDelivered: false,
                                     ));
                               },
                               child: Container(

@@ -20,7 +20,7 @@ class Api {
           fromFirestore: (data, __) => AuthUser.fromJson(data.data()!),
           toFirestore: (user, __) => user.toJson(),
         )
-        .where("status", isEqualTo: 1)
+        .where("status", isEqualTo: 2)
         .get()
         .then((value) async {
       final users = value.docs;

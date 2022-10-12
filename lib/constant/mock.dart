@@ -2,6 +2,8 @@ import 'package:uuid/uuid.dart';
 
 import '../model/week_promotion.dart';
 
+const mockSubImage =
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSx7CksVEvsuSeI7PJ-wem1rWjDeDSMmhC2bgMRQhAG&s";
 const mockProfile =
     "https://png.pngtree.com/png-vector/20191103/ourmid/pngtree-handsome-young-guy-avatar-cartoon-style-png-image_1947775.jpg";
 const mockMainCategory =

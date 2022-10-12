@@ -1,10 +1,12 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:citymall/colors/colors.dart';
+import 'package:citymall/constant/mock.dart';
 import 'package:citymall/controller/camerahomefavoritecontroller.dart';
 import 'package:citymall/controller/db_data_controller.dart';
 import 'package:citymall/controller/theme_controller.dart';
 import 'package:citymall/discount_product_viewall/bin/dpva_binding.dart';
 import 'package:citymall/discount_product_viewall/view/dpva_view.dart';
+import 'package:citymall/homescreen/cameradashboardscreen/action_screen_binding.dart';
 import 'package:citymall/homescreen/cameradashboardscreen/actionscreen.dart';
 import 'package:citymall/homescreen/subcategoryview_all/bin/scva_binding.dart';
 import 'package:citymall/homescreen/subcategoryview_all/view/subcategory_view_all.dart';
@@ -91,7 +93,7 @@ class CameraDeshBoard extends StatelessWidget {
                 : ColorResources.white,
           ),
         ),
-        actions: [
+        /*  actions: [
           Padding(
             padding: const EdgeInsets.only(right: 25),
             child: InkWell(
@@ -106,7 +108,7 @@ class CameraDeshBoard extends StatelessWidget {
               ),
             ),
           ),
-        ],
+        ], */
       ),
       body: Padding(
         padding: const EdgeInsets.only(top: 10),
@@ -286,13 +288,18 @@ class CameraDeshBoard extends StatelessWidget {
                                       );
                                       dbDataController
                                           .getInitialProducts(subCategory.id);
-                                      Get.to(() => const ActionScreen());
+                                      Get.to(
+                                        () => const ActionScreen(),
+                                        binding: ActionScreenBinding(),
+                                      );
                                     },
                                     child: Container(
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(7),
                                         image: DecorationImage(
-                                          image: AssetImage(Images.digital),
+                                          image: NetworkImage(
+                                              subCategory?.image ??
+                                                  mockSubImage),
                                           fit: BoxFit.cover,
                                         ),
                                       ),

@@ -1,8 +1,7 @@
-import 'package:citymall/controller/db_data_controller.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../model/product.dart';
+import '../../controller/db_data_controller.dart';
+import '../../model/product.dart';
 
 enum PriceSortType {
   lowToHigh,
@@ -10,34 +9,7 @@ enum PriceSortType {
   none,
 }
 
-class RecommendScreenController extends GetxController {
-  final DBDataController dataController = Get.find();
-  //**For Pagination */
-  final ScrollController scrollController =
-      ScrollController(initialScrollOffset: 0);
-  var isLoading = false.obs;
-
-  @override
-  void onInit() {
-    scrollController.addListener(() {
-      if (scrollController.position.pixels ==
-          scrollController.position.maxScrollExtent) {
-        if (!(isLoading.value)) {
-          isLoading.value = true;
-          final lastD = dataController.homePopularProducts.last;
-          debugPrint('********LastId: ${lastD.dateTime}');
-          dataController.getMoreHomePopularProducts([
-            lastD.reviewCount,
-            lastD.name,
-            lastD.toJson()["dateTime"]
-          ]).then((value) => isLoading.value = false);
-        }
-      }
-    });
-    super.onInit();
-  }
-
-  //**For Sort And Filtering... */
+class ActionController extends GetxController {
   final DBDataController dbDataController = Get.find();
   List<Product> dataList = [];
   var reviewIndex = 4.obs;
@@ -61,7 +33,7 @@ class RecommendScreenController extends GetxController {
   }
 
   void applySort() {
-    dataList = dataController.homePopularProducts;
+    dataList = dbDataController.products[dbDataController.subId]!;
 
     isSort.value = true;
     isSortLoading.value = true;
@@ -106,5 +78,4 @@ class RecommendScreenController extends GetxController {
     }
     return list;
   }
-  //**End */
 }
