@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
+import '../rout_screens/rout_1.dart';
+
 class OnBoardingScreen extends StatefulWidget {
   const OnBoardingScreen({Key? key}) : super(key: key);
 
@@ -163,7 +165,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             child: InkWell(
               onTap: () {
                 index == 2
-                    ? Get.off(LoginScreen())
+                    ? Get.off(() => NavigationBarBottom())
                     : pageController.nextPage(
                         duration: 300.milliseconds, curve: Curves.ease);
               },

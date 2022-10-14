@@ -15,6 +15,7 @@ import 'package:citymall/admin/sub_category/view/sc_view.dart';
 import 'package:citymall/admin/time_sale/bin/time_sale_binding.dart';
 import 'package:citymall/admin/week_promotion/bin/week_promotion_binding.dart';
 import 'package:citymall/admin/week_promotion/view/week_promotion_view.dart';
+import 'package:citymall/authscreens/loginscreen.dart';
 import 'package:citymall/colors/colors.dart';
 import 'package:citymall/controller/auth_controller.dart';
 import 'package:citymall/controller/theme_controller.dart';
@@ -111,9 +112,9 @@ class MenuPage extends GetView {
                   /* inkwell(Images.profileicon, "My profile", () {
                     Get.off(ProfileScreen());
                   }), */
-                  inkwell(Images.languegeicon, "Language", () {
+                  /* inkwell(Images.languegeicon, "Language", () {
                     Get.off(LangueageScreen());
-                  }),
+                  }), */
                   //Admin Panel
                   Obx(() {
                     final isAdmin =
@@ -189,48 +190,81 @@ class MenuPage extends GetView {
                     Get.off(MenuViewAllScreen());
                   }), */
                   Obx(() {
-                    final isNotAdmin =
-                        authController.currentUser.value!.status! == 1;
-                    return isNotAdmin
-                        ? inkwell(Images.myordericon, "My Order", () {
-                            Get.to(
-                              () => MyOrderScreen(),
-                              binding: MyOrderScreenBinding(),
-                            );
-                          })
-                        : const SizedBox();
-                  }),
-                  inkwell(Images.settingicon, "Settings", () {
-                    Get.to(() => SettingScreen());
-                  }),
-                  inkwell(Images.aboutusicon, "About Us", () {
-                    Get.off(AboutUsScreen());
-                  }),
-                  SizedBox(height: 10),
-                  InkWell(
-                    onTap: () {
-                      authController.logOut();
-                      Get.off(SplashScreen());
-                    },
-                    child: Container(
-                      height: 50,
-                      width: 100,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: ColorResources.blue1,
-                      ),
-                      child: const Center(
-                        child: Text(
-                          "Log Out",
-                          style: TextStyle(
-                            fontFamily: TextFontFamily.SEN_BOLD,
-                            fontSize: 14,
-                            color: ColorResources.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                    return authController.currentUser.value!.status! > 0
+                        ? ListView(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            children: [
+                              Obx(() {
+                                final isNotAdmin =
+                                    authController.currentUser.value!.status! ==
+                                        1;
+                                return isNotAdmin
+                                    ? inkwell(Images.myordericon, "My Order",
+                                        () {
+                                        Get.to(
+                                          () => MyOrderScreen(),
+                                          binding: MyOrderScreenBinding(),
+                                        );
+                                      })
+                                    : const SizedBox();
+                              }),
+                              inkwell(Images.settingicon, "Settings", () {
+                                Get.to(() => SettingScreen());
+                              }),
+                              inkwell(Images.aboutusicon, "About Us", () {
+                                Get.off(AboutUsScreen());
+                              }),
+                              SizedBox(height: 10),
+                              InkWell(
+                                onTap: () {
+                                  authController.logOut();
+                                  Get.off(SplashScreen());
+                                },
+                                child: Container(
+                                  height: 50,
+                                  width: 100,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    color: ColorResources.blue1,
+                                  ),
+                                  child: const Center(
+                                    child: Text(
+                                      "Log Out",
+                                      style: TextStyle(
+                                        fontFamily: TextFontFamily.SEN_BOLD,
+                                        fontSize: 14,
+                                        color: ColorResources.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )
+                        : InkWell(
+                            onTap: () {
+                              Get.to(() => LoginScreen());
+                            },
+                            child: Container(
+                              height: 50,
+                              width: 100,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: ColorResources.blue1,
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  "Log in",
+                                  style: TextStyle(
+                                    fontFamily: TextFontFamily.SEN_BOLD,
+                                    fontSize: 14,
+                                    color: ColorResources.white,
+                                  ),
+                                ),
+                              ),
+                            ));
+                  })
                 ],
               );
             }),

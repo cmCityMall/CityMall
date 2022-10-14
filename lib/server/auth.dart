@@ -27,7 +27,7 @@ class Auth {
       // Once signed in, return the UserCredential
       await FirebaseAuth.instance.signInWithCredential(credential);
       hideLoading();
-      Get.off(NavigationBarBottom());
+      Get.back();
     } on FirebaseAuthException catch (e) {
       debugPrint("GoogleSignInError: $e");
       Get.snackbar("Fail!", "$e");

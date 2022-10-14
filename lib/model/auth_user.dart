@@ -35,6 +35,6 @@ class AuthUser {
         image: mockProfile,
         points: 0,
         status: 0,
-        token: "testToken",
+        token: "invalidToken",
       );
 }

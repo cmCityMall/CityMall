@@ -13,6 +13,8 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
+import '../../authscreens/loginscreen.dart';
+import '../../controller/auth_controller.dart';
 import '../../controller/cart_controller.dart';
 import '../../model/cart_product.dart';
 import '../../widgets/other/cart_icon_widget.dart';
@@ -25,6 +27,7 @@ class WPPDView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AuthController authController = Get.find();
     final DBDataController dataController = Get.find();
     final WPPDController wppdController = Get.find();
     final CartController cartController = Get.find();
@@ -716,6 +719,12 @@ class WPPDView extends StatelessWidget {
                                 Expanded(
                                   child: InkWell(
                                     onTap: () {
+                                      if (authController
+                                              .currentUser.value!.status! ==
+                                          0) {
+                                        Get.to(() => LoginScreen());
+                                        return;
+                                      }
                                       final p =
                                           dataController.selectedProduct.value!;
                                       cartController.addIntoCart(CartProduct(

@@ -218,7 +218,7 @@ class LoginScreen extends StatelessWidget {
             left: 0,
             child: InkWell(
               onTap: () {
-                Get.off(() => OnBoardingScreen());
+                Get.back();
               },
               child: Container(
                 height: 60,

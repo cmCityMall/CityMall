@@ -18,6 +18,8 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../authscreens/loginscreen.dart';
+import '../controller/auth_controller.dart';
 import '../controller/cart_controller.dart';
 import '../model/review.dart';
 import '../widgets/other/cache_image.dart';
@@ -67,6 +69,7 @@ class ProductDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AuthController authController = Get.find();
     final CartController cartController = Get.find();
     final DBDataController dataController = Get.find();
     final ProductDetailController detailController = Get.find();
@@ -994,10 +997,18 @@ class ProductDetailScreen extends StatelessWidget {
                                             Radius.circular(10),
                                           ),
                                         )),
-                                    onPressed: () =>
-                                        detailController.writeReiew(
-                                      currentProduct.id,
-                                    ),
+                                    onPressed: () {
+                                      if (authController
+                                              .currentUser.value!.status! ==
+                                          0) {
+                                        Get.snackbar(
+                                            "", "Login to review product.");
+                                        return;
+                                      }
+                                      detailController.writeReiew(
+                                        currentProduct.id,
+                                      );
+                                    },
                                     child: Obx(() {
                                       return detailController
                                               .isWritingReviewLoading.value
@@ -1049,6 +1060,12 @@ class ProductDetailScreen extends StatelessWidget {
                       Expanded(
                         child: InkWell(
                           onTap: () {
+                            if (authController.currentUser.value!.status! ==
+                                0) {
+                              Get.to(() => LoginScreen());
+                              return;
+                            }
+
                             cartController.addIntoCart(CartProduct(
                               id: currentProduct.id,
                               name: currentProduct.name,
@@ -1068,18 +1085,6 @@ class ProductDetailScreen extends StatelessWidget {
                                   : detailController.selectedSize.value,
                               count: 0,
                             ));
-                            /* Get.bottomSheet(
-                              Container(
-                                child: RelatedAddressWidget(
-                                    themeController: themeController,
-                                    addressClickController1:
-                                        addressClickController1),
-                              ),
-                              backgroundColor:
-                                  themeController.isLightTheme.value
-                                      ? ColorResources.white
-                                      : ColorResources.black4,
-                            ); */
                           },
                           child: Container(
                             height: 50,
