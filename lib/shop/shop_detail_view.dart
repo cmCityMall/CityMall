@@ -311,45 +311,31 @@ class _ShopDetailViewState extends State<ShopDetailView> {
                                             return IconButton(
                                                 onPressed: () {
                                                   box.put(
-                                                    dataController
-                                                        .shopProducts[
-                                                            dataController
-                                                                .selectedShop
-                                                                .value!
-                                                                .id]![index]
-                                                        .id,
-                                                    FavouriteItem(
-                                                      id: dataController
+                                                      dataController
                                                           .shopProducts[
                                                               dataController
                                                                   .selectedShop
                                                                   .value!
                                                                   .id]![index]
                                                           .id,
-                                                      name: dataController
-                                                          .shopProducts[
-                                                              dataController
-                                                                  .selectedShop
-                                                                  .value!
-                                                                  .id]![index]
-                                                          .name,
-                                                      image: dataController
-                                                          .shopProducts[
-                                                              dataController
-                                                                  .selectedShop
-                                                                  .value!
-                                                                  .id]![index]
-                                                          .images
-                                                          .first,
-                                                      price: dataController
-                                                          .shopProducts[
-                                                              dataController
-                                                                  .selectedShop
-                                                                  .value!
-                                                                  .id]![index]
-                                                          .price,
-                                                    ),
-                                                  );
+                                                      dataController
+                                                          .changeProductToHive(
+                                                        dataController
+                                                                .shopProducts[
+                                                            dataController
+                                                                .selectedShop
+                                                                .value!
+                                                                .id]![index],
+                                                        dataController.getProductType(dataController
+                                                                .shopProducts[
+                                                                    dataController
+                                                                        .selectedShop
+                                                                        .value!
+                                                                        .id]![
+                                                                    index]
+                                                                .promotionId ??
+                                                            ""),
+                                                      ));
                                                 },
                                                 icon: const Icon(
                                                   Icons.favorite_outline,

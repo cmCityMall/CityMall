@@ -215,6 +215,9 @@ class MenuPage extends GetView {
                               inkwell(Images.aboutusicon, "About Us", () {
                                 Get.off(AboutUsScreen());
                               }),
+                              inkwell(Images.phone, "Contact Us", () {
+                                //Open Company's Phone Number
+                              }),
                               SizedBox(height: 10),
                               InkWell(
                                 onTap: () {

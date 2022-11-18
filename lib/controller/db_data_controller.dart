@@ -4,6 +4,7 @@ import 'package:citymall/constant/collection_path.dart';
 import 'package:citymall/model/advertisement.dart';
 import 'package:citymall/model/auth_user.dart';
 import 'package:citymall/model/brand.dart';
+import 'package:citymall/model/favourite_item.dart';
 import 'package:citymall/model/main_category.dart';
 import 'package:citymall/model/time_sale.dart';
 import 'package:citymall/model/week_promotion.dart';
@@ -12,7 +13,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
+import '../constant/constant.dart';
 import '../model/hive_personal_address.dart';
 import '../model/product.dart';
 import '../model/shop.dart';
@@ -28,6 +31,8 @@ class DBDataController extends GetxController {
   RxMap<String, bool> subCategoriesLoading = <String, bool>{}.obs;
   List<Brand> brands = [];
   List<Shop> shops = [];
+  final Box<List<String>> addressKVBox =
+      Hive.box<List<String>>(addressKeyValueBox);
 
   //**For Hive Personal Address */
   var selectedAddressId = "".obs;
@@ -35,7 +40,10 @@ class DBDataController extends GetxController {
       Rxn<HivePersonalAddress?>(null);
   void setSelectedHivePersonalAddress(HivePersonalAddress? hp) =>
       selectedHivePersonalAddress.value = hp;
-  void setSelectedAddressId(String id) => selectedAddressId.value = id;
+  void setSelectedAddressId(String id, String value) {
+    selectedAddressId.value = id;
+    addressKVBox.put(selectedAddressKey, [id, value]);
+  }
 
   /// For Real Data */
   RxList<Product> homePopularProducts = <Product>[].obs;
@@ -505,6 +513,10 @@ class DBDataController extends GetxController {
   Future<void> onInit() async {
     oleoBold = await rootBundle.load("fonts/OleoScriptSwashCaps-Bold.ttf");
     cherryUnicode = await rootBundle.load("fonts/Cherry_Unicode.ttf");
+    final value = addressKVBox.get(selectedAddressKey);
+    if (!(value == null)) {
+      selectedAddressId.value = value.first[0];
+    }
     getInitialMenuMainCategories();
     getInitialHomeProducts();
     getInitialShops();
@@ -541,4 +553,73 @@ class DBDataController extends GetxController {
   }
 
   ///
+  ///For HiveBox Changing
+  Product changeHiveToProduct(FavouriteItem item) {
+    return Product(
+      id: item.id,
+      name: item.name,
+      images: item.images,
+      description: item.description,
+      price: item.price,
+      subCategoryId: item.subCategoryId,
+      reviewCount: item.reviewCount,
+      totalQuantity: item.totalQuantity,
+      remainQuantity: item.remainQuantity,
+      dateTime: item.dateTime,
+    );
+  }
+
+  FavouriteItem changeProductToHive(Product p, String productType) {
+    return FavouriteItem(
+      id: p.id,
+      barCode: p.barCode,
+      brandId: p.brandId,
+      dateTime: p.dateTime,
+      description: p.description,
+      images: p.images,
+      mainCategoryId: p.mainCategoryId,
+      name: p.name,
+      nameArray: p.nameArray,
+      price: p.price,
+      productType: productType,
+      promotion: p.promotion,
+      promotionId: p.promotionId,
+      remainQuantity: p.remainQuantity,
+      reviewCount: p.reviewCount,
+      saleCount: p.saleCount,
+      shopId: p.shopId,
+      sizeColorImagePrice: p.sizeColorImagePrice,
+      subCategoryId: p.subCategoryId,
+      totalQuantity: p.totalQuantity,
+    );
+  }
+
+  //Get WeekPromotion
+  WeekPromotion getWeekPromotion(String id) {
+    return weekPromotions.where((p0) => p0.id == id).first;
+  }
+
+  //Get TimeSalePromotion
+  TimeSale getTimeSale(String id) {
+    return timeSales.where((p0) => p0.id == id).first;
+  }
+
+  String getProductType(String promotionId) {
+    if (promotionId.isEmpty) {
+      return normalProduct;
+    }
+    //First Search in WeekPromotions
+    final resultFromWeek = weekPromotions.where((p0) => p0.id == promotionId);
+    if (resultFromWeek.isNotEmpty) {
+      //If match,we assign week
+      return weekPromotionProduct;
+    } else {
+      //Second Search in TimeSale
+      final resultFromTime = timeSales.where((p0) => p0.id == promotionId);
+      if (resultFromTime.isNotEmpty) {
+        return timeSaleProduct;
+      }
+    }
+    return normalProduct;
+  }
 }

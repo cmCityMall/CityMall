@@ -149,13 +149,13 @@ class ChildAddressContainer extends StatelessWidget {
 
   final ThemeController themeController;
   final HivePersonalAddress hivePerson;
-  final void Function(String id) selected;
+  final void Function(String id, String value) selected;
   final bool isSelected;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => selected(hivePerson.id),
+      onTap: () => selected(hivePerson.id, hivePerson.address),
       child: Padding(
         padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
         child: Container(

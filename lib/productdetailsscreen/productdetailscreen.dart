@@ -13,14 +13,18 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../authscreens/loginscreen.dart';
+import '../constant/constant.dart';
 import '../controller/auth_controller.dart';
 import '../controller/cart_controller.dart';
+import '../model/favourite_item.dart';
 import '../model/review.dart';
 import '../widgets/other/cache_image.dart';
 import '../widgets/other/cart_icon_widget.dart';
@@ -365,17 +369,43 @@ class ProductDetailScreen extends StatelessWidget {
                                   ),
                                 );
                               }),
-                              //TOtal Sale
-                              /* Text(
-                                "(932 Sale)",
-                                style: TextStyle(
-                                  fontFamily: TextFontFamily.SEN_REGULAR,
-                                  fontSize: 14,
-                                  color: themeController.isLightTheme.value
-                                      ? ColorResources.grey5
-                                      : ColorResources.white.withOpacity(0.6),
-                                ),
-                              ), */
+                              //Favourite Icon
+                              ValueListenableBuilder(
+                                valueListenable:
+                                    Hive.box<FavouriteItem>(favouriteBox)
+                                        .listenable(),
+                                builder:
+                                    (context, Box<FavouriteItem> box, widget) {
+                                  final currentObj = box.get(currentProduct.id);
+
+                                  if (!(currentObj == null)) {
+                                    return IconButton(
+                                        onPressed: () {
+                                          box.delete(currentObj.id);
+                                        },
+                                        icon: const Icon(
+                                          FontAwesomeIcons.solidHeart,
+                                          color: Colors.red,
+                                          size: 25,
+                                        ));
+                                  }
+                                  return IconButton(
+                                      onPressed: () {
+                                        box.put(
+                                            currentProduct.id,
+                                            dataController.changeProductToHive(
+                                              currentProduct,
+                                              dataController.getProductType(
+                                                  normalProduct),
+                                            ));
+                                      },
+                                      icon: const Icon(
+                                        Icons.favorite_outline,
+                                        color: Colors.red,
+                                        size: 25,
+                                      ));
+                                },
+                              ),
                             ],
                           ),
                           SizedBox(height: 10),

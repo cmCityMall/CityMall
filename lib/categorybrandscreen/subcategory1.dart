@@ -315,45 +315,21 @@ class _BrandsDetailViewState extends State<BrandsDetailView> {
                                             return IconButton(
                                                 onPressed: () {
                                                   box.put(
-                                                    dataController
-                                                        .brandProducts[
-                                                            dataController
-                                                                .selectedBrand
-                                                                .value!
-                                                                .id]![index]
-                                                        .id,
-                                                    FavouriteItem(
-                                                      id: dataController
+                                                      dataController
                                                           .brandProducts[
                                                               dataController
                                                                   .selectedBrand
                                                                   .value!
                                                                   .id]![index]
                                                           .id,
-                                                      name: dataController
-                                                          .brandProducts[
+                                                      dataController.changeProductToHive(
+                                                          dataController
+                                                                  .brandProducts[
                                                               dataController
                                                                   .selectedBrand
                                                                   .value!
-                                                                  .id]![index]
-                                                          .name,
-                                                      image: dataController
-                                                          .brandProducts[
-                                                              dataController
-                                                                  .selectedBrand
-                                                                  .value!
-                                                                  .id]![index]
-                                                          .images
-                                                          .first,
-                                                      price: dataController
-                                                          .brandProducts[
-                                                              dataController
-                                                                  .selectedBrand
-                                                                  .value!
-                                                                  .id]![index]
-                                                          .price,
-                                                    ),
-                                                  );
+                                                                  .id]![index],
+                                                          normalProduct));
                                                 },
                                                 icon: const Icon(
                                                   Icons.favorite_outline,

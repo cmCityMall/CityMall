@@ -1,5 +1,6 @@
 import 'package:citymall/colors/colors.dart';
 import 'package:citymall/constant/constant.dart';
+import 'package:citymall/controller/db_data_controller.dart';
 import 'package:citymall/controller/favoritegridfavoritecontroller.dart';
 import 'package:citymall/controller/theme_controller.dart';
 import 'package:citymall/images/images.dart';
@@ -12,6 +13,13 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import '../flashsale_product_detail/bin/fspd_binding.dart';
+import '../flashsale_product_detail/view/flashsale_product_detail_view.dart';
+import '../productdetailsscreen/product_detail_binding.dart';
+import '../productdetailsscreen/productdetailscreen.dart';
+import '../wppd/bin/wppd_binding.dart';
+import '../wppd/view/wppd_view.dart';
+
 // ignore: must_be_immutable
 class FavoriteScreen extends StatelessWidget {
   FavoriteScreen({Key? key}) : super(key: key);
@@ -21,6 +29,7 @@ class FavoriteScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final DBDataController dbDataController = Get.find();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: themeController.isLightTheme.value
@@ -64,7 +73,43 @@ class FavoriteScreen extends StatelessWidget {
                   ),
                   itemBuilder: (context, index) {
                     return InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        switch (list[index].productType) {
+                          case normalProduct:
+                            dbDataController.setSelectedProduct(dbDataController
+                                .changeHiveToProduct(list[index]));
+                            Get.to(
+                              () => ProductDetailScreen(),
+                              binding: ProductDetailBinding(),
+                            );
+                            break;
+                          case weekPromotionProduct:
+                            dbDataController.setSelectedWeekPromotion(
+                                dbDataController.getWeekPromotion(
+                                    list[index].promotionId!));
+                            dbDataController.setSelectedProduct(dbDataController
+                                .changeHiveToProduct(list[index]));
+                            Get.to(
+                              () => WPPDView(),
+                              binding: WPPDBinding(),
+                            );
+                            break;
+                          case timeSaleProduct:
+                            dbDataController.setSelectedTimeSale(
+                                dbDataController
+                                    .getTimeSale(list[index].promotionId!));
+                            dbDataController.setSelectedProduct(dbDataController
+                                .changeHiveToProduct(list[index]));
+
+                            Get.to(
+                              () => FlashSaleDetailView(),
+                              binding: FSPDBinding(),
+                            );
+                            break;
+                          default:
+                            break;
+                        }
+                      },
                       child: Container(
                         decoration: BoxDecoration(
                           color: themeController.isLightTheme.value
@@ -98,7 +143,7 @@ class FavoriteScreen extends StatelessWidget {
                                     titlePadding: EdgeInsets.zero,
                                     content: Center(
                                       child: Image.network(
-                                        list[index].image,
+                                        list[index].images.first,
                                       ),
                                     ),
                                   );
@@ -113,7 +158,7 @@ class FavoriteScreen extends StatelessWidget {
                                   child: Padding(
                                     padding: const EdgeInsets.all(5),
                                     child: Image.network(
-                                      list[index].image,
+                                      list[index].images.first,
                                     ),
                                   ),
                                 ),

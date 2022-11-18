@@ -286,8 +286,8 @@ class ProductController extends GetxController {
         selectedBrandId.isEmpty ||
         selectedSubCategoryId.isEmpty ||
         selectedMainCategoryId.isEmpty ||
-        selectedShopId.isEmpty ||
-        selectedPromotionId.isEmpty ||
+        selectedShopId.isEmpty || /* 
+        selectedPromotionId.isEmpty || */
         barCode.isEmpty) {
       return false;
     } else {
@@ -457,15 +457,18 @@ class ProductController extends GetxController {
           .id;
       brandId = brands.where((e) => e.name == selectedBrandId.value).first.id;
       shopId = shops.where((e) => e.name == selectedShopId.value).first.id;
-      promoId = _dataController.weekPromotions
-          .where((e) => e.desc == selectedPromotionId.value)
-          .first
-          .id;
-      promotion = _dataController.weekPromotions
+      promoId = tryCatchFunctin(
+          _dataController.weekPromotions
               .where((e) => e.desc == selectedPromotionId.value)
               .first
-              .percentage ??
-          0;
+              .id,
+          defaultValue: '');
+      promotion = tryCatchFunctin(
+          _dataController.weekPromotions
+              .where((e) => e.desc == selectedPromotionId.value)
+              .first
+              .percentage,
+          defaultValue: 0);
       tQuantity = int.parse(totalQuantityController.text.removeAllWhitespace);
       rQuantity = int.parse(remainQuantityController.text.removeAllWhitespace);
     } catch (e) {
@@ -542,6 +545,17 @@ class ProductController extends GetxController {
     } else {
       debugPrint("****Not valid");
     }
+  }
+
+  dynamic tryCatchFunctin(dynamic function, {required dynamic defaultValue}) {
+    dynamic value = "";
+    try {
+      value = function;
+    } catch (e) {
+      value = defaultValue;
+    }
+
+    return value;
   }
 
   pickImage() async {

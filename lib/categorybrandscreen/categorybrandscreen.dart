@@ -43,7 +43,7 @@ class CategoryBrandScreen extends StatelessWidget {
             child: Column(
               children: [
                 Obx(() {
-                  final list = dataController.brandRxList;
+                  final list = dataController.shopRxList;
                   if (list.isEmpty) {
                     return const EmptyWidget("No brands yet.");
                   }
@@ -57,8 +57,8 @@ class CategoryBrandScreen extends StatelessWidget {
                           padding: const EdgeInsets.only(bottom: 10),
                           child: InkWell(
                             onTap: () {
-                              dataController.setSelectedBrand(brand);
-                              dataController.getInitialBrandProducts(brand.id);
+                              dataController.setSelectedShop(brand);
+                              dataController.getInitialShopProducts(brand.id);
                               Get.to(() => const BrandsDetailView());
                             },
                             child: Container(
@@ -79,7 +79,7 @@ class CategoryBrandScreen extends StatelessWidget {
                                   style: TextStyle(
                                     fontSize: 32,
                                     fontFamily: TextFontFamily.SEN_EXTRA_BOLD,
-                                    color: ColorResources.white,
+                                    color: ColorResources.black,
                                   ),
                                 ),
                               ),

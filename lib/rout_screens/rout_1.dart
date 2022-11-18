@@ -1,5 +1,5 @@
 import 'dart:developer';
-
+import 'package:url_launcher/url_launcher.dart';
 import 'package:citymall/cartscreen/cartscreen.dart';
 import 'package:citymall/categorybrandscreen/categorybrandscreen.dart';
 import 'package:citymall/colors/colors.dart';
@@ -17,9 +17,12 @@ import 'package:citymall/textstylefontfamily/textfontfamily.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
 
+import '../constant/constant.dart';
 import '../searchscreen/search_controller.dart';
 
 class NavigationBarBottom extends StatefulWidget {
@@ -186,21 +189,24 @@ class _NavigationBarBottomState extends State<NavigationBarBottom> {
                                 ),
                               ],
                             ),
-                            Obx(() {
-                              return Text(
-                                dataController.selectedHivePersonalAddress
-                                            .value ==
-                                        null
-                                    ? ""
-                                    : dataController.selectedHivePersonalAddress
-                                        .value!.address,
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontFamily: TextFontFamily.SEN_REGULAR,
-                                  color: ColorResources.orange,
-                                ),
-                              );
-                            }),
+                            //Address String
+                            ValueListenableBuilder(
+                              valueListenable:
+                                  Hive.box<List<String>>(addressKeyValueBox)
+                                      .listenable(),
+                              builder: (context, Box<List<String>> box, __) {
+                                return Text(
+                                  box.isEmpty
+                                      ? "Add Address"
+                                      : box.values.first[1],
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontFamily: TextFontFamily.SEN_REGULAR,
+                                    color: ColorResources.orange,
+                                  ),
+                                );
+                              },
+                            ),
                           ],
                         ),
                       )
@@ -228,7 +234,7 @@ class _NavigationBarBottomState extends State<NavigationBarBottom> {
                               )
                             : selectedIndex == 3
                                 ? Text(
-                                    "Category Brand",
+                                    "Category Shop",
                                     style: TextStyle(
                                       fontFamily: TextFontFamily.SEN_BOLD,
                                       fontSize: 22,
@@ -251,6 +257,45 @@ class _NavigationBarBottomState extends State<NavigationBarBottom> {
                                       )
                                     : Container(),
                 actions: [
+                  selectedIndex == 0
+                      ? Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: SizedBox(
+                            width: 45,
+                            child: ElevatedButton(
+                              style: ButtonStyle(
+                                alignment: Alignment.center,
+                                backgroundColor:
+                                    MaterialStateProperty.all(Colors.white),
+                                elevation:
+                                    MaterialStateProperty.resolveWith<double>(
+                                  // As you said you dont need elevation. I'm returning 0 in both case
+                                  (Set<MaterialState> states) {
+                                    if (states
+                                        .contains(MaterialState.disabled)) {
+                                      return 0;
+                                    }
+                                    return 0; // Defer to the widget's default.
+                                  },
+                                ),
+                              ),
+                              onPressed: () async {
+                                try {
+                                  await launchUrl(
+                                      Uri.parse('https://m.me/deluxbeauti'));
+                                } catch (e) {
+                                  print(e);
+                                }
+                              },
+                              child: const FaIcon(
+                                FontAwesomeIcons.facebookMessenger,
+                                color: Colors.blue,
+                                size: 23,
+                              ),
+                            ),
+                          ),
+                        )
+                      : const SizedBox(),
                   /* selectedIndex == 0 || selectedIndex == 1 || selectedIndex == 4
                       ? Padding(
                           padding: const EdgeInsets.only(top: 10, right: 8),
@@ -356,6 +401,9 @@ class _NavigationBarBottomState extends State<NavigationBarBottom> {
                   topRight: Radius.circular(30),
                 ),
                 child: BottomNavigationBar(
+                  selectedLabelStyle: const TextStyle(
+                    color: ColorResources.blue,
+                  ),
                   items: [
                     BottomNavigationBarItem(
                       icon: selectedIndex == 0
@@ -363,7 +411,7 @@ class _NavigationBarBottomState extends State<NavigationBarBottom> {
                               Images.homefill,
                             )
                           : SvgPicture.asset(Images.homeblank),
-                      label: "",
+                      label: "Home",
                     ),
                     BottomNavigationBarItem(
                       icon: selectedIndex == 1
@@ -377,11 +425,11 @@ class _NavigationBarBottomState extends State<NavigationBarBottom> {
                               height: 22,
                               width: 22,
                             ),
-                      label: "",
+                      label: "Favourite",
                     ),
                     BottomNavigationBarItem(
                       icon: Container(),
-                      label: "",
+                      label: "Search",
                     ),
                     BottomNavigationBarItem(
                       icon: selectedIndex == 3
@@ -389,7 +437,7 @@ class _NavigationBarBottomState extends State<NavigationBarBottom> {
                               Images.categorybrandfill,
                             )
                           : SvgPicture.asset(Images.categorybrandblank),
-                      label: "",
+                      label: "Shop",
                     ),
                     BottomNavigationBarItem(
                       icon: selectedIndex == 4
@@ -397,7 +445,7 @@ class _NavigationBarBottomState extends State<NavigationBarBottom> {
                               Images.cartfill,
                             )
                           : SvgPicture.asset(Images.cartblank),
-                      label: "",
+                      label: "Cart",
                     ),
                   ],
                   backgroundColor: themeController.isLightTheme.value
@@ -405,7 +453,7 @@ class _NavigationBarBottomState extends State<NavigationBarBottom> {
                       : ColorResources.black6,
                   type: BottomNavigationBarType.fixed,
                   currentIndex: selectedIndex,
-                  selectedItemColor: ColorResources.orange,
+                  selectedItemColor: ColorResources.blue,
                   unselectedItemColor: ColorResources.black,
                   onTap: (index) {
                     setState(() {
@@ -415,36 +463,41 @@ class _NavigationBarBottomState extends State<NavigationBarBottom> {
                   elevation: 5,
                 ),
               ),
-              floatingActionButton: Container(
-                height: 50,
-                width: 50,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: ColorResources.blue1,
-                  boxShadow: [
-                    BoxShadow(
-                      color: themeController.isLightTheme.value
-                          ? ColorResources.blue1.withOpacity(0.25)
-                          : ColorResources.black1.withOpacity(0.25),
-                      spreadRadius: 0,
-                      blurRadius: 15,
-                      offset: Offset(0, 8),
-                    ),
-                  ],
+              floatingActionButton: Padding(
+                padding: const EdgeInsets.only(
+                  bottom: 3,
                 ),
-                child: FloatingActionButton(
-                  onPressed: () {
-                    selectedIndex = 2;
-                    Navigator.of(context, rootNavigator: true)
-                        .pushReplacement(MaterialPageRoute(
-                      builder: (context) => NavigationBarBottom(),
-                    ));
-                  },
-                  child: SvgPicture.asset(Images.search),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+                child: Container(
+                  height: 50,
+                  width: 50,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: ColorResources.blue1,
+                    boxShadow: [
+                      BoxShadow(
+                        color: themeController.isLightTheme.value
+                            ? ColorResources.blue1.withOpacity(0.25)
+                            : ColorResources.black1.withOpacity(0.25),
+                        spreadRadius: 0,
+                        blurRadius: 15,
+                        offset: Offset(0, 8),
+                      ),
+                    ],
                   ),
-                  backgroundColor: ColorResources.blue1,
+                  child: FloatingActionButton(
+                    onPressed: () {
+                      selectedIndex = 2;
+                      Navigator.of(context, rootNavigator: true)
+                          .pushReplacement(MaterialPageRoute(
+                        builder: (context) => NavigationBarBottom(),
+                      ));
+                    },
+                    child: SvgPicture.asset(Images.search),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    backgroundColor: ColorResources.blue1,
+                  ),
                 ),
               ),
               floatingActionButtonLocation:

@@ -43,6 +43,7 @@ Future<void> main() async {
   await Hive.openBox<HivePersonalAddress>(addressBox);
   await Hive.openBox<FavouriteItem>(favouriteBox);
   await Hive.openBox<String>(searchHistoryBox);
+  await Hive.openBox<List<String>>(addressKeyValueBox);
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   Get.put(AuthController());

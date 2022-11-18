@@ -371,12 +371,10 @@ class WeekPromotionScreen extends StatelessWidget {
                                                 onPressed: () {
                                                   box.put(
                                                     product.id,
-                                                    FavouriteItem(
-                                                      id: product.id,
-                                                      name: product.name,
-                                                      image:
-                                                          product.images.first,
-                                                      price: product.price,
+                                                    dataController
+                                                        .changeProductToHive(
+                                                      product,
+                                                      weekPromotionProduct,
                                                     ),
                                                   );
                                                 },

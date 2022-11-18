@@ -18,9 +18,9 @@ class CategoryBrandController extends GetxController {
           scrollController.position.maxScrollExtent) {
         if (!(isLoading.value)) {
           isLoading.value = true;
-          final lastD = dataController.brandRxList.last;
+          final lastD = dataController.shopRxList.last;
           dataController
-              .getMoreBrands(
+              .getMoreShops(
                 lastD.toJson()["dateTime"],
               )
               .then((value) => isLoading.value = false);

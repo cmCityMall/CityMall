@@ -203,14 +203,15 @@ class SearchScreen extends StatelessWidget {
                                           return IconButton(
                                               onPressed: () {
                                                 box.put(
-                                                  product.id,
-                                                  FavouriteItem(
-                                                    id: product.id,
-                                                    name: product.name,
-                                                    image: product.images.first,
-                                                    price: product.price,
-                                                  ),
-                                                );
+                                                    product.id,
+                                                    dbDataController
+                                                        .changeProductToHive(
+                                                      product,
+                                                      dbDataController
+                                                          .getProductType(product
+                                                                  .promotionId ??
+                                                              ""),
+                                                    ));
                                               },
                                               icon: const Icon(
                                                 Icons.favorite_outline,

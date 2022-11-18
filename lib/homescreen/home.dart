@@ -872,11 +872,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                           onPressed: () {
                                             box.put(
                                               product.id,
-                                              FavouriteItem(
-                                                id: product.id,
-                                                name: product.name,
-                                                image: product.images.first,
-                                                price: product.price,
+                                              dbDataController
+                                                  .changeProductToHive(
+                                                product,
+                                                normalProduct,
                                               ),
                                             );
                                           },

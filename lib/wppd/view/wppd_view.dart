@@ -11,12 +11,16 @@ import 'package:citymall/widgets/other/cache_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../authscreens/loginscreen.dart';
+import '../../constant/constant.dart';
 import '../../controller/auth_controller.dart';
 import '../../controller/cart_controller.dart';
 import '../../model/cart_product.dart';
+import '../../model/favourite_item.dart';
 import '../../widgets/other/cart_icon_widget.dart';
 import '../controller/wppd_controller.dart';
 
@@ -137,6 +141,46 @@ class WPPDView extends StatelessWidget {
                             ),
                           ),
                         ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 25,
+                      right: 10,
+                      child: //Favourite Icon
+                          ValueListenableBuilder(
+                        valueListenable:
+                            Hive.box<FavouriteItem>(favouriteBox).listenable(),
+                        builder: (context, Box<FavouriteItem> box, widget) {
+                          final currentObj =
+                              box.get(dataController.selectedProduct.value!.id);
+
+                          if (!(currentObj == null)) {
+                            return IconButton(
+                                onPressed: () {
+                                  box.delete(currentObj.id);
+                                },
+                                icon: const Icon(
+                                  FontAwesomeIcons.solidHeart,
+                                  color: Colors.red,
+                                  size: 25,
+                                ));
+                          }
+                          return IconButton(
+                              onPressed: () {
+                                box.put(
+                                    dataController.selectedProduct.value!.id,
+                                    dataController.changeProductToHive(
+                                      dataController.selectedProduct.value!,
+                                      dataController
+                                          .getProductType(normalProduct),
+                                    ));
+                              },
+                              icon: const Icon(
+                                Icons.favorite_outline,
+                                color: Colors.red,
+                                size: 25,
+                              ));
+                        },
                       ),
                     ),
                   ],

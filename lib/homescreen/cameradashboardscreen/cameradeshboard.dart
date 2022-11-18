@@ -748,19 +748,12 @@ class CameraDeshBoard extends StatelessWidget {
                                                 return IconButton(
                                                     onPressed: () {
                                                       box.put(
-                                                        dataList[index].id,
-                                                        FavouriteItem(
-                                                          id: dataList[index]
-                                                              .id,
-                                                          name: dataList[index]
-                                                              .name,
-                                                          image: dataList[index]
-                                                              .images
-                                                              .first,
-                                                          price: dataList[index]
-                                                              .price,
-                                                        ),
-                                                      );
+                                                          dataList[index].id,
+                                                          dbDataController
+                                                              .changeProductToHive(
+                                                            dataList[index],
+                                                            normalProduct,
+                                                          ));
                                                     },
                                                     icon: const Icon(
                                                       Icons.favorite_outline,
@@ -1025,19 +1018,12 @@ class CameraDeshBoard extends StatelessWidget {
                                                 return IconButton(
                                                     onPressed: () {
                                                       box.put(
-                                                        dataList[index].id,
-                                                        FavouriteItem(
-                                                          id: dataList[index]
-                                                              .id,
-                                                          name: dataList[index]
-                                                              .name,
-                                                          image: dataList[index]
-                                                              .images
-                                                              .first,
-                                                          price: dataList[index]
-                                                              .price,
-                                                        ),
-                                                      );
+                                                          dataList[index].id,
+                                                          dbDataController
+                                                              .changeProductToHive(
+                                                            dataList[index],
+                                                            normalProduct,
+                                                          ));
                                                     },
                                                     icon: const Icon(
                                                       Icons.favorite_outline,

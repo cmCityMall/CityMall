@@ -72,6 +72,7 @@ dependencies:
   pdf: ^3.8.3
   printing: ^5.9.3
   photo_view: ^0.14.0
+  url_launcher: ^6.1.6
   
 dev_dependencies:
   build_runner: ^2.2.1
