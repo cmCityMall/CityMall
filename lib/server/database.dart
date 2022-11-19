@@ -6,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:uuid/uuid.dart';
 
 import '../constant/collection_path.dart';
+import '../model/cart_product.dart';
 import '../model/purchase.dart';
 import 'api.dart';
 
@@ -129,7 +130,8 @@ class Database {
           collectionPath: purchaseCollection,
           documentPath: purchase.id,
           data: purchase.copyWith(screenShotImage: value).toJson(),
-        ).then((value) {
+        ).then((value) async {
+          await decreaseProductQuantity(purchase.items);
           //After purchase uploaded.Push send FCM
           Api.sendOrder(
                   "အော်ဒါတင်ခြင်း",
@@ -148,7 +150,8 @@ class Database {
         collectionPath: purchaseCollection,
         documentPath: purchase.id,
         data: purchase.toJson(),
-      ).then((value) {
+      ).then((value) async {
+        await decreaseProductQuantity(purchase.items);
         //After purchase uploaded.Push send FCM
         Api.sendOrder(
                 "အော်ဒါတင်ခြင်း",
@@ -169,5 +172,28 @@ class Database {
         .putFile(File(imagePath));
     final resultImage = await snapshot.ref.getDownloadURL();
     return resultImage;
+  }
+
+  //Decrease Product's Quantity
+  Future<void> decreaseProductQuantity(List<CartProduct> items) async {
+    for (var product in items) {
+      await updateRemainQuantity(product);
+    }
+  }
+
+  Future<void> updateRemainQuantity(CartProduct product) async {
+    //debugPrint("******${product.snapshot}*****");
+    FirebaseFirestore.instance.runTransaction((transaction) async {
+      //secure snapshot
+      final secureSnapshot = await transaction.get(FirebaseFirestore.instance
+          .collection(productCollection)
+          .doc(product.id));
+
+      final int remainQuan = secureSnapshot.get("remainQuantity") as int;
+
+      transaction.update(secureSnapshot.reference, {
+        "remainQuantity": remainQuan - product.count,
+      });
+    });
   }
 }

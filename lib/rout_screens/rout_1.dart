@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:citymall/menuscreens/settingscreens/saveaddressscreen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:citymall/cartscreen/cartscreen.dart';
 import 'package:citymall/categorybrandscreen/categorybrandscreen.dart';
@@ -23,6 +24,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
 
 import '../constant/constant.dart';
+import '../model/hive_personal_address.dart';
 import '../searchscreen/search_controller.dart';
 
 class NavigationBarBottom extends StatefulWidget {
@@ -165,49 +167,113 @@ class _NavigationBarBottomState extends State<NavigationBarBottom> {
                 title: selectedIndex == 0
                     ? Padding(
                         padding: const EdgeInsets.only(top: 10),
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "Delivery to ",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontFamily: TextFontFamily.SEN_REGULAR,
-                                    color: themeController.isLightTheme.value
-                                        ? ColorResources.black2
-                                        : ColorResources.white,
-                                  ),
-                                ),
-                                Icon(
-                                  Icons.keyboard_arrow_down,
-                                  size: 12,
-                                  color: themeController.isLightTheme.value
-                                      ? ColorResources.black2
-                                      : ColorResources.white,
-                                ),
-                              ],
-                            ),
+                        child:
                             //Address String
                             ValueListenableBuilder(
+                          valueListenable:
+                              Hive.box<List<String>>(addressKeyValueBox)
+                                  .listenable(),
+                          builder: (context, Box<List<String>> box, __) {
+                            return ValueListenableBuilder(
                               valueListenable:
-                                  Hive.box<List<String>>(addressKeyValueBox)
+                                  Hive.box<HivePersonalAddress>(addressBox)
                                       .listenable(),
-                              builder: (context, Box<List<String>> box, __) {
-                                return Text(
-                                  box.isEmpty
-                                      ? "Add Address"
-                                      : box.values.first[1],
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    fontFamily: TextFontFamily.SEN_REGULAR,
-                                    color: ColorResources.orange,
-                                  ),
-                                );
+                              builder: (context,
+                                  Box<HivePersonalAddress> personBox, __) {
+                                log("${personBox.length},${personBox.values.toString()}");
+                                return box.isEmpty
+                                    ? TextButton(
+                                        onPressed: () =>
+                                            Get.to(() => SaveAddressScreen()),
+                                        child: const Text(
+                                          "Add Address",
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            fontFamily:
+                                                TextFontFamily.SEN_REGULAR,
+                                            color: ColorResources.orange,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ))
+                                    : DropdownButton(
+                                        alignment: Alignment.center,
+                                        underline: const SizedBox(),
+                                        onTap: () =>
+                                            dataController.changePopUp(true),
+                                        icon: const SizedBox(),
+                                        value: box.values.first[1],
+                                        items: personBox.values.map((e) {
+                                          log("${e.id},${e.address}");
+                                          return DropdownMenuItem(
+                                            onTap: () {
+                                              box.put(selectedAddressKey,
+                                                  [e.id, e.address]);
+                                              dataController.changePopUp(false);
+                                            },
+                                            value: e.address,
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Obx(() => dataController
+                                                        .isPopUp.value
+                                                    ? const SizedBox()
+                                                    : Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Text(
+                                                            "Delivery to ",
+                                                            style: TextStyle(
+                                                              fontSize: 14,
+                                                              fontFamily:
+                                                                  TextFontFamily
+                                                                      .SEN_REGULAR,
+                                                              color: themeController
+                                                                      .isLightTheme
+                                                                      .value
+                                                                  ? ColorResources
+                                                                      .black2
+                                                                  : ColorResources
+                                                                      .white,
+                                                            ),
+                                                          ),
+                                                          Icon(
+                                                            Icons
+                                                                .keyboard_arrow_down,
+                                                            size: 12,
+                                                            color: themeController
+                                                                    .isLightTheme
+                                                                    .value
+                                                                ? ColorResources
+                                                                    .black2
+                                                                : ColorResources
+                                                                    .white,
+                                                          ),
+                                                        ],
+                                                      )),
+                                                Text(
+                                                  e.address,
+                                                  style: const TextStyle(
+                                                    fontSize: 15,
+                                                    fontFamily: TextFontFamily
+                                                        .SEN_REGULAR,
+                                                    color:
+                                                        ColorResources.orange,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        }).toList(),
+                                        onChanged: (value) {},
+                                      );
                               },
-                            ),
-                          ],
+                            );
+                          },
                         ),
                       )
                     : selectedIndex == 1

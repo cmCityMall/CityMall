@@ -622,4 +622,8 @@ class DBDataController extends GetxController {
     }
     return normalProduct;
   }
+
+  //for home
+  var isPopUp = false.obs;
+  void changePopUp(bool value) => isPopUp.value = value;
 }
