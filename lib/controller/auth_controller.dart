@@ -25,6 +25,8 @@ class AuthController extends GetxController {
   RxList<Purchase> orderList = <Purchase>[].obs;
   Rxn<AuthUser> currentUser = Rxn<AuthUser>(AuthUser.guest());
 
+  void setCurrentUserPoint(int value) => currentUserPoint = value;
+
   @override
   void onInit() {
     getDeviceToken();

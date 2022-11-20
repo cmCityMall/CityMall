@@ -33,6 +33,8 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
 import '../admin/advertisement/view/ad_view.dart';
+import '../admin/reward_product/bin/reward_product_binding.dart';
+import '../admin/reward_product/view/manage_reward_product.dart';
 import '../admin/time_sale/view/time_sale_view.dart';
 import '../splashscreen/splash.dart';
 
@@ -175,6 +177,13 @@ class MenuPage extends GetView {
                           Get.to(
                             () => const ManageProduct(),
                             binding: ProductBinding(),
+                          );
+                        }),
+                        inkwell(Images.categoryicon, "Manage Reward Product",
+                            () {
+                          Get.to(
+                            () => const ManageRewardProduct(),
+                            binding: RewardProductBinding(),
                           );
                         }),
                         inkwell(Images.myordericon, "Manage Orders", () {
