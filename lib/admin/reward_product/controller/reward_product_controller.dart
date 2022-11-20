@@ -68,11 +68,8 @@ class RewardProductController extends GetxController {
   }
 
   Future<void> configureForEditRewardProduct() async {
-    if (_dataController.editRewardProduct == null) {
-      isLoading.value = false;
-    } else {
+    if (!(_dataController.editRewardProduct == null)) {
       final rewardProduct = _dataController.editRewardProduct!;
-      isLoading.value = true;
 
       nameController.text = rewardProduct.name;
       descriptionController.text = rewardProduct.description;
@@ -172,18 +169,14 @@ class RewardProductController extends GetxController {
   }
 
   Future<String> uploadImage(File? image, String productId) async {
-    String resultImage = "";
-    if (!(image == null)) {
-      //Check for edit
-      return resultImage;
+    if (image == null) {
+      return "";
     }
-    await FirebaseStorage.instance
+    final snapshot = await FirebaseStorage.instance
         .ref()
-        .child("products/$productId/${Uuid().v1()}")
-        .putFile(image!)
-        .then((snapshot) async {
-      await snapshot.ref.getDownloadURL().then((value) => resultImage = value);
-    });
+        .child("rewardProducts/$productId/${Uuid().v1()}")
+        .putFile(image);
+    final resultImage = await snapshot.ref.getDownloadURL();
     return resultImage;
   }
 
@@ -220,7 +213,8 @@ class RewardProductController extends GetxController {
           //Check for save and edit
           image = File(pickedImage.value);
         }
-        await uploadImage(image, id).then((value) async {
+        uploadImage(image, id).then((value) async {
+          log("Image: $value");
           final product = RewardProduct(
             id: id,
             name: name,

@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:citymall/admin/product/view/upload_product.dart';
+import 'package:citymall/admin/reward_product/view/upload_reward_product.dart';
 import 'package:citymall/controller/db_data_controller.dart';
 import 'package:citymall/utils/widgets/empty_widgt.dart';
 import 'package:flutter/material.dart';
@@ -64,8 +65,8 @@ class ManageRewardProduct extends StatelessWidget {
           color: Colors.white,
         ),
         onPressed: () {
-          dataController.setEditProduct(null);
-          Get.to(() => const UploadProduct());
+          dataController.setEditRewardProduct(null);
+          Get.to(() => const UploadRewardProduct());
           rewardProductController.configureForEditRewardProduct();
         },
       ),
@@ -117,7 +118,7 @@ class ManageRewardProduct extends StatelessWidget {
                             dataController.setEditRewardProduct(item);
                             rewardProductController
                                 .configureForEditRewardProduct();
-                            Get.to(() => const UploadProduct());
+                            Get.to(() => const UploadRewardProduct());
                           },
                           title: 'Edit',
                         ),

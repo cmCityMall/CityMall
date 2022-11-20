@@ -22,7 +22,7 @@ class RewardProductWidget extends StatelessWidget {
       },
       child: ConstrainedBox(
         constraints: const BoxConstraints(
-          maxHeight: 100,
+          maxHeight: 80,
         ),
         child: Card(
           elevation: 0,

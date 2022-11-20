@@ -16,14 +16,14 @@ import '../../../widgets/form/text_form.dart';
 import '../../sub_category/view/sc_view.dart';
 import '../controller/reward_product_controller.dart';
 
-class UploadProduct extends StatefulWidget {
-  const UploadProduct({Key? key}) : super(key: key);
+class UploadRewardProduct extends StatefulWidget {
+  const UploadRewardProduct({Key? key}) : super(key: key);
 
   @override
-  State<UploadProduct> createState() => _UploadProductState();
+  State<UploadRewardProduct> createState() => _UploadRewardProductState();
 }
 
-class _UploadProductState extends State<UploadProduct> {
+class _UploadRewardProductState extends State<UploadRewardProduct> {
   final RewardProductController productController = Get.find();
   @override
   void initState() {

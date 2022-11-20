@@ -1129,78 +1129,85 @@ class _HomeScreenState extends State<HomeScreen> {
                   return const SizedBox();
                 }
                 return AspectRatio(
-                  aspectRatio: 1,
+                  aspectRatio: 1.15,
                   child: Padding(
                     padding: const EdgeInsets.only(
                       top: 20,
                     ),
-                    child: Card(
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              left: 10,
-                              right: 10,
-                              bottom: 10,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                //Status Text
-                                const Text(
-                                  "REWARD PRODUCTS",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  textAlign: TextAlign.center,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            /* left: 10,
+                            right: 10, */
+                            bottom: 10,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              //Status Text
+                              const Text(
+                                "REWARD PRODUCTS",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
                                 ),
+                                textAlign: TextAlign.center,
+                              ),
 
-                                //See More
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: TextButton(
-                                    onPressed: () {
-                                      //TODO: Go to reward view all
+                              //See More
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: TextButton(
+                                  onPressed: () {
+                                    //TODO: Go to reward view all
+                                  },
+                                  child: InkWell(
+                                    onTap: () {
+                                      Get.to(
+                                        () => BrandViewAll(),
+                                        binding: BrandViewAllBinding(),
+                                      );
                                     },
-                                    child: const Text(
-                                      "Show More",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.blue,
-                                        fontWeight: FontWeight.normal,
-                                      ),
+                                    child: Row(
+                                      children: [
+                                        const Text(
+                                          "View all  ",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontFamily:
+                                                TextFontFamily.SEN_REGULAR,
+                                            color: ColorResources.blue1,
+                                          ),
+                                        ),
+                                        SvgPicture.asset(Images.viewallarrow),
+                                      ],
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            child: GridView.builder(
-                              scrollDirection: Axis.horizontal,
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 1,
-                                childAspectRatio: 2.35,
                               ),
-                              /* separatorBuilder: (context, index) {
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            /* separatorBuilder: (context, index) {
                                               return const SizedBox(width: 10);
                                             }, */
-                              physics: BouncingScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount: dbDataController.rewardProducts.length,
-                              itemBuilder: (context, productIndex) {
-                                return RewardProductWidget(
-                                  product: dbDataController
-                                      .rewardProducts[productIndex],
-                                );
-                              },
-                            ),
+                            physics: BouncingScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: dbDataController.rewardProducts.length,
+                            itemBuilder: (context, productIndex) {
+                              return RewardProductWidget(
+                                product: dbDataController
+                                    .rewardProducts[productIndex],
+                              );
+                            },
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 );
