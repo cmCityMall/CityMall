@@ -115,6 +115,7 @@ class CartController extends GetxController {
         Purchase(
           id: Uuid().v1(),
           eta: "",
+          rewardProducts: rewardCartMap.entries.map((e) => e.value).toList(),
           items: cartMap.entries.map((e) => e.value).toList(),
           personalAddress: PersonalAddress(
             fullName: selectedHivePersonalAddress.value!.fullName,
@@ -154,6 +155,7 @@ class CartController extends GetxController {
 
   void clearAll() {
     cartMap.clear();
+    rewardCartMap.clear();
     paidScreenShotImage.value = "";
     selectedPaymentIndex.value = 0;
     townShipNameAndFee = {};
@@ -175,7 +177,7 @@ class CartController extends GetxController {
             previousItem!.copyWith(count: previousItem.count + 1);
       } else {
         //Else,this is new,so we add normally
-        rewardCartMap.putIfAbsent(product.id, () => product);
+        rewardCartMap.putIfAbsent(product.id, () => product.copyWith(count: 1));
       }
     } else if (!isCanAdd(product.requiredPoint)) {
       showNotEnoughPoint();
@@ -185,15 +187,15 @@ class CartController extends GetxController {
 
   void removeFromRewardCart(RewardProduct product) {
     final previousItem = rewardCartMap[product.id]!;
-    if (previousItem.count == 0) {
+    if (previousItem.count == 1) {
       rewardCartMap.remove(previousItem.id);
     } else {
       rewardCartMap[product.id] = previousItem.copyWith(
         count: previousItem.count - 1,
       );
-      authController.setCurrentUserPoint(authController.currentUserPoint +
-          (rewardCartMap[product.id]!.count *
-              rewardCartMap[product.id]!.requiredPoint));
     }
+    authController.setCurrentUserPoint(authController.currentUserPoint +
+        (rewardCartMap[product.id]!.count *
+            rewardCartMap[product.id]!.requiredPoint));
   }
 }

@@ -337,9 +337,13 @@ class CartScreen extends StatelessWidget {
                                   cartController.townShipNameAndFee.isNotEmpty;
                               return Obx(() {
                                 return InkWell(
-                                  onTap: (cartController.subTotal.value > 0 &&
+                                  onTap: ((cartController.subTotal.value > 0 ||
+                                              cartController
+                                                  .rewardCartMap.isNotEmpty) &&
                                           deliveryEmpty)
                                       ? () {
+                                          //If subTotal of normal products is not zero or
+                                          //reward cart is not emtpy,we let user to submit order.
                                           Get.bottomSheet(
                                             Container(
                                               child: RelatedAddressWidget(
