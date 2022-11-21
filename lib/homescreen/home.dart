@@ -20,6 +20,7 @@ import 'package:citymall/shop/shop_detail_view.dart';
 import 'package:citymall/shop/shop_view_all.dart';
 import 'package:citymall/textstylefontfamily/textfontfamily.dart';
 import 'package:citymall/week_promotion/week_promotion_detail.dart';
+import 'package:citymall/widgets/reward/reward_product_viewall.dart';
 import 'package:citymall/widgets/reward/reward_product_widget.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -1159,31 +1160,23 @@ class _HomeScreenState extends State<HomeScreen> {
                               //See More
                               Align(
                                 alignment: Alignment.centerRight,
-                                child: TextButton(
-                                  onPressed: () {
-                                    //TODO: Go to reward view all
+                                child: InkWell(
+                                  onTap: () {
+                                    Get.to(() => RewardProductViewAll());
                                   },
-                                  child: InkWell(
-                                    onTap: () {
-                                      Get.to(
-                                        () => BrandViewAll(),
-                                        binding: BrandViewAllBinding(),
-                                      );
-                                    },
-                                    child: Row(
-                                      children: [
-                                        const Text(
-                                          "View all  ",
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontFamily:
-                                                TextFontFamily.SEN_REGULAR,
-                                            color: ColorResources.blue1,
-                                          ),
+                                  child: Row(
+                                    children: [
+                                      const Text(
+                                        "View all  ",
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontFamily:
+                                              TextFontFamily.SEN_REGULAR,
+                                          color: ColorResources.blue1,
                                         ),
-                                        SvgPicture.asset(Images.viewallarrow),
-                                      ],
-                                    ),
+                                      ),
+                                      SvgPicture.asset(Images.viewallarrow),
+                                    ],
                                   ),
                                 ),
                               ),

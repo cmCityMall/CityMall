@@ -110,6 +110,31 @@ class MenuPage extends GetView {
                           : ColorResources.white,
                     ),
                   ),
+                  const SizedBox(height: 5),
+                  RichText(
+                    text: TextSpan(
+                        text: "💎 My points: ",
+                        style: TextStyle(
+                          fontFamily: TextFontFamily.SEN_REGULAR,
+                          fontSize: 14,
+                          color: themeController.isLightTheme.value
+                              ? ColorResources.black2
+                              : ColorResources.white,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: "${user?.points ?? 0}",
+                            style: TextStyle(
+                              fontFamily: TextFontFamily.SEN_REGULAR,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: themeController.isLightTheme.value
+                                  ? ColorResources.blue
+                                  : ColorResources.blue,
+                            ),
+                          ),
+                        ]),
+                  ),
                   SizedBox(height: 40),
                   /* inkwell(Images.profileicon, "My profile", () {
                     Get.off(ProfileScreen());

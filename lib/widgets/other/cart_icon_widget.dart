@@ -38,8 +38,10 @@ class CartIconWidget extends StatelessWidget {
                   backgroundColor: ColorResources.blue1,
                   child: Obx(() {
                     final map = cartController.cartMap;
+                    final rewardMap = cartController.rewardCartMap;
                     final count = map.length;
-                    return Text("$count",
+                    final rewardCount = rewardMap.length;
+                    return Text("${count + rewardCount}",
                         style: const TextStyle(
                           fontSize: 8,
                           color: Colors.white,

@@ -230,43 +230,59 @@ class _UploadRewardProductState extends State<UploadRewardProduct> {
                                         alignment: Alignment.bottomLeft,
                                         child: Padding(
                                           padding: const EdgeInsets.all(5.0),
-                                          child: Card(
-                                            child: !(productController
-                                                    .isFile.value)
-                                                ? CachedNetworkImage(
-                                                    imageUrl: productController
-                                                        .pickedImage.value,
-                                                    memCacheHeight: 80,
-                                                    memCacheWidth: 80,
-                                                    fit: BoxFit.cover,
-                                                    progressIndicatorBuilder:
-                                                        (context, _, __) {
-                                                      return Shimmer.fromColors(
-                                                        highlightColor:
-                                                            Colors.white,
-                                                        baseColor: Colors.grey,
-                                                        child: Container(
-                                                            color:
-                                                                Colors.white),
-                                                      );
-                                                    },
-                                                  )
-                                                : Card(
-                                                    child: ClipRRect(
-                                                      borderRadius:
-                                                          const BorderRadius
-                                                                  .all(
-                                                              Radius.circular(
-                                                                  20)),
-                                                      child: Image.file(
-                                                        File(productController
-                                                            .pickedImage.value),
-                                                        fit: BoxFit.cover,
-                                                        height: 80,
-                                                        width: 80,
-                                                      ),
-                                                    ),
-                                                  ),
+                                          child: InkWell(
+                                            onTap: () =>
+                                                productController.pickImage(),
+                                            child: Card(
+                                              child:
+                                                  !(productController
+                                                          .isFile.value)
+                                                      ? CachedNetworkImage(
+                                                          imageUrl:
+                                                              productController
+                                                                  .pickedImage
+                                                                  .value,
+                                                          memCacheHeight: 80,
+                                                          memCacheWidth: 80,
+                                                          fit: BoxFit.cover,
+                                                          progressIndicatorBuilder:
+                                                              (context, _, __) {
+                                                            return Shimmer
+                                                                .fromColors(
+                                                              highlightColor:
+                                                                  Colors.white,
+                                                              baseColor:
+                                                                  Colors.grey,
+                                                              child: Container(
+                                                                  color: Colors
+                                                                      .white),
+                                                            );
+                                                          },
+                                                        )
+                                                      : Card(
+                                                          child: InkWell(
+                                                            onTap: () =>
+                                                                productController
+                                                                    .pickImage(),
+                                                            child: ClipRRect(
+                                                              borderRadius:
+                                                                  const BorderRadius
+                                                                          .all(
+                                                                      Radius.circular(
+                                                                          20)),
+                                                              child: Image.file(
+                                                                File(productController
+                                                                    .pickedImage
+                                                                    .value),
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                                height: 80,
+                                                                width: 80,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                            ),
                                           ),
                                         ),
                                       );

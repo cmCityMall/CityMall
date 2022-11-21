@@ -39,7 +39,7 @@ class RewardProductController extends GetxController {
   var pickedImageError = "".obs;
   var barCodeError = "".obs;
   //Temporary
-  var isLoading = true.obs;
+  var isLoading = false.obs;
   var isFirstTimePressed = false.obs;
 
   void setBarCode(String value) => barCode.value = value;

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:citymall/colors/colors.dart';
 import 'package:citymall/controller/auth_controller.dart';
 import 'package:citymall/controller/cart_controller.dart';
+import 'package:citymall/widgets/reward/reward_product_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -18,7 +19,7 @@ class RewardProductWidget extends StatelessWidget {
     final AuthController authController = Get.find();
     return InkWell(
       onTap: () {
-        //TODO: GO TO DETAIL PAGE
+        Get.to(() => RewardProductDetailScreen(rewardProduct: product));
       },
       child: ConstrainedBox(
         constraints: const BoxConstraints(
