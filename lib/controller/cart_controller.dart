@@ -10,14 +10,17 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 
+import '../model/reward_product.dart';
 import '../productdetailsscreen/paymentscreen.dart';
 import '../rout_screens/rout_1.dart';
 import '../server/database.dart';
+import '../widgets/show_dialog/show_dialog.dart';
 import 'auth_controller.dart';
 
 class CartController extends GetxController {
   final Database _database = Database();
   final AuthController authController = Get.find();
+  RxMap<String, RewardProduct> rewardCartMap = <String, RewardProduct>{}.obs;
   RxMap<String, CartProduct> cartMap = <String, CartProduct>{}.obs;
   Rxn<HivePersonalAddress> selectedHivePersonalAddress =
       Rxn<HivePersonalAddress>();
@@ -112,6 +115,7 @@ class CartController extends GetxController {
         Purchase(
           id: Uuid().v1(),
           eta: "",
+          rewardProducts: rewardCartMap.entries.map((e) => e.value).toList(),
           items: cartMap.entries.map((e) => e.value).toList(),
           personalAddress: PersonalAddress(
             fullName: selectedHivePersonalAddress.value!.fullName,
@@ -151,8 +155,47 @@ class CartController extends GetxController {
 
   void clearAll() {
     cartMap.clear();
+    rewardCartMap.clear();
     paidScreenShotImage.value = "";
     selectedPaymentIndex.value = 0;
     townShipNameAndFee = {};
+  }
+
+  //For Reward Cart
+  bool isCanAdd(int rewardPoint) {
+    return authController.currentUserPoint > (rewardPoint * 1);
+  }
+
+  void addToRewardCart(RewardProduct product) {
+    if (isCanAdd(product.requiredPoint)) {
+      authController.setCurrentUserPoint(
+          authController.currentUserPoint - (product.requiredPoint * 1));
+      if (rewardCartMap.containsKey(product.id)) {
+        //If Already contain,we increase count
+        final previousItem = rewardCartMap[product.id];
+        rewardCartMap[product.id] =
+            previousItem!.copyWith(count: previousItem.count + 1);
+      } else {
+        //Else,this is new,so we add normally
+        rewardCartMap.putIfAbsent(product.id, () => product.copyWith(count: 1));
+      }
+    } else if (!isCanAdd(product.requiredPoint)) {
+      showNotEnoughPoint();
+      return;
+    }
+  }
+
+  void removeFromRewardCart(RewardProduct product) {
+    final previousItem = rewardCartMap[product.id]!;
+    if (previousItem.count == 1) {
+      rewardCartMap.remove(previousItem.id);
+    } else {
+      rewardCartMap[product.id] = previousItem.copyWith(
+        count: previousItem.count - 1,
+      );
+    }
+    authController.setCurrentUserPoint(authController.currentUserPoint +
+        (rewardCartMap[product.id]!.count *
+            rewardCartMap[product.id]!.requiredPoint));
   }
 }

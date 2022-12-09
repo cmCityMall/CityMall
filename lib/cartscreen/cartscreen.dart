@@ -7,6 +7,7 @@ import 'package:citymall/textstylefontfamily/textfontfamily.dart';
 import 'package:citymall/utils/widgets/empty_widgt.dart';
 import 'package:citymall/widgets/cart/division_dialog_widget.dart';
 import 'package:citymall/widgets/other/cache_image.dart';
+import 'package:citymall/widgets/reward/reward_cart_list.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -48,127 +49,139 @@ class CartScreen extends StatelessWidget {
                     left: 10, right: 10, top: 20, bottom: 140),
                 child: Obx(() {
                   final map = cartController.cartMap;
-                  if (map.isEmpty) {
+                  final rewardMap = cartController.rewardCartMap;
+                  if (map.isEmpty && rewardMap.isEmpty) {
                     return const EmptyWidget("Cart is empty.");
                   }
                   return ListView(
-                    children: map.entries.map((e) {
-                      final product = e.value;
-                      return Card(
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              height: 85,
-                              width: 85,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15),
-                                color: ColorResources.white6,
-                              ),
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 10),
-                                child: CustomCacheNetworkImage(
-                                  imageUrl: e.value.image,
-                                  boxFit: BoxFit.contain,
-                                ),
+                    children: [
+                      RewardCartList(themeController: themeController),
+                      ListView(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        children: map.entries.map((e) {
+                          final product = e.value;
+                          return Card(
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10),
                               ),
                             ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                SizedBox(
-                                  width: 100,
-                                  child: Text(
-                                    product.name,
-                                    maxLines: 2,
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontFamily: TextFontFamily.SEN_BOLD,
-                                      color: themeController.isLightTheme.value
-                                          ? ColorResources.black2
-                                          : ColorResources.white,
+                                Container(
+                                  height: 85,
+                                  width: 85,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15),
+                                    color: ColorResources.white6,
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10),
+                                    child: CustomCacheNetworkImage(
+                                      imageUrl: e.value.image,
+                                      boxFit: BoxFit.contain,
                                     ),
                                   ),
                                 ),
-                                Text(
-                                  "${product.color ?? ""},${product.size ?? ""}",
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    fontFamily: TextFontFamily.SEN_REGULAR,
-                                    color: themeController.isLightTheme.value
-                                        ? ColorResources.white7
-                                        : ColorResources.white.withOpacity(0.6),
-                                  ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    SizedBox(
+                                      width: 100,
+                                      child: Text(
+                                        product.name,
+                                        maxLines: 2,
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          fontFamily: TextFontFamily.SEN_BOLD,
+                                          color:
+                                              themeController.isLightTheme.value
+                                                  ? ColorResources.black2
+                                                  : ColorResources.white,
+                                        ),
+                                      ),
+                                    ),
+                                    Text(
+                                      "${product.color ?? ""},${product.size ?? ""}",
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontFamily: TextFontFamily.SEN_REGULAR,
+                                        color:
+                                            themeController.isLightTheme.value
+                                                ? ColorResources.white7
+                                                : ColorResources.white
+                                                    .withOpacity(0.6),
+                                      ),
+                                    ),
+                                    Text(
+                                      "${product.lastPrice}",
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontFamily: TextFontFamily.SEN_REGULAR,
+                                        fontWeight: FontWeight.w800,
+                                        color: ColorResources.blue1,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                Text(
-                                  "${product.lastPrice}",
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontFamily: TextFontFamily.SEN_REGULAR,
-                                    fontWeight: FontWeight.w800,
-                                    color: ColorResources.blue1,
-                                  ),
+                                Column(
+                                  children: [
+                                    //Increase
+                                    IconButton(
+                                      onPressed: () =>
+                                          cartController.addIntoCart(product),
+                                      icon: Container(
+                                        decoration: const BoxDecoration(
+                                            color: ColorResources.blue1,
+                                            borderRadius: BorderRadius.all(
+                                              Radius.circular(20),
+                                            )),
+                                        child: const Icon(
+                                          Icons.add,
+                                          color: ColorResources.white,
+                                          size: 22,
+                                        ),
+                                      ),
+                                    ),
+                                    //Count Text
+                                    Text(
+                                      "${product.count}",
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontFamily: TextFontFamily.SEN_BOLD,
+                                        color: ColorResources.black,
+                                      ),
+                                    ),
+                                    //Decrease
+                                    IconButton(
+                                      onPressed: () => cartController
+                                          .removeFromCart(product.id),
+                                      icon: Container(
+                                        decoration: const BoxDecoration(
+                                            color: ColorResources.blue1,
+                                            borderRadius: BorderRadius.all(
+                                              Radius.circular(20),
+                                            )),
+                                        child: const Icon(
+                                          Icons.remove,
+                                          color: ColorResources.white,
+                                          size: 22,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                            Column(
-                              children: [
-                                //Increase
-                                IconButton(
-                                  onPressed: () =>
-                                      cartController.addIntoCart(product),
-                                  icon: Container(
-                                    decoration: const BoxDecoration(
-                                        color: ColorResources.blue1,
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(20),
-                                        )),
-                                    child: const Icon(
-                                      Icons.add,
-                                      color: ColorResources.white,
-                                      size: 22,
-                                    ),
-                                  ),
-                                ),
-                                //Count Text
-                                Text(
-                                  "${product.count}",
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontFamily: TextFontFamily.SEN_BOLD,
-                                    color: ColorResources.black,
-                                  ),
-                                ),
-                                //Decrease
-                                IconButton(
-                                  onPressed: () =>
-                                      cartController.removeFromCart(product.id),
-                                  icon: Container(
-                                    decoration: const BoxDecoration(
-                                        color: ColorResources.blue1,
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(20),
-                                        )),
-                                    child: const Icon(
-                                      Icons.remove,
-                                      color: ColorResources.white,
-                                      size: 22,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
+                          );
+                        }).toList(),
+                      ),
+                    ],
                   );
                 }),
               ),
@@ -324,9 +337,13 @@ class CartScreen extends StatelessWidget {
                                   cartController.townShipNameAndFee.isNotEmpty;
                               return Obx(() {
                                 return InkWell(
-                                  onTap: (cartController.subTotal.value > 0 &&
+                                  onTap: ((cartController.subTotal.value > 0 ||
+                                              cartController
+                                                  .rewardCartMap.isNotEmpty) &&
                                           deliveryEmpty)
                                       ? () {
+                                          //If subTotal of normal products is not zero or
+                                          //reward cart is not emtpy,we let user to submit order.
                                           Get.bottomSheet(
                                             Container(
                                               child: RelatedAddressWidget(

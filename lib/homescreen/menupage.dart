@@ -33,6 +33,8 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
 import '../admin/advertisement/view/ad_view.dart';
+import '../admin/reward_product/bin/reward_product_binding.dart';
+import '../admin/reward_product/view/manage_reward_product.dart';
 import '../admin/time_sale/view/time_sale_view.dart';
 import '../splashscreen/splash.dart';
 
@@ -108,6 +110,31 @@ class MenuPage extends GetView {
                           : ColorResources.white,
                     ),
                   ),
+                  const SizedBox(height: 5),
+                  RichText(
+                    text: TextSpan(
+                        text: "💎 My points: ",
+                        style: TextStyle(
+                          fontFamily: TextFontFamily.SEN_REGULAR,
+                          fontSize: 14,
+                          color: themeController.isLightTheme.value
+                              ? ColorResources.black2
+                              : ColorResources.white,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: "${user?.points ?? 0}",
+                            style: TextStyle(
+                              fontFamily: TextFontFamily.SEN_REGULAR,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: themeController.isLightTheme.value
+                                  ? ColorResources.blue
+                                  : ColorResources.blue,
+                            ),
+                          ),
+                        ]),
+                  ),
                   SizedBox(height: 40),
                   /* inkwell(Images.profileicon, "My profile", () {
                     Get.off(ProfileScreen());
@@ -175,6 +202,13 @@ class MenuPage extends GetView {
                           Get.to(
                             () => const ManageProduct(),
                             binding: ProductBinding(),
+                          );
+                        }),
+                        inkwell(Images.categoryicon, "Manage Reward Product",
+                            () {
+                          Get.to(
+                            () => const ManageRewardProduct(),
+                            binding: RewardProductBinding(),
                           );
                         }),
                         inkwell(Images.myordericon, "Manage Orders", () {

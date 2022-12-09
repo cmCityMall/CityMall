@@ -9,3 +9,4 @@ const promotionCollection = "promotions";
 const timeSaleCollection = "timeSale";
 const userCollection = "users";
 const purchaseCollection = 'purchases';
+const rewardProductCollection = "reward_products";

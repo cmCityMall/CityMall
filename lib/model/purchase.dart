@@ -1,4 +1,5 @@
 import 'package:citymall/model/personal_address.dart';
+import 'package:citymall/model/reward_product.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'cart_product.dart';
@@ -11,7 +12,8 @@ class Purchase with _$Purchase {
   @JsonSerializable(explicitToJson: true)
   factory Purchase({
     required String id,
-    required List<CartProduct> items,
+    List<CartProduct>? items,
+    List<RewardProduct>? rewardProducts,
     required PersonalAddress personalAddress,
     required String screenShotImage,
     required Map<String, dynamic> townShipNameAndFee,

@@ -18,6 +18,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../constant/constant.dart';
 import '../model/hive_personal_address.dart';
 import '../model/product.dart';
+import '../model/reward_product.dart';
 import '../model/shop.dart';
 import '../model/sub_category.dart';
 
@@ -50,6 +51,7 @@ class DBDataController extends GetxController {
 
   RxList<MainCategory> menuMainCategories = <MainCategory>[].obs;
   RxList<TimeSale> timeSales = <TimeSale>[].obs;
+  RxList<RewardProduct> rewardProducts = <RewardProduct>[].obs;
   RxList<WeekPromotion> weekPromotions = <WeekPromotion>[].obs;
   RxList<Advertisement> advertisements = <Advertisement>[].obs;
   RxMap<String, List<Product>> products = <String, List<Product>>{}.obs;
@@ -74,6 +76,7 @@ class DBDataController extends GetxController {
 
   var advertisementLoading = true.obs;
   var promotionsLoading = true.obs;
+  var rewardProductsLoading = true.obs;
   var timeSaleLoading = true.obs;
   var mainCategoryLoading = false.obs;
   var menuMainCategoryLoading = true.obs;
@@ -89,6 +92,7 @@ class DBDataController extends GetxController {
   String mainName = "";
   String subName = "";
   Product? editProduct;
+  RewardProduct? editRewardProduct;
 
   ///For temporary Function */
   void setSelectedTimeSale(TimeSale t) => selectedTimeSale.value = t;
@@ -98,6 +102,7 @@ class DBDataController extends GetxController {
   void setSelectedBrand(Brand brand) => selectedBrand.value = brand;
   void setSelectedShop(Shop shop) => selectedShop.value = shop;
   void setEditProduct(Product? value) => editProduct = value;
+  void setEditRewardProduct(RewardProduct? value) => editRewardProduct = value;
   void setSelectedMain(String id, String name) {
     mainId = id;
     mainName = name;
@@ -541,6 +546,15 @@ class DBDataController extends GetxController {
         promotionsLoading.value = false;
       }
     });
+    //Reward Product...
+    _database.watchCollection(rewardProductCollection).listen((event) {
+      rewardProducts.value =
+          event.docs.map((e) => RewardProduct.fromJson(e.data())).toList();
+      if (rewardProductsLoading.value) {
+        rewardProductsLoading.value = false;
+      }
+    });
+    //........//
     _database.watchCollectionWithoutOrder(timeSaleCollection).listen((event) {
       if (event.docs.isNotEmpty) {
         timeSales.value =

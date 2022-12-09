@@ -175,105 +175,172 @@ class OrderDetailView extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Container(
-                    color: themeController.isLightTheme.value
-                        ? ColorResources.white1
-                        : ColorResources.black1,
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: purchase.items.length,
-                      itemBuilder: (context, index) {
-                        final item = purchase.items[index];
-                        return ListTile(
-                          leading: CircleAvatar(
-                            radius: 15,
-                            backgroundColor: ColorResources.blue1,
-                            child: Text(
-                              "${index + 1}",
-                              style: const TextStyle(
-                                fontFamily: TextFontFamily.SEN_REGULAR,
-                                fontSize: 14,
-                                color: ColorResources.white,
-                              ),
-                            ),
-                          ),
-                          title: Text(
-                            item.name,
-                            style: TextStyle(
-                              fontFamily: TextFontFamily.SEN_REGULAR,
-                              fontSize: 16,
-                              color: themeController.isLightTheme.value
-                                  ? ColorResources.black2
-                                  : ColorResources.white,
-                            ),
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              item.color == null
-                                  ? const SizedBox()
-                                  : Text(
-                                      "Color: ",
-                                      style: TextStyle(
-                                        fontFamily: TextFontFamily.SEN_REGULAR,
-                                        fontSize: 16,
-                                        color:
-                                            themeController.isLightTheme.value
-                                                ? ColorResources.black2
-                                                : ColorResources.white,
-                                      ),
+                  !(purchase.items == null)
+                      ? Container(
+                          color: themeController.isLightTheme.value
+                              ? ColorResources.white1
+                              : ColorResources.black1,
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: purchase.items!.length,
+                            itemBuilder: (context, index) {
+                              final item = purchase.items![index];
+                              return ListTile(
+                                leading: CircleAvatar(
+                                  radius: 15,
+                                  backgroundColor: ColorResources.blue1,
+                                  child: Text(
+                                    "${index + 1}",
+                                    style: const TextStyle(
+                                      fontFamily: TextFontFamily.SEN_REGULAR,
+                                      fontSize: 14,
+                                      color: ColorResources.white,
                                     ),
-                              item.color == null
-                                  ? const SizedBox()
-                                  : Container(
-                                      height: 25,
-                                      width: 25,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        color:
-                                            themeController.isLightTheme.value
-                                                ? ColorResources.white9
-                                                : ColorResources.black1,
-                                      ),
-                                      child: Center(
-                                        child: CircleAvatar(
-                                          radius: 9,
-                                          backgroundColor:
-                                              HexColor(item.color!),
-                                        ),
-                                      ),
-                                    ),
-                              //Size
-                              item.size == null
-                                  ? const SizedBox()
-                                  : Text(
-                                      "Size: ${item.size}",
-                                      style: TextStyle(
-                                        fontFamily: TextFontFamily.SEN_REGULAR,
-                                        fontSize: 16,
-                                        color:
-                                            themeController.isLightTheme.value
-                                                ? ColorResources.black2
-                                                : ColorResources.white,
-                                      ),
-                                    ),
-                            ],
+                                  ),
+                                ),
+                                title: Text(
+                                  item.name,
+                                  style: TextStyle(
+                                    fontFamily: TextFontFamily.SEN_REGULAR,
+                                    fontSize: 16,
+                                    color: themeController.isLightTheme.value
+                                        ? ColorResources.black2
+                                        : ColorResources.white,
+                                  ),
+                                ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    item.color == null
+                                        ? const SizedBox()
+                                        : Text(
+                                            "Color: ",
+                                            style: TextStyle(
+                                              fontFamily:
+                                                  TextFontFamily.SEN_REGULAR,
+                                              fontSize: 16,
+                                              color: themeController
+                                                      .isLightTheme.value
+                                                  ? ColorResources.black2
+                                                  : ColorResources.white,
+                                            ),
+                                          ),
+                                    item.color == null
+                                        ? const SizedBox()
+                                        : Container(
+                                            height: 25,
+                                            width: 25,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              color: themeController
+                                                      .isLightTheme.value
+                                                  ? ColorResources.white9
+                                                  : ColorResources.black1,
+                                            ),
+                                            child: Center(
+                                              child: CircleAvatar(
+                                                radius: 9,
+                                                backgroundColor:
+                                                    HexColor(item.color!),
+                                              ),
+                                            ),
+                                          ),
+                                    //Size
+                                    item.size == null
+                                        ? const SizedBox()
+                                        : Text(
+                                            "Size: ${item.size}",
+                                            style: TextStyle(
+                                              fontFamily:
+                                                  TextFontFamily.SEN_REGULAR,
+                                              fontSize: 16,
+                                              color: themeController
+                                                      .isLightTheme.value
+                                                  ? ColorResources.black2
+                                                  : ColorResources.white,
+                                            ),
+                                          ),
+                                  ],
+                                ),
+                                trailing: Text(
+                                  "${item.lastPrice * item.count}MMK",
+                                  style: TextStyle(
+                                    fontFamily: TextFontFamily.SEN_REGULAR,
+                                    fontSize: 16,
+                                    color: themeController.isLightTheme.value
+                                        ? ColorResources.black2
+                                        : ColorResources.white,
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                          trailing: Text(
-                            "${item.lastPrice * item.count}MMK",
-                            style: TextStyle(
-                              fontFamily: TextFontFamily.SEN_REGULAR,
-                              fontSize: 16,
-                              color: themeController.isLightTheme.value
-                                  ? ColorResources.black2
-                                  : ColorResources.white,
-                            ),
-                          ),
-                        );
-                      },
+                        )
+                      : const SizedBox(),
+                  const SizedBox(height: 10),
+                  //Reward Product.............//
+                  Text(
+                    "Reward Items Detail: ",
+                    style: TextStyle(
+                      fontFamily: TextFontFamily.SEN_BOLD,
+                      fontSize: 19,
+                      color: themeController.isLightTheme.value
+                          ? ColorResources.black2
+                          : ColorResources.white,
                     ),
                   ),
+                  const SizedBox(height: 10),
+                  !(purchase.rewardProducts == null)
+                      ? Container(
+                          color: themeController.isLightTheme.value
+                              ? ColorResources.white1
+                              : ColorResources.black1,
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: purchase.rewardProducts!.length,
+                            itemBuilder: (context, index) {
+                              final item = purchase.rewardProducts![index];
+                              return ListTile(
+                                leading: CircleAvatar(
+                                  radius: 15,
+                                  backgroundColor: ColorResources.blue1,
+                                  child: Text(
+                                    "${index + 1}",
+                                    style: const TextStyle(
+                                      fontFamily: TextFontFamily.SEN_REGULAR,
+                                      fontSize: 14,
+                                      color: ColorResources.white,
+                                    ),
+                                  ),
+                                ),
+                                title: Text(
+                                  item.name,
+                                  style: TextStyle(
+                                    fontFamily: TextFontFamily.SEN_REGULAR,
+                                    fontSize: 16,
+                                    color: themeController.isLightTheme.value
+                                        ? ColorResources.black2
+                                        : ColorResources.white,
+                                  ),
+                                ),
+                                trailing: Text(
+                                  "${item.requiredPoint * item.count} points",
+                                  style: TextStyle(
+                                    fontFamily: TextFontFamily.SEN_REGULAR,
+                                    fontSize: 16,
+                                    color: themeController.isLightTheme.value
+                                        ? ColorResources.black2
+                                        : ColorResources.white,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        )
+                      : const SizedBox(),
                   const SizedBox(height: 10),
                   Text(
                     "Delivery Fee:  ${purchase.townShipNameAndFee["fee"]}MMK",

@@ -23,7 +23,6 @@ import 'controller/cart_controller.dart';
 import 'controller/week_promotion_controller.dart';
 import 'rout_screens/rout_1.dart';
 import 'searchscreen/search_controller.dart';
-//import 'package:get/get.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();

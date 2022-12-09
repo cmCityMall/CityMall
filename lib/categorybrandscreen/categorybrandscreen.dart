@@ -4,6 +4,7 @@ import 'package:citymall/controller/category_brand_controller.dart';
 import 'package:citymall/controller/db_data_controller.dart';
 import 'package:citymall/controller/theme_controller.dart';
 import 'package:citymall/images/images.dart';
+import 'package:citymall/shop/shop_detail_view.dart';
 import 'package:citymall/textstylefontfamily/textfontfamily.dart';
 import 'package:citymall/utils/widgets/empty_widgt.dart';
 import 'package:flutter/material.dart';
@@ -59,7 +60,7 @@ class CategoryBrandScreen extends StatelessWidget {
                             onTap: () {
                               dataController.setSelectedShop(brand);
                               dataController.getInitialShopProducts(brand.id);
-                              Get.to(() => const BrandsDetailView());
+                              Get.to(() => const ShopDetailView());
                             },
                             child: Container(
                               height: 141,
@@ -73,16 +74,7 @@ class CategoryBrandScreen extends StatelessWidget {
                                   fit: BoxFit.cover,
                                 ),
                               ),
-                              child: Center(
-                                child: Text(
-                                  brand.name,
-                                  style: TextStyle(
-                                    fontSize: 32,
-                                    fontFamily: TextFontFamily.SEN_EXTRA_BOLD,
-                                    color: ColorResources.black,
-                                  ),
-                                ),
-                              ),
+                              child: const Center(),
                             ),
                           ),
                         );

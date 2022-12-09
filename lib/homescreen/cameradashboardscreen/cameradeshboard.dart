@@ -303,13 +303,21 @@ class CameraDeshBoard extends StatelessWidget {
                                           fit: BoxFit.cover,
                                         ),
                                       ),
-                                      child: Center(
-                                        child: Text(
-                                          subCategory?.name ?? "Null",
-                                          style: TextStyle(
-                                            fontFamily: TextFontFamily.SEN_BOLD,
-                                            fontSize: 14,
-                                            color: ColorResources.white,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(7),
+                                          color: Colors.black.withOpacity(0.3),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            subCategory?.name ?? "Null",
+                                            style: TextStyle(
+                                              fontFamily:
+                                                  TextFontFamily.SEN_BOLD,
+                                              fontSize: 14,
+                                              color: ColorResources.white,
+                                            ),
                                           ),
                                         ),
                                       ),

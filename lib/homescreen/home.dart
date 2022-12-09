@@ -20,6 +20,8 @@ import 'package:citymall/shop/shop_detail_view.dart';
 import 'package:citymall/shop/shop_view_all.dart';
 import 'package:citymall/textstylefontfamily/textfontfamily.dart';
 import 'package:citymall/week_promotion/week_promotion_detail.dart';
+import 'package:citymall/widgets/reward/reward_product_viewall.dart';
+import 'package:citymall/widgets/reward/reward_product_widget.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -1118,6 +1120,89 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         );
                       }),
+                );
+              }),
+              Obx(() {
+                if (dbDataController.rewardProductsLoading.value) {
+                  return const LoadingWidget();
+                }
+                if (dbDataController.rewardProducts.isEmpty) {
+                  return const SizedBox();
+                }
+                return AspectRatio(
+                  aspectRatio: 1.15,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: 20,
+                    ),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            /* left: 10,
+                            right: 10, */
+                            bottom: 10,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              //Status Text
+                              const Text(
+                                "REWARD PRODUCTS",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+
+                              //See More
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: InkWell(
+                                  onTap: () {
+                                    Get.to(() => RewardProductViewAll());
+                                  },
+                                  child: Row(
+                                    children: [
+                                      const Text(
+                                        "View all  ",
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontFamily:
+                                              TextFontFamily.SEN_REGULAR,
+                                          color: ColorResources.blue1,
+                                        ),
+                                      ),
+                                      SvgPicture.asset(Images.viewallarrow),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            /* separatorBuilder: (context, index) {
+                                              return const SizedBox(width: 10);
+                                            }, */
+                            physics: BouncingScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: dbDataController.rewardProducts.length,
+                            itemBuilder: (context, productIndex) {
+                              return RewardProductWidget(
+                                product: dbDataController
+                                    .rewardProducts[productIndex],
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 );
               }),
             ],

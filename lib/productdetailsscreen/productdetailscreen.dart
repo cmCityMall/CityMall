@@ -43,33 +43,6 @@ class ProductDetailScreen extends StatelessWidget {
       Get.put(ArrowClickController());
   final AddressClickController1 addressClickController1 =
       Get.put(AddressClickController1());
-  /*  List<Map> topRatedProductList = [
-    {
-      "image": Images.purseimage,
-      "text": "Nike Air Max 270\nReact ENG",
-      "text1": "10%",
-      "price": "\$299,43",
-    },
-    {
-      "image": Images.shoesimage,
-      "text": "Nike Air Max 270\nReact ENG",
-      "text1": "10%",
-      "price": "\$299,43",
-    },
-  ];
-
-  List<Map> bottomAddressList = [
-    {
-      "icon": Images.homefill,
-      "text1": "Home Address",
-      "text2": "+91 12345 67890",
-    },
-    {
-      "icon": Images.office,
-      "text1": "Office Address",
-      "text2": "+91 98765 43210",
-    },
-  ]; */
 
   @override
   Widget build(BuildContext context) {
@@ -132,18 +105,9 @@ class ProductDetailScreen extends StatelessWidget {
         actions: [
           Padding(
             padding: const EdgeInsets.only(top: 8, bottom: 8, right: 25),
-            child: InkWell(
-              onTap: () {
-                selectedIndex = 4;
-                Navigator.of(context, rootNavigator: true)
-                    .pushReplacement(MaterialPageRoute(
-                  builder: (context) => NavigationBarBottom(),
-                ));
-              },
-              child: CartIconWidget(
-                themeController: themeController,
-                color: ColorResources.white,
-              ),
+            child: CartIconWidget(
+              themeController: themeController,
+              color: ColorResources.white,
             ),
           ),
         ],

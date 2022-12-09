@@ -90,7 +90,7 @@ class _MenuViewAllScreenState extends State<MenuViewAllScreen> {
           ),
         ),
         actions: [
-          Padding(
+          /* Padding(
             padding: const EdgeInsets.only(right: 25),
             child: InkWell(
               onTap: () {
@@ -103,7 +103,7 @@ class _MenuViewAllScreenState extends State<MenuViewAllScreen> {
                     : ColorResources.white.withOpacity(0.6),
               ),
             ),
-          ),
+          ), */
         ],
       ),
       body: Padding(

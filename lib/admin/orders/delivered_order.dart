@@ -223,16 +223,25 @@ class DeliveredOrders extends StatelessWidget {
 
   getQuantity(Purchase purchase) {
     int count = 0;
-    for (var e in purchase.items) {
-      count += e.count;
+    if (!(purchase.items == null)) {
+      for (var e in purchase.items!) {
+        count += e.count;
+      }
+    }
+    if (!(purchase.rewardProducts == null)) {
+      for (var e in purchase.rewardProducts!) {
+        count += e.count;
+      }
     }
     return count;
   }
 
   getTotalAmount(Purchase purchase) {
     int total = 0;
-    for (var e in purchase.items) {
-      total += e.lastPrice * e.count;
+    if (!(purchase.items == null)) {
+      for (var e in purchase.items!) {
+        total += e.lastPrice * e.count;
+      }
     }
     return total;
   }

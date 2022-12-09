@@ -105,7 +105,7 @@ class _ShopDetailViewState extends State<ShopDetailView> {
                     fit: BoxFit.cover,
                     width: Get.width,
                   ),
-                  Padding(
+                  /* Padding(
                     padding: const EdgeInsets.only(bottom: 30),
                     child: Text(
                       dataController.selectedShop.value?.name ?? "",
@@ -115,7 +115,7 @@ class _ShopDetailViewState extends State<ShopDetailView> {
                         color: ColorResources.black2,
                       ),
                     ),
-                  ),
+                  ), */
                 ],
               ),
             ),
@@ -175,6 +175,9 @@ class _ShopDetailViewState extends State<ShopDetailView> {
                         itemBuilder: (context, index) {
                           return InkWell(
                             onTap: () {
+                              dataController.setSelectedProduct(
+                                  dataController.shopProducts[dataController
+                                      .selectedShop.value!.id]![index]);
                               Get.to(
                                 () => ProductDetailScreen(),
                                 binding: ProductDetailBinding(),

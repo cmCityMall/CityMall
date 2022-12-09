@@ -133,67 +133,135 @@ class _UserOrderPrintViewState extends State<UserOrderPrintView> {
                               fontSize: 8,
                             )),
                       ]),
-                  for (var item in widget.purchaseModel.items) ...[
-                    pw.TableRow(
-                      verticalAlignment: pw.TableCellVerticalAlignment.full,
-                      children: [
-                        pw.SizedBox(width: 10),
-                        //Name
-                        pw.Expanded(
+                  if (!(widget.purchaseModel.items == null)) ...[
+                    for (var item in widget.purchaseModel.items!) ...[
+                      pw.TableRow(
+                        verticalAlignment: pw.TableCellVerticalAlignment.full,
+                        children: [
+                          pw.SizedBox(width: 10),
+                          //Name
+                          pw.Expanded(
+                              child: pw.Text(
+                            item.name,
+                            textAlign: pw.TextAlign.left,
+                            style: pw.TextStyle(
+                              font: cherryUnicode,
+                              fontSize: 8,
+                            ),
+                          )),
+                          //Color,Size
+                          pw.Expanded(
+                              child: pw.Padding(
+                                  padding: const pw.EdgeInsets.only(left: 15),
+                                  child: pw.Text(
+                                    "${getColor(item.color ?? "")}-${item.size ?? ""}",
+                                    textAlign: pw.TextAlign.left,
+                                    style: pw.TextStyle(
+                                      font: cherryUnicode,
+                                      fontSize: 8,
+                                    ),
+                                  ))),
+                          //Count
+                          pw.Expanded(
                             child: pw.Text(
-                          item.name,
-                          textAlign: pw.TextAlign.left,
-                          style: pw.TextStyle(
-                            font: cherryUnicode,
-                            fontSize: 8,
+                              "${item.count}",
+                              overflow: pw.TextOverflow.clip,
+                              maxLines: 1,
+                              textAlign: pw.TextAlign.center,
+                              style: pw.TextStyle(
+                                font: cherryUnicode,
+                                fontSize: 8,
+                              ),
+                            ),
                           ),
-                        )),
-                        //Color,Size
-                        pw.Expanded(
-                            child: pw.Padding(
-                                padding: const pw.EdgeInsets.only(left: 15),
-                                child: pw.Text(
-                                  "${getColor(item.color ?? "")}-${item.size ?? ""}",
-                                  textAlign: pw.TextAlign.left,
-                                  style: pw.TextStyle(
-                                    font: cherryUnicode,
-                                    fontSize: 8,
-                                  ),
-                                ))),
-                        //Count
-                        pw.Expanded(
-                          child: pw.Text(
-                            "${item.count}",
-                            overflow: pw.TextOverflow.clip,
-                            maxLines: 1,
+                          //Price
+                          pw.Expanded(
+                              child: pw.Text(
+                            "${item.lastPrice} Ks",
                             textAlign: pw.TextAlign.center,
                             style: pw.TextStyle(
                               font: cherryUnicode,
                               fontSize: 8,
                             ),
-                          ),
+                          )),
+                          pw.Expanded(
+                              child: pw.Text(
+                            "${item.lastPrice * item.count} Ks",
+                            textAlign: pw.TextAlign.center,
+                            style: pw.TextStyle(
+                              font: cherryUnicode,
+                              fontSize: 8,
+                            ),
+                          )),
+                        ],
+                      ),
+                    ],
+                    //For Reward
+                    if (!(widget.purchaseModel.rewardProducts == null)) ...[
+                      for (var item
+                          in widget.purchaseModel.rewardProducts!) ...[
+                        pw.TableRow(
+                          verticalAlignment: pw.TableCellVerticalAlignment.full,
+                          children: [
+                            pw.SizedBox(width: 10),
+                            //Name
+                            pw.Expanded(
+                                child: pw.Text(
+                              item.name,
+                              textAlign: pw.TextAlign.left,
+                              style: pw.TextStyle(
+                                font: cherryUnicode,
+                                fontSize: 8,
+                              ),
+                            )),
+                            //Color,Size
+                            pw.Expanded(
+                                child: pw.Padding(
+                                    padding: const pw.EdgeInsets.only(left: 15),
+                                    child: pw.Text(
+                                      "",
+                                      textAlign: pw.TextAlign.left,
+                                      style: pw.TextStyle(
+                                        font: cherryUnicode,
+                                        fontSize: 8,
+                                      ),
+                                    ))),
+                            //Count
+                            pw.Expanded(
+                              child: pw.Text(
+                                "${item.count}",
+                                overflow: pw.TextOverflow.clip,
+                                maxLines: 1,
+                                textAlign: pw.TextAlign.center,
+                                style: pw.TextStyle(
+                                  font: cherryUnicode,
+                                  fontSize: 8,
+                                ),
+                              ),
+                            ),
+                            //Price
+                            pw.Expanded(
+                                child: pw.Text(
+                              "${item.requiredPoint} points",
+                              textAlign: pw.TextAlign.center,
+                              style: pw.TextStyle(
+                                font: cherryUnicode,
+                                fontSize: 8,
+                              ),
+                            )),
+                            pw.Expanded(
+                                child: pw.Text(
+                              "${item.requiredPoint * item.count} points",
+                              textAlign: pw.TextAlign.center,
+                              style: pw.TextStyle(
+                                font: cherryUnicode,
+                                fontSize: 8,
+                              ),
+                            )),
+                          ],
                         ),
-                        //Price
-                        pw.Expanded(
-                            child: pw.Text(
-                          "${item.lastPrice} Ks",
-                          textAlign: pw.TextAlign.center,
-                          style: pw.TextStyle(
-                            font: cherryUnicode,
-                            fontSize: 8,
-                          ),
-                        )),
-                        pw.Expanded(
-                            child: pw.Text(
-                          "${item.lastPrice * item.count} Ks",
-                          textAlign: pw.TextAlign.center,
-                          style: pw.TextStyle(
-                            font: cherryUnicode,
-                            fontSize: 8,
-                          ),
-                        )),
-                      ],
-                    ),
+                      ]
+                    ],
                   ],
                 ]),
             pw.Divider(
