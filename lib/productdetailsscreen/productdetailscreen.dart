@@ -105,18 +105,9 @@ class ProductDetailScreen extends StatelessWidget {
         actions: [
           Padding(
             padding: const EdgeInsets.only(top: 8, bottom: 8, right: 25),
-            child: InkWell(
-              onTap: () {
-                selectedIndex = 4;
-                Navigator.of(context, rootNavigator: true)
-                    .pushReplacement(MaterialPageRoute(
-                  builder: (context) => NavigationBarBottom(),
-                ));
-              },
-              child: CartIconWidget(
-                themeController: themeController,
-                color: ColorResources.white,
-              ),
+            child: CartIconWidget(
+              themeController: themeController,
+              color: ColorResources.white,
             ),
           ),
         ],

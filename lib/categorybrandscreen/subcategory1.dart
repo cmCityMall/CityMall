@@ -142,8 +142,8 @@ class _BrandsDetailViewState extends State<BrandsDetailView> {
                     child: Obx(() {
                       final isLoading = dataController.brandProductLoading[
                           dataController.selectedBrand.value!.id];
-                      final dataList = dataController.brandProducts[
-                          dataController.selectedBrand.value!.id];
+                      final dataList = dataController
+                          .shopProducts[dataController.selectedBrand.value!.id];
                       if (isLoading!) {
                         return const LoadingWidget();
                       }
@@ -154,10 +154,7 @@ class _BrandsDetailViewState extends State<BrandsDetailView> {
                         );
                       }
                       return GridView.builder(
-                        itemCount: dataController
-                            .brandProducts[
-                                dataController.selectedBrand.value!.id]!
-                            .length,
+                        itemCount: dataList.length,
                         physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         gridDelegate:
@@ -241,12 +238,14 @@ class _BrandsDetailViewState extends State<BrandsDetailView> {
                                           padding: const EdgeInsets.all(5),
                                           child: Image.network(
                                             dataController
-                                                .brandProducts[dataController
-                                                    .selectedBrand
-                                                    .value!
-                                                    .id]![index]
-                                                .images
-                                                .first,
+                                                    .brandProducts[
+                                                        dataController
+                                                            .selectedBrand
+                                                            .value!
+                                                            .id]?[index]
+                                                    .images
+                                                    .first ??
+                                                "",
                                           ),
                                         ),
                                       ),
