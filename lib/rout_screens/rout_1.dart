@@ -82,11 +82,15 @@ class _NavigationBarBottomState extends State<NavigationBarBottom> {
       onHorizontalDragStart: (detail) {
         final _state = _endSideMenuKey.currentState;
         if (detail.globalPosition.direction < 1) {
-          if (!(_state == null) && _state.isOpened) {
+          if (!(_state == null) && isOpened && _state.isOpened) {
+            isOpened = false;
             _state.closeSideMenu();
           }
         } else {
-          if (!(_state == null) && !_state.isOpened) {
+          if (!(_state == null) &&
+              isOpened == false &&
+              _state.isOpened == false) {
+            isOpened = true;
             _state.openSideMenu();
           }
         }
